@@ -188,7 +188,7 @@ export default function Home() {
             <span className="text-[#D1E2F0] text-sm">Premium Dental Care</span>
             <h1 className={`${noticia_regular.className} text-4xl text-white font-bold`}>Your smile,<br/>Our priority.</h1>
             <h2 className={`${schibsted_grotesk.className} text-lg text-white mt-6`}>
-              Whether you're here for a routine checkup or a complete smile makeover, our experienced team is dedicated to giving you the care you deserve — in a space that feels like home.
+              Whether you&apos;re here for a routine checkup or a complete smile makeover, our experienced team is dedicated to giving you the care you deserve — in a space that feels like home.
             </h2>
             <div className="flex flex-col lg:flex-row items-center gap-4 mt-10">
               <Link href="/appointment" className="w-full">
@@ -262,8 +262,8 @@ export default function Home() {
               <Slider {...settings}>
                 {review_data.map((r, i) => {
                   return (
-                    <div className="lg:px-4">
-                      <div key={i} className="rounded-lg bg-[#eef3f9] p-4 h-[20rem]">
+                    <div key={i} className="lg:px-4">
+                      <div className="rounded-lg bg-[#eef3f9] p-4 h-[20rem]">
                         <div className="flex gap-2 mb-4">
                           <Image src={r.img} alt="" width={48} height={48} className="rounded-full"></Image>
                           <div className="flex flex-col">
