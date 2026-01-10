@@ -151,12 +151,12 @@ export default function Home() {
           <button onClick={() => setIsOpen(prev => !prev)} className="block lg:hidden">
             {isOpen ? ( 
               // Close Icon (X)
-              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-10 text-[#032d68] transition-all duration-200">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-10 text-white transition-all duration-200">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
               </svg>
             ) : (
               // Hamburger Icon
-              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-10 text-[#032d68] transition-all duration-200">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-10 text-white transition-all duration-200">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
               </svg>
             )}
@@ -183,7 +183,7 @@ export default function Home() {
       
       {/* Primary Container */}
       <div className={`${styles.primary_container} lg:w-[95%] lg:mx-auto`}>
-        <div className="w-[90%] mx-auto pt-32 lg:pt-38 py-8 pb-16 flex flex-col lg:flex-row lg:items-center justify-between">
+        <div className="w-[90%] mx-auto pt-8 lg:pt-38 py-8 pb-16 flex flex-col lg:flex-row lg:items-center justify-between">
           <div className="lg:w-[50%]">
             <span className="text-[#D1E2F0] text-sm">Premium Dental Care</span>
             <h1 className={`${noticia_regular.className} text-4xl text-white font-bold`}>Your smile,<br/>Our priority.</h1>
