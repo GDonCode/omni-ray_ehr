@@ -1,0 +1,10 @@
+Naval Night - #011B3E
+Dark Blue - #032d68
+Azure - #1b75bc
+Vivid Azure - #33a5ff
+White - #ffffff
+Link Water - #D1D5DB
+
+${noticia_regular.className}  - Heading
+${schibsted_grotesk.className} - Body
+${encode_sans.className} - Accent

@@ -1,6 +1,9 @@
+import "../globals.css";
+import Image from "next/image";
 export default function Login() {
     return (
-        <div>
+        <div className="bg-white">
+            <Image src="/logo.png" alt="Clinic Logo" width={150} height={150} className="mx-auto my-8" />
             <h1>Take control of your health</h1>
             <p>Login to your account</p>
             <form>

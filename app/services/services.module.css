@@ -1,0 +1,52 @@
+.secondary_container {
+    --color: #032d68;
+    background-color:  #043570 ;
+    background-image: linear-gradient(0deg, transparent 24%, var(--color) 25%, var(--color) 26%, transparent 27%,transparent 74%, var(--color) 75%, var(--color) 76%, transparent 77%,transparent),
+    linear-gradient(90deg, transparent 24%, var(--color) 25%, var(--color) 26%, transparent 27%,transparent 74%, var(--color) 75%, var(--color) 76%, transparent 77%,transparent);
+    background-size: 16px 16px;
+}
+@media (min-width: 768px) {
+    .secondary_container {
+        background-size: 30px 30px;
+    }
+    .primary_container {
+      background-size: 30px 30px;
+    }
+}
+
+.primary_container {
+     --color: #E1E1E1;
+    background-color: #F3F3F3;
+    background-image: linear-gradient(0deg, transparent 24%, var(--color) 25%, var(--color) 26%, transparent 27%,transparent 74%, var(--color) 75%, var(--color) 76%, transparent 77%,transparent),
+    linear-gradient(90deg, transparent 24%, var(--color) 25%, var(--color) 26%, transparent 27%,transparent 74%, var(--color) 75%, var(--color) 76%, transparent 77%,transparent);
+    background-size: 16px 16px;
+}
+
+
+.corner_accent {
+    position: relative;
+    display: inline-block;
+}
+.corner_accent::before {
+  content: '';
+  position: absolute;
+  top: -5px;
+  left: -5px;
+  width: 30px;
+  height: 30px;
+  border-top: 2px solid #FFD700;
+  border-left: 2px solid #FFD700;
+  z-index: 10;
+}
+
+.corner_accent::after {
+  content: '';
+  position: absolute;
+  bottom: -5px;
+  right: -5px;
+  width: 30px;
+  height: 30px;
+  border-bottom: 2px solid #FFD700;
+  border-right: 2px solid #FFD700;
+  z-index: 10;
+}
