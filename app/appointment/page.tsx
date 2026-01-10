@@ -1,11 +1,9 @@
 'use client'
 
-import {useState,useEffect} from "react";
-import { Mail, Phone, Check } from 'lucide-react';
+import {useState} from "react";
 import AppointmentCalendar from "../components/AppointmentCalendar";
 import StepIndicator from '../components/StepIndicator';
 import Image from "next/image";
-import Link from "next/link";
 import styles from "./new_appointment.module.css";
 import localFont from "next/font/local";
 const noticia_regular = localFont({

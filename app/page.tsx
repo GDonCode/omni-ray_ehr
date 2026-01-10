@@ -8,12 +8,20 @@ import "@radix-ui/themes/styles.css";
 import localFont from "next/font/local";
 import { useState } from "react";
 import dynamic from "next/dynamic";
+import { CSSProperties } from 'react';
 
 const Slider = dynamic(() => import("react-slick"), { ssr: false });
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import type { ComponentProps } from "react";
-type ArrowProps = ComponentProps<typeof Slider>["nextArrow"];
+
+interface ArrowProps {
+  className?: string;
+  style?: CSSProperties;
+  onClick?: React.MouseEventHandler<HTMLDivElement>;
+  currentSlide?: number;
+  slideCount?: number;
+}
 
 const noticia_regular = localFont({
   src: "./fonts/Noticia_Text/NoticiaText-Regular.ttf"
@@ -25,8 +33,7 @@ const encode_sans = localFont ({
   src: "./fonts/Encode_Sans/EncodeSans-VariableFont_wdth,wght.ttf"
 })
 export default function Home() {
-  function NextArrow(props: any) {
-    const { className, style, onClick } = props;
+  function NextArrow({ className, style, onClick }: ArrowProps) {
     return (
       <div
       className={className}
@@ -49,8 +56,7 @@ export default function Home() {
     );
   }
 
-  function PrevArrow(props: any) {
-    const { className, style, onClick } = props;
+  function PrevArrow({ className, style, onClick }: ArrowProps) {
     return (
       <div
       className={className}
@@ -73,7 +79,7 @@ export default function Home() {
     );
   }
 
-  var settings = {
+  const settings = {
     dots: true,
     infinite: true,
     speed: 500,
