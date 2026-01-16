@@ -4,6 +4,7 @@ import {useState} from "react";
 import AppointmentCalendar from "../components/AppointmentCalendar";
 import StepIndicator from '../components/StepIndicator';
 import Image from "next/image";
+import Link from "next/link";
 import styles from "./new_appointment.module.css";
 import localFont from "next/font/local";
 const noticia_regular = localFont({
@@ -210,7 +211,9 @@ export default function NewAppointment (){
     <div className={`${styles.secondary_container}`}>
         {/* Header */}
         <div className={`w-[100%] flex items-center justify-between pl-8 pr-12 lg:justify-center lg:gap-100 z-20`} >
-          <Image src={"/demo-logo.png"} alt="Logo" width={110} height={110} className="lg:w-[130] cursor-pointer"/>
+          <Link href={"/"}>
+            <Image src={"/logo.png"} alt="Logo" width={120} height={120} className="lg:w-[130] cursor-pointer"/>
+          </Link>
            <nav className={`${schibsted_grotesk.className} hidden lg:block`}>
               <ul className="flex items-center gap-12 font-medium text-lg">
                 {navItems.map((item) => (
@@ -244,12 +247,12 @@ export default function NewAppointment (){
                   <button onClick={() => setIsOpen(prev => !prev)} className="block lg:hidden">
                     {isOpen ? ( 
                       // Close Icon (X)
-                      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-10 text-[#032d68] transition-all duration-200">
+                      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-10 text-white transition-all duration-200">
                         <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
                       </svg>
                     ) : (
                       // Hamburger Icon
-                      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-10 text-[#032d68] transition-all duration-200">
+                      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-10 text-white transition-all duration-200">
                         <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
                       </svg>
                     )}
@@ -258,8 +261,8 @@ export default function NewAppointment (){
         
         
         {currentStep === 1 && (
-          <div className={`${styles.secondary_container} p-4 relative`}>
-            <div className="flex flex-col md:flex-row md:w-[80%] gap-2 md:items-end mb-6 mt-4 w-[100%]">
+          <div className={`${styles.secondary_container} p-4 pt-0 relative`}>
+            <div className="flex flex-col md:flex-row md:w-[80%] gap-2 md:items-end mb-6 w-[100%]">
               <div className="flex gap-2 items-center mb-4">
                 <Image src={"/number-1.png"} alt="First" width={25} height={25}></Image>
                 <h2 className={`${noticia_regular.className} text-2xl font-semibold border-b-2 border-[#FFD700] w-fit text-white`}>Choose a service</h2>
@@ -320,8 +323,8 @@ export default function NewAppointment (){
         )}
 
         {currentStep === 2 && (
-          <div className={`${styles.secondary_container} p-4 relative`}>
-            <div className="flex flex-col md:flex-row gap-2 md:items-center md:items-end mb-6 mt-4 w-[100%]">
+          <div className={`${styles.secondary_container} p-4 pt-0 relative`}>
+            <div className="flex flex-col md:flex-row gap-2 md:items-center md:items-end mb-6 w-[100%]">
               <div className="flex gap-2 items-center mb-4">
                 <Image src={"/number-2.png"} alt="First" width={25} height={25}></Image>
                 <h2 className={`${noticia_regular.className} text-2xl font-semibold border-b-2 border-yellow-400 w-fit text-white`}>Choose a Date and Time</h2>
