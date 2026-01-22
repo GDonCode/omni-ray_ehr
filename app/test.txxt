@@ -8,3 +8,109 @@
             <ellipse cx="80" cy="68" rx="5" ry="12" fill="#8B7347" transform="rotate(55 80 68)"/>
             <circle cx="50" cy="60" r="4" fill="#D4B882"/>
           </svg>
+
+
+
+          
+            <div className="flex flex-col rounded-lg overflow-hidden w-[90%] mx-auto mt-4 shadow-md hover:shadow-lg">
+              <video src={"/cleaning-vid.mp4"} autoPlay muted loop></video>
+              <div className="bg-[#eef3f9] p-4 rounded-b-lg ">
+                <h3 className={`${noticia_regular.className} flex items-center text-2xl font-semibold tracking-wide mb-3`}>
+                  <Image src={"/clean-teeth.png"} alt="Cleaning Icon" width={30} height={30} className="inline-block mr-2 mb-1"/>
+                  <span>Fillings</span>
+                </h3>
+                <p className={`${schibsted_grotesk.className} text-lg`}>We repair cavities discreetly with <span className="font-semibold">durable, tooth-colored</span> composite material that <span className="font-semibold">blends naturally</span> with your smile.</p>
+              </div>
+            </div>
+
+            <div className="flex flex-col rounded-lg overflow-hidden w-[90%] mx-auto mt-4 shadow-md hover:shadow-lg">
+              <video src={"/cleaning-vid.mp4"} autoPlay muted loop></video>
+              <div className="bg-[#eef3f9] p-4 rounded-b-lg ">
+                <h3 className={`${noticia_regular.className} flex items-center text-2xl font-semibold tracking-wide mb-3`}>
+                  <Image src={"/clean-teeth.png"} alt="Cleaning Icon" width={30} height={30} className="inline-block mr-2 mb-1"/>
+                  <span>Extractions</span>
+                </h3>
+                <p className={`${schibsted_grotesk.className} text-lg`}>When a tooth cannot be saved, we perform <span className="font-semibold">gentle and careful</span> removal in a <span className="font-semibold">comfortable, caring</span> environment.</p>
+              </div>
+            </div>
+
+            <div className="flex flex-col rounded-lg overflow-hidden w-[90%] mx-auto mt-4 shadow-md hover:shadow-lg">
+              <video src={"/root-canal-vid.mp4"} autoPlay muted loop></video>
+              <div className="bg-[#eef3f9] p-4 rounded-b-lg ">
+                <h3 className={`${noticia_regular.className} flex items-center text-2xl font-semibold tracking-wide mb-3`}>
+                  <Image src={"/clean-teeth.png"} alt="Cleaning Icon" width={30} height={30} className="inline-block mr-2 mb-1"/>
+                  <span>Root Canals</span>
+                </h3>
+                <p className={`${schibsted_grotesk.className} text-lg`}>This procedure <span className="font-semibold">relieves pain</span> and saves a severely infected tooth by <span className="font-semibold">removing damaged tissue</span> and <span className="font-semibold">sealing it</span> from further issues.</p>
+              </div>
+            </div>
+            
+            <div className="flex flex-col rounded-lg overflow-hidden w-[90%] mx-auto mt-4 shadow-md hover:shadow-lg">
+              <video src={"/cleaning-vid.mp4"} autoPlay muted loop></video>
+              <div className="bg-[#eef3f9] p-4 rounded-b-lg ">
+                <h3 className={`${noticia_regular.className} flex items-center text-2xl font-semibold tracking-wide mb-3`}>
+                  <Image src={"/clean-teeth.png"} alt="Cleaning Icon" width={30} height={30} className="inline-block mr-2 mb-1"/>
+                  <span>Wisdom Teeth Removals</span>
+                </h3>
+                <p className={`${schibsted_grotesk.className} text-lg`}>We <span className="font-semibold">safely extract</span> impacted or problematic wisdom teeth to <span className="font-semibold">prevent</span> pain, crowding, and future oral healthcomplications.</p>
+              </div>
+            </div>
+
+            <div className="flex flex-col rounded-lg overflow-hidden w-[90%] mx-auto mt-4 shadow-md hover:shadow-lg">
+              <video src={"/cleaning-vid.mp4"} autoPlay muted loop></video>
+              <div className="bg-[#eef3f9] p-4 rounded-b-lg ">
+                <h3 className={`${noticia_regular.className} flex items-center text-2xl font-semibold tracking-wide mb-3`}>
+                  <Image src={"/clean-teeth.png"} alt="Cleaning Icon" width={30} height={30} className="inline-block mr-2 mb-1"/>
+                  <span>Veneers & Smile Design</span>
+                </h3>
+                <p className={`${schibsted_grotesk.className} text-lg`}><span className="font-semibold">Custom-crafted</span> porcelain veneers can <span className="font-semibold">transform your smile</span> — correcting chips, gaps, stains, or alignment in <span className="font-semibold">just a few visits</span>.</p>
+              </div>
+            </div>
+
+            <div className="flex flex-col rounded-lg overflow-hidden w-[90%] mx-auto mt-4 shadow-md hover:shadow-lg">
+              <video src={"/cleaning-vid.mp4"} autoPlay muted loop></video>
+              <div className="bg-[#eef3f9] p-4 rounded-b-lg ">
+                <h3 className={`${noticia_regular.className} flex items-center text-2xl font-semibold tracking-wide mb-3`}>
+                  <Image src={"/clean-teeth.png"} alt="Cleaning Icon" width={30} height={30} className="inline-block mr-2 mb-1"/>
+                  <span>Crowns & Bridges</span>
+                </h3>
+                <p className={`${schibsted_grotesk.className} text-lg`}>Crowns <span className="font-semibold">protect and restore</span> damaged teeth, while bridges <span className="font-semibold">replace</span> one or more <span className="font-semibold">missing teeth</span> — both <span className="font-semibold">restoring function</span> and <span className="font-semibold">natural appearance.</span></p>
+              </div>
+            </div>
+
+            <div className="flex flex-col rounded-lg overflow-hidden w-[90%] mx-auto mt-4 shadow-md hover:shadow-lg">
+              <video src={"/cleaning-vid.mp4"} autoPlay muted loop></video>
+              <div className="bg-[#eef3f9] p-4 rounded-b-lg ">
+                <h3 className={`${noticia_regular.className} flex items-center text-2xl font-semibold tracking-wide mb-3`}>
+                  <Image src={"/clean-teeth.png"} alt="Cleaning Icon" width={30} height={30} className="inline-block mr-2 mb-1"/>
+                  <span>Dentures</span>
+                </h3>
+                <p className={`${schibsted_grotesk.className} text-lg`}>We craft <span className="font-semibold">comfortable, natural-looking</span> full or partial dentures to <span className="font-semibold">replace missing teeth</span> and <span className="font-semibold">restore your ability</span> to eat, speak, and <span className="font-semibold">smile with confidence</span>.</p>
+              </div>
+            </div>
+
+            <div className="flex flex-col rounded-lg overflow-hidden w-[90%] mx-auto mt-4 shadow-md hover:shadow-lg">
+              <video src={"/whitening-vid.mp4"} autoPlay muted loop></video>
+              <div className="bg-[#eef3f9] p-4 rounded-b-lg ">
+                <h3 className={`${noticia_regular.className} flex items-center text-2xl font-semibold tracking-wide mb-3`}>
+                  <Image src={"/clean-teeth.png"} alt="Cleaning Icon" width={30} height={30} className="inline-block mr-2 mb-1"/>
+                  <span>Teeth Whitening</span>
+                </h3>
+                <p className={`${schibsted_grotesk.className} text-lg`}><span className="font-semibold">Brighten</span> your smile with <span className="font-semibold">safe, effective</span> whitening treatments.</p>
+              </div>
+            </div>
+
+            <div className="flex flex-col rounded-lg overflow-hidden w-[90%] mx-auto mt-4 shadow-md hover:shadow-lg">
+              <video src={"/xray-vid.mp4"} autoPlay muted loop></video>
+              <div className="bg-[#eef3f9] p-4 rounded-b-lg ">
+                <h3 className={`${noticia_regular.className} flex items-center text-2xl font-semibold tracking-wide mb-3`}>
+                  <Image src={"/clean-teeth.png"} alt="Cleaning Icon" width={30} height={30} className="inline-block mr-2 mb-1"/>
+                  <span>X-rays/Radiograph</span>
+                </h3>
+                <p className={`${schibsted_grotesk.className} text-lg`}>Using <span className="font-semibold">low-radiation</span> digital imaging, we see <span className="font-semibold">beneath the surface</span> to <span className="font-semibold">accurately diagnose issues</span> not visible during a regular exam.</p>
+              </div>
+            </div>
+          </div>
+
+
+

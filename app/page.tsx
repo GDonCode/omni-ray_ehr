@@ -13,8 +13,6 @@ import { CSSProperties } from 'react';
 const Slider = dynamic(() => import("react-slick"), { ssr: false });
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
-import type { ComponentProps } from "react";
-import { link } from "fs";
 
 interface ArrowProps {
   className?: string;
@@ -25,21 +23,31 @@ interface ArrowProps {
 }
 
 const noticia_regular = localFont({
-  src: "./fonts/Noticia_Text/NoticiaText-Regular.ttf"
+  src: "./fonts/Noticia_Text/NoticiaText-Regular.ttf",
+  display: 'swap',
+  preload: true
 });
 const schibsted_grotesk = localFont({
-  src: "./fonts/Schibsted_Grotesk/SchibstedGrotesk-VariableFont_wght.ttf"
+  src: "./fonts/Schibsted_Grotesk/SchibstedGrotesk-VariableFont_wght.ttf",
+  display: 'swap',
+  preload: true
 })
 const encode_sans = localFont ({
   src: "./fonts/Encode_Sans/EncodeSans-VariableFont_wdth,wght.ttf"
 })
 const soage = localFont ({
-  src: "./fonts/Soage PersonalUseOnly/Soage PersonalUseOnly.ttf"
+  src: "./fonts/Soage PersonalUseOnly/Soage PersonalUseOnly.ttf",
+  display: 'swap',
+  preload: true
 })
 const cinzel = localFont ({
-  src: "./fonts/Cinzel/Cinzel-Regular.otf"
+  src: "./fonts/Cinzel/Cinzel-Regular.otf",
+  display: 'swap',
+  preload: true
 })
 export default function Home() {
+  
+  // Slider Settings
   function NextArrow({ className, style, onClick }: ArrowProps) {
     return (
       <div
@@ -62,7 +70,6 @@ export default function Home() {
     </div>
     );
   }
-
   function PrevArrow({ className, style, onClick }: ArrowProps) {
     return (
       <div
@@ -85,7 +92,6 @@ export default function Home() {
     </div>
     );
   }
-
   const settings = {
     dots: false,
     infinite: true,
@@ -104,15 +110,21 @@ export default function Home() {
       }
     ]
   };
+  const [isClient, setIsClient] = useState(false);
+
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
 
   const [isOpen, setIsOpen] = useState(false);
    const toggleMenu = () => {
     setIsOpen(!isOpen);
   };
-
   const closeMenu = () => {
     setIsOpen(false);
   };
+
+  
   const [activeMobileLink, setActiveMobileLink] = useState('home');
   const handleMobileLinkClick = (linkName: string) => {
     setActiveMobileLink(linkName);
@@ -123,11 +135,22 @@ export default function Home() {
   const navItems = [
     { id: 'home', label: 'Home', href: '#' },
     { id: 'services', label: 'Services', href: '/services' },
-    { id: 'about', label: 'About', href: '#' },
-    { id: 'help', label: 'Help', href: '#' },
-    { id: 'contact', label: 'Contact', href: '#' }
+    { id: 'about', label: 'About', href: '/about' },
+    { id: 'help', label: 'Help', href: '/help' },
+    { id: 'contact', label: 'Contact', href: '/contact' }
   ];
 
+
+   const [isScrolled, setIsScrolled] = useState(false);
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => {
+    setMounted(true);
+    const handleScroll = () => {
+      setIsScrolled(window.scrollY > 0);
+    };
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
 
   const images = [
     "/header-photo-2.png",
@@ -136,22 +159,30 @@ export default function Home() {
   ];
 
   const [currentIndex, setCurrentIndex] = useState(0);
-  const [fade, setFade] = useState(true);
+const [fade, setFade] = useState(true);
+const [isHydrated, setIsHydrated] = useState(false);
 
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setFade(false);
-      
-      setTimeout(() => {
-        setCurrentIndex((prevIndex) => (prevIndex + 1) % images.length);
-        setFade(true);
-      }, 500);
-    }, 4000);
+useEffect(() => {
+  setIsHydrated(true); // Mark as hydrated
+}, []);
 
-    return () => clearInterval(interval);
-  }, []);
+useEffect(() => {
+  if (!isHydrated) return; // Don't start interval until hydrated
+  
+  const interval = setInterval(() => {
+    setFade(false);
+    setTimeout(() => {
+      setCurrentIndex((prevIndex) => (prevIndex + 1) % images.length);
+      setFade(true);
+    }, 500);
+  }, 4000);
+  
+  return () => clearInterval(interval);
+}, [isHydrated, images.length]);
+
+
   return (
-    <>
+  <div>
     <div className={`${styles.background}`}>
       <span></span>
       <span></span>
@@ -208,16 +239,17 @@ export default function Home() {
     <div className={`relative z-1`}>
 
       {/* Floating Whatsapp Icon */}
-      <a href="wa.link/2cyzq4" className="absolute fixed bottom-10 right-4 z-100 rounded-full p-2 bg-[#3FC050]">
+      <a href="https://wa.link/2cyzq4" className="fixed bottom-10 right-4 z-50 rounded-full p-2 bg-[#3FC050]">
         <Image src={"/icons8-whatsapp.svg"} alt="Whatsapp Logo" width={36} height={36} className=""></Image>
       </a>
 
       {/* Header */}
-      <div className="flex items-center lg:justify-between lg:px-8 px-4 pt-4">
+      <div className={`flex items-center lg:justify-between justify-between lg:px-8 px-4 pt-4 z-10 fixed top-0 w-full transition-all duration-300
+          ${mounted && isScrolled ? 'bg-[#177A7A] py-2' : 'bg-transparent py-4'}`}>
         <Link href={"/"} className="flex items-center gap-2">
           <Image src={"/aurelia-dental_logo.png"} alt="Logo" width={95} height={95} className="cursor-pointer"/>
           <h1 className={`${soage.className} text-white lg:text-4xl text-[1.6rem] font-bold items-center flex flex-col mt-2 tracking-widest`}>
-            Aurelia <span className="block -mt-1">Dental</span>
+            Aurelia <span className="block -mt-1 text-white">Dental</span>
           </h1>
         </Link>
         <nav className={`${schibsted_grotesk.className} hidden lg:block`}>
@@ -244,8 +276,8 @@ export default function Home() {
             ))}
           </ul>
         </nav>
-        <div className="flex items-center gap-2 block lg:hidden ml-auto mr-4">
-          <button onClick={() => setIsOpen(prev => !prev)} className="block lg:hidden py-2 px-4 border-2 border-white">
+        <div className="flex items-center gap-2 lg:hidden ml-auto mr-4">
+          <button onClick={() => setIsOpen(prev => !prev)} className="block lg:hidden py-2 px-4 border-2 border-white bg-gray-700/10">
             <span className="text-white font-bold tracking-widest">MENU</span>
           </button>
         </div>
@@ -259,28 +291,27 @@ export default function Home() {
       </div>
 
       {/* Mobile Nav */}
-      <nav className={`fixed right-0 top-0 w-70 h-[60vh] bg-gradient-to-br from-white to-gray-50 z-50 shadow-2xl transform transition-transform duration-500 ease-out ${
+      <nav className={`fixed right-0 top-0 w-70 h-fit bg-gradient-to-br from-white to-gray-50 z-50 shadow-2xl transform transition-transform duration-500 ease-out ${
         isOpen ? 'translate-x-0' : 'translate-x-full'
       }`}>
         {/* Close Button */}
         <div className="flex items-center block lg:hidden px-8 py-4">
-          <button onClick={toggleMenu} className="ml-auto block lg:hidden py-2 px-4 border-2 border-[#008080]">
+          <button onClick={toggleMenu} className="ml-auto block lg:hidden py-2 px-4 border-3 border-[#008080]">
             <span className="text-[#008080] font-extrabold text-xl tracking-widest">X</span>
           </button>
         </div>
         
         {/* Menu Items */}
         <div className="px-8 py-4">
-          <ul className="space-y-2">
-            <ul className="space-y-2">
+          <ul className="space-y-4">
             {navItems.map((link) => (
               <li key={link.id}>
                 <a 
                   href={link.href}
                   className={`block py-3 px-4 rounded-lg transition-all ${
                     activeMobileLink === link.id
-                      ? 'text-[#008080] font-bold text-xl bg-[#237d75]/10 border-l-4 border-[#008080]' 
-                      : 'text-gray-700 font-medium text-[1.2rem] hover:bg-gray-100 hover:text-[#3c5b64] border-l-4 border-transparent'
+                      ? 'text-[#008080] font-bold text-[1.4rem] bg-[#237d75]/10 border-l-4 border-[#008080]' 
+                      : 'text-gray-700 font-medium text-[1.3rem] bg-gray-100 hover:text-[#3c5b64] border-l-4 border-gray-200'
                   }`}
                   onClick={() => handleMobileLinkClick(link.id)}
                 >
@@ -288,7 +319,6 @@ export default function Home() {
                 </a>
               </li>
             ))}
-          </ul>
           </ul>
 
           {/* Social Links (Optional) */}
@@ -309,38 +339,39 @@ export default function Home() {
 
       
       {/* Hero Container */}
-      <div className={`lg:w-[95%] lg:mx-auto w-[95%] mt-4 mx-auto bg-white/10 rounded-lg backdrop-blur-sm border border-white/30`}>
+      <div className={`lg:w-[95%] lg:mx-auto w-[95%] mt-32 mx-auto bg-white/20 rounded-lg backdrop-blur-sm border border-gray-700/25`}>
         <div className="w-[90%] mx-auto lg:pt-20 pt-4 lg:pb-16 pb-6 flex flex-col lg:flex-row lg:items-center justify-between">
-          <div className="lg:w-[50%] lg:p-12 rounded-lg">
-            <h1 className="flex flex-col items-center"><span className={`${cinzel.className} text-[3rem] text-white text-center font-bold`}>Your Smile</span><span className={`${schibsted_grotesk.className} text-2xl text-white -mt-2 font-semibold tracking-wider`}>is our priority.</span></h1>
+          <div className="lg:w-[50%] lg:p-12 rounded-lg"> 
+            <h1 className="flex flex-col items-center">
+              <span className={`${cinzel.className} text-[3.5rem] text-gray-100 text-center font-bold`} style={{textShadow: '0 0 20px #fff'}}>Your Smile</span>
+              <span className={`${encode_sans.className} text-2xl text-[#ffcf40] font-semibold tracking-wider -mt-3`}>
+                is our priority.
+              </span>
+            </h1>
             <h2 className={`${schibsted_grotesk.className} text-xl leading-7.5 tracking-wide font-medium text-white mt-6`}>
               Whether you&apos;re here for a routine checkup or a complete smile makeover, our <span className="font-bold">experienced</span> team is dedicated to giving you the care you deserve — in a space that <span className="font-bold">feels like home.</span>
             </h2>
             <div className="flex flex-col lg:flex-row items-center gap-4 mt-10">
-              <Link href="/appointment" className="w-full">
-                <button className={`${encode_sans.className} ${styles.animate_pulse_scale} bg-white text-[#35565f] border-2 border-[white] py-5 rounded-lg text-xl font-semibold w-full hover:scale-105 cursor-pointer`}>
-                  Book an Appointment
-                </button>
+              <Link href="/appointment" className={`${styles.animate_pulse_scale} bg-[#ffdf20] text-gray-800 py-5 rounded-lg text-2xl text-center font-semibold tracking-wide w-full hover:scale-105 cursor-pointer`}>
+                Book an Appointment
               </Link>
-               <Link href="/services" className="w-full">
-                <button className={`${encode_sans.className} bg-transparent text-white border-2 border-[white] text-xl px-6 py-4 rounded-lg w-full hover:scale-105 cursor-pointer`}>
-                  Explore Services
-                </button>
+              <Link href="/services" className={`${encode_sans.className} bg-transparent text-white font-semibold border-2 border-[white] text-xl text-center px-6 py-4 rounded-lg w-full hover:scale-105 cursor-pointer`}>
+                Explore Services
               </Link>
             </div>
           </div>
-          <div className={`${styles.corner_accent} mt-16 lg:mt-0 p-2 w-[320px] h-[320px] lg:w-[500px] lg:h-[175px] mx-auto`}>
-            <Image src={images[currentIndex]} alt="Before and After of Dental Work" width={400} height={140} className={`w-full h-full object-contain rounded-lg transition-opacity duration-1000 ${fade ? 'opacity-100' : 'opacity-30'}`}></Image>
+          <div className={`${styles.corner_accent} mt-16 lg:mt-0 p-2 w-[320px] h-[320px] lg:w-[500px] lg:h-[175px] mx-auto`} suppressHydrationWarning={true}>
+            <Image src={images[currentIndex]} loading="eager" alt="Before and After of Dental Work" width={400} height={140} className={`w-full h-full object-contain rounded-lg transition-opacity duration-1000 ${fade ? 'opacity-100' : 'opacity-30'}`}></Image>
           </div>
         </div>
       </div>
       
       <div className="lg:w-[95%] lg:mx-auto lg:my-13 mt-10 mb-0 shadow-b-xl">
-        <div className={`pb-8 mb-6 w-[95%] mx-auto bg-white/10 rounded-lg backdrop-blur-sm border border-white/30`}>
+        <div className={`pb-8 mb-6 w-[95%] mx-auto bg-white/20 rounded-lg backdrop-blur-sm border border-gray-700/25`}>
           <div className="text-center w-[90%] lg:w-[75%] mx-auto px-4 pb-10 pt-6">
-            <p className={`${encode_sans.className} inline-block text-[#8A6B00] bg-[#FFF6CC] px-2.5 py-0.5 rounded-full text-xs font-semibold tracking-wide`}>Why Choose Us</p>
-            <h3 className={`${noticia_regular.className} text-3xl font-semibold text-white`}>The Aurelia Dental Difference</h3>
-            <p className={`${schibsted_grotesk.className} text-[1.2rem] mt-6 text-white text-left tracking-wide font-medium`}>We deliver exceptional care through our commitment to <span className="font-bold">excellence</span>, advanced <span className="font-bold">technology</span>, and <span className="font-bold">patient-centered</span> approach.</p>
+            <p className={`${encode_sans.className} inline-block text-[#8A6B00] bg-[#ffcf40] px-2.5 py-0.5 rounded-full text-xs font-semibold tracking-wide`}>Why Choose Us</p>
+            <h3 className={`${noticia_regular.className} text-3xl font-semibold text-gray-100`}>The Aurelia Dental Difference</h3>
+            <p className={`${schibsted_grotesk.className} text-[1.2rem] mt-6 text-gray-100 text-center tracking-wide font-medium`}>We deliver exceptional care through our commitment to <span className="font-bold">excellence</span>, advanced <span className="font-bold">technology</span>, and <span className="font-bold">patient-centered</span> approach.</p>
           </div>
           <div className="flex flex-col lg:flex-row lg:px-12 lg:py-4 gap-10">
             <div className="bg-[#eef3f9] rounded-lg text-center w-[90%] mx-auto p-6 flex flex-col items-center shadow-md hover:shadow-lg border-2 border-[#e6eef8]">
@@ -364,28 +395,29 @@ export default function Home() {
                 <path fillRule="evenodd" d="M14.615 1.595a.75.75 0 0 1 .359.852L12.982 9.75h7.268a.75.75 0 0 1 .548 1.262l-10.5 11.25a.75.75 0 0 1-1.272-.71l1.992-7.302H3.75a.75.75 0 0 1-.548-1.262l10.5-11.25a.75.75 0 0 1 .913-.143Z" clipRule="evenodd" />
               </svg>
               <h4 className={`${noticia_regular.className} text-[1.45rem] font-semibold mb-5`}>Cutting-Edge Technology</h4>
-              <p className={`${schibsted_grotesk.className} text-lg`}>From digital X-rays to pain-free laser treatments, we invest in the latest dental technology to make your visits faster, safer, and more comfortable.</p>
+              <p className={`${schibsted_grotesk.className} text-lg`}>From digital X-rays to pain-free laser treatments, we invest in the <span className="font-semibold">latest dental technology</span> to make your visits <span className="font-semibold">faster, safer, and more comfortable</span>.</p>
             </div>
           </div>
         </div>
         <div className={`bg-[#eef3f9] lg:w-[95%] lg:mx-auto border-y border-[#e6eef8]`}>
           <div className="w-[90%] mx-auto px-6 py-12 flex flex-col lg:flex-row lg:justify-between lg:items-center">
             <div className="lg:w-[50%]">
-              <span className={`${encode_sans.className} inline-block text-[#8A6B00] bg-[#FFF6CC] px-2.5 py-0.5 rounded-full text-xs font-semibold tracking-wide`}>Book Now</span>
+              <span className={`${encode_sans.className} inline-block text-[#8A6B00] bg-[#ffcf40] px-2.5 py-0.5 rounded-full text-xs font-semibold tracking-wide`}>Book Now</span>
               <p className={`${noticia_regular.className} text-4xl font-bold mb-6`}>Ready to Transform Your Smile?</p>
               <p className={`${schibsted_grotesk.className} text-[1.2rem] mb-8 text-left tracking-wide font-medium`}>Schedule your consultation <span className="font-bold">today</span> and take the <span className="font-bold">first step</span> towards a healthier, <span className="font-bold">more beautiful smile</span>.</p>
             </div>
-            <button className={`${encode_sans.className} ${styles.animate_pulse_scale} bg-[#008080] text-white px-10 py-5 lg:py-4 rounded-lg text-xl font-semibold w-full lg:w-[35%] lg:h-fit hover:scale-105 cursor-pointer`}>Book an Appointment</button>
+            <button className={`${encode_sans.className} ${styles.animate_pulse_scale} bg-[#008080] text-white px-10 py-5 lg:py-4 rounded-lg text-2xl font-semibold tracking-wide w-full lg:w-[35%] lg:h-fit hover:scale-105 cursor-pointer`}>Book an Appointment</button>
           </div>
         </div>
-        <div className={`w-[95%] mx-auto bg-white/20 rounded-lg backdrop-blur-sm border border-white/30 mt-6`}>
+        <div className={`w-[95%] mx-auto bg-white/20 rounded-lg backdrop-blur-sm border border-gray-700/25 mt-6`}>
           <div className="flex flex-col items-center pb-8 pt-6">
-            <p className={`${encode_sans.className} inline-block text-[#8A6B00] bg-[#FFF6CC] px-2.5 py-0.5 rounded-full text-xs font-semibold tracking-wide my-1`}>User Reviews</p>
-            <h3 className={`${noticia_regular.className} text-2xl font-semibold text-white`}>What our Patients Say</h3>
+            <p className={`${encode_sans.className} inline-block text-[#8A6B00] bg-[#ffcf40] px-2.5 py-0.5 rounded-full text-xs font-semibold tracking-wide my-1`}>User Reviews</p>
+            <h3 className={`${noticia_regular.className} text-3xl font-semibold text-gray-100`}>What our Patients Say</h3>
           </div>
           <div className="w-[75%] mx-auto pb-6">
             <div>
-              <Slider {...settings}>
+              {isClient && (
+                <Slider {...settings}>
                 {review_data.map((r, i) => {
                   return (
                     <div key={i} className="lg:px-4">
@@ -403,10 +435,10 @@ export default function Home() {
                         </div>
 
                         <div className="flex justify-between items-center mt-auto">
-                          <a href={r.link} target="_blank">
+                          <a href={r.link} target="_blank" rel="noopener noreferrer">
                             <p className={`${encode_sans.className} text-sm text-gray-500`}>Verified Patient</p>
                           </a>
-                          <a href={r.link} target="_blank">
+                          <a href={r.link} target="_blank" rel="noopener noreferrer">
                             <Image src={'/google-logo-removebg-preview.png'} alt="Google Logo" width={80} height={80}></Image>
                           </a>
                         </div>
@@ -415,19 +447,21 @@ export default function Home() {
                   )
                 })}
               </Slider>
+              )}
+              
             </div>
           </div>
-        <p className="flex flex-col items-center mb-6">
-          <span className={`${cinzel.className} text-[2.5rem] font-bold text-center text-white`}><span className={`${cinzel.className} text-[2rem] font-bold text-center text-white`}>Over</span> 200,000</span>
-          <span className={`${schibsted_grotesk.className} text-xl text-white -mt-2 font-semibold tracking-wider`}>patients served!</span>
-        </p>
+        <div className="flex flex-col items-center mb-6">
+          <span className={`${cinzel.className} text-[2.5rem] font-bold text-center text-gray-100`}><span className={`${cinzel.className} text-[2rem] font-bold text-center text-white`}>Over</span> 200,000</span>
+          <span className={`${schibsted_grotesk.className} text-xl text-gray-100 -mt-2 font-semibold tracking-wider`}>patients served!</span>
+        </div>
         </div>
       </div>
       {/* FOOTER */}
       <div className="bg-[#004c4c] p-8 lg:p-12 border-t-4 border-[#004c4c] mt-8">
         <div className="flex flex-col lg:flex-row lg:justify-between">
-          <div className="mt-4">
-            <h5 className={`${noticia_regular.className} text-white text-xl font-semibold border-b border-[#FFD700] w-fit pb-1 mb-6`}>Contact Us</h5>
+          <div className="">
+            <h5 className={`${noticia_regular.className} text-gray-100 text-xl font-semibold border-b border-[#FFD700] w-fit pb-1 mb-6`}>Contact Us</h5>
             <div className="flex flex-col gap-5">
               <div className="flex gap-6">
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="size-5 text-[#D1D5DB]">
@@ -454,7 +488,7 @@ export default function Home() {
             </div>
           </div>
           <div className="mt-12">
-            <h5 className={`${noticia_regular.className} text-white text-xl font-semibold border-b border-[#FFD700] w-fit pb-1 mb-6`}>Opening Hours</h5>
+            <h5 className={`${noticia_regular.className} text-gray-100 text-xl font-semibold border-b border-[#FFD700] w-fit pb-1 mb-6`}>Opening Hours</h5>
             <div className="flex flex-col gap-6">
               <div className="flex border-b border-b-gray-100 pb-1">
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="size-5 text-white mr-2">
@@ -486,7 +520,7 @@ export default function Home() {
             </div>
           </div>
           <div className="mt-12">
-            <h5 className={`${noticia_regular.className} text-white text-xl font-semibold border-b border-[#FFD700] w-fit pb-1 mb-4`}>Quick Links</h5>
+            <h5 className={`${noticia_regular.className} text-gray-100 text-xl font-semibold border-b border-[#FFD700] w-fit pb-1 mb-4`}>Quick Links</h5>
             <div className="flex flex-col gap-3">
               <div className="flex gap-1 items-center group cursor-pointer">
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="size-4 text-[#D1D5DB] transition-transform duration-200 ease-in-out group-hover:translate-x-1">
@@ -515,7 +549,7 @@ export default function Home() {
             </div>
           </div>
           <div className="mt-12">
-            <h5 className={`${noticia_regular.className} text-white text-xl font-semibold border-b border-[#FFD700] w-fit pb-1 mb-4`}>Our Services</h5>
+            <h5 className={`${noticia_regular.className} text-gray-100 text-xl font-semibold border-b border-[#FFD700] w-fit pb-1 mb-4`}>Our Services</h5>
             <div className="flex flex-col gap-3 text-[#D1D5DB]">
               <div className="flex gap-1 items-center group cursor-pointer">
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="size-4 text-[#D1D5DB] transition-transform duration-200 ease-in-out group-hover:translate-x-1">
@@ -558,7 +592,7 @@ export default function Home() {
       </div>
       {/* FOOTER */}
     </div>
-    </>
+    </div>
   );
 }
 
