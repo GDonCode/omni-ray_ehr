@@ -2,34 +2,60 @@ import React from 'react';
 
 interface StepIndicatorProps {
   currentStep: number;
-  totalSteps?: number;
 }
 
-export default function StepIndicator({ currentStep, totalSteps = 5 }: StepIndicatorProps) {
-  const steps = Array.from({ length: totalSteps }, (_, i) => i + 1);
+const STEP_TITLES = [
+  'Choose Service',
+  'Preferred Date & Time',
+  'Personal Information',
+  'Summary',
+  'Confirmation',
+];
 
+export default function StepIndicator({ currentStep }: StepIndicatorProps) {
   return (
-    <div className="flex items-center justify-between px-8 py-3 bg-white/10 backdrop-blur-sm rounded-xl border border-white/20 shadow-l md:w-[60%] md:ml-8">
-      {steps.map((step, index) => {
+    <>
+    <div className="w-full flex justify-center mb-1">
+      <h2
+        className="
+          text-2xl md:text-3xl
+          font-semibold
+          text-[#ffdf20]
+          transition-all duration-300
+        "
+      >
+        {STEP_TITLES[currentStep - 1]}
+      </h2>
+    </div>
+    <div className="grid grid-cols-[auto_1fr_auto_1fr_auto_1fr_auto_1fr_auto] items-start px-2 pb-2 w-full md:ml-8">
+      {STEP_TITLES.map((title, index) => {
+        const step = index + 1;
         const isCompleted = currentStep > step;
         const isCurrent = currentStep === step;
-        const isPending = currentStep < step;
 
         return (
           <React.Fragment key={step}>
-            {/* Step Circle */}
-            <div className="flex flex-col items-center gap-1">
-              <div 
+            {/* Step */}
+            <div className="flex flex-col items-center gap-2 min-w-[72px]">
+              <div
                 className={`
-                  w-10 h-10 rounded-full flex items-center justify-center
-                  font-bold text-sm transition-all duration-300
-                  ${isCompleted ? 'bg-yellow-400 text-gray-900' : ''}
-                  ${isCurrent ? 'bg-white text-[#011B3E] ring-4 ring-yellow-400 scale-110' : ''}
-                  ${isPending ? 'bg-[#032d68] text-white/60 border-2 border-white/30' : ''}
+                  relative
+                  w-8 h-8 rounded-full flex items-center justify-center
+                  font-semibold text-sm
+                  transition-all duration-300 ease-out
+                  
+                  ${isCompleted && 'bg-[#ffdf20]/90 text-gray-900'}
+                  ${isCurrent && 'bg-[#ffdf20] text-[#1C1C1C] scale-110 shadow-[0_0_0_6px_rgba(245,183,0,0.15)]'}
+                  ${!isCompleted && !isCurrent && 'bg-[#0D4D5C] text-white border border-[#F5B700]/60'}
                 `}
               >
                 {isCompleted ? (
-                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <svg
+                    className="w-5 h-5"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
                   </svg>
                 ) : (
@@ -38,20 +64,28 @@ export default function StepIndicator({ currentStep, totalSteps = 5 }: StepIndic
               </div>
             </div>
 
-            {/* Connector Line */}
-            {index < steps.length - 1 && (
-              <div className="relative w-12 h-0.5 bg-white/20">
-                <div 
-                  className={`
-                    absolute top-0 left-0 h-full bg-[#E6C84F] transition-all duration-300
-                    ${currentStep > step ? 'w-full' : 'w-0'}
-                  `}
-                />
+            {/* Connector */}
+            {step < STEP_TITLES.length && (
+              <div className="relative flex items-center h-8">
+                <div className="relative w-full h-8">
+                  <div className="absolute left-0 top-1/2 -translate-y-1/2 w-full h-[3px] rounded-full bg-white/10 overflow-hidden">
+                    <div
+                      className={`
+                        absolute left-0 top-1/2 -translate-y-1/2
+                        h-full rounded-full
+                        bg-gradient-to-r from-[#F5B700] to-[#FFD966]
+                        transition-all duration-500 ease-out
+                        ${currentStep > step ? 'w-full' : 'w-0'}
+                      `}
+                    />
+                  </div>
+                </div>
               </div>
             )}
           </React.Fragment>
         );
       })}
     </div>
+  </>
   );
 }

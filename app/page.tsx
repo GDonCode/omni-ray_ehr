@@ -182,61 +182,13 @@ useEffect(() => {
 
 
   return (
-  <div>
-    <div className={`${styles.background}`}>
-      <span></span>
-      <span></span>
-      <span></span>
-      <span></span>
-      <span></span>
-      <span></span>
-      <span></span>
-      <span></span>
-      <span></span>
-      <span></span>
-      <span></span>
-      <span></span>
-      <span></span>
-      <span></span>
-      <span></span>
-      <span></span>
-      <span></span>
-      <span></span>
-      <span></span>
-      <span></span>
-      <span></span>
-      <span></span>
-      <span></span>
-      <span></span>
-      <span></span>
-      <span></span>
-      <span></span>
-      <span></span>
-      <span></span>
-      <span></span>
-      <span></span>
-      <span></span>
-      <span></span>
-      <span></span>
-      <span></span>
-      <span></span>
-      <span></span>
-      <span></span>
-      <span></span>
-      <span></span>
-      <span></span>
-      <span></span>
-      <span></span>
-      <span></span>
-      <span></span>
-      <span></span>
-      <span></span>
-      <span></span>
-      <span></span>
-      <span></span>
-    </div>
-
-    <div className={`relative z-1`}>
+    <>
+      <div className={`${styles.background}`}>
+        <div></div>
+        <div></div>
+        <div></div>
+      </div>
+    <div className={`relative z-1 pt-12`}>
 
       {/* Floating Whatsapp Icon */}
       <a href="https://wa.link/2cyzq4" className="fixed bottom-10 right-4 z-50 rounded-full p-2 bg-[#3FC050]">
@@ -244,11 +196,10 @@ useEffect(() => {
       </a>
 
       {/* Header */}
-      <div className={`flex items-center lg:justify-between justify-between lg:px-8 px-4 pt-4 z-10 fixed top-0 w-full transition-all duration-300
-          ${mounted && isScrolled ? 'bg-[#177A7A] py-2' : 'bg-transparent py-4'}`}>
+      <div className={`backdrop-blur-md border border-white/30 shadow-lg z-20 py-2 fixed top-2 left-1/2 -translate-x-1/2 flex items-center justify-between px-4  border-gray-200/20 w-[95%] bg-[#088395]`}>
         <Link href={"/"} className="flex items-center gap-2">
-          <Image src={"/aurelia-dental_logo.png"} alt="Logo" width={95} height={95} className="cursor-pointer"/>
-          <h1 className={`${soage.className} text-white lg:text-4xl text-[1.6rem] font-bold items-center flex flex-col mt-2 tracking-widest`}>
+          <Image src={"/aurelia-dental_logo.png"} alt="Logo" width={85} height={85} className="cursor-pointer"/>
+          <h1 className={`${soage.className} text-white lg:text-4xl text-[1.55rem] font-bold items-center flex flex-col mt-2 tracking-widest`}>
             Aurelia <span className="block -mt-1 text-white">Dental</span>
           </h1>
         </Link>
@@ -276,11 +227,13 @@ useEffect(() => {
             ))}
           </ul>
         </nav>
-        <div className="flex items-center gap-2 lg:hidden ml-auto mr-4">
-          <button onClick={() => setIsOpen(prev => !prev)} className="block lg:hidden py-2 px-4 border-2 border-white bg-gray-700/10">
-            <span className="text-white font-bold tracking-widest">MENU</span>
+        <div className="flex items-center gap-2 lg:hidden ml-auto mr-1">
+          <button onClick={() => setIsOpen(prev => !prev)} className="block lg:hidden py-2 px-4 border-2 border-[#ffdf20] bg-gray-700/10">
+            <span className="text-[#ffdf20] font-bold tracking-widest">MENU</span>
           </button>
         </div>
+      </div>
+
         {/* Backdrop */}
         <div 
           className={`fixed inset-0 bg-black/40 backdrop-blur-sm z-40 transition-opacity duration-300 ${
@@ -288,16 +241,14 @@ useEffect(() => {
           }`}
           onClick={closeMenu}
         />
-      </div>
-
       {/* Mobile Nav */}
       <nav className={`fixed right-0 top-0 w-70 h-fit bg-gradient-to-br from-white to-gray-50 z-50 shadow-2xl transform transition-transform duration-500 ease-out ${
         isOpen ? 'translate-x-0' : 'translate-x-full'
       }`}>
         {/* Close Button */}
         <div className="flex items-center block lg:hidden px-8 py-4">
-          <button onClick={toggleMenu} className="ml-auto block lg:hidden py-2 px-4 border-3 border-[#008080]">
-            <span className="text-[#008080] font-extrabold text-xl tracking-widest">X</span>
+          <button onClick={toggleMenu} className="ml-auto block lg:hidden py-2 px-4 border-3 border-[#09637E]">
+            <span className="text-[#09637E] font-extrabold text-xl tracking-widest">X</span>
           </button>
         </div>
         
@@ -310,7 +261,7 @@ useEffect(() => {
                   href={link.href}
                   className={`block py-3 px-4 rounded-lg transition-all ${
                     activeMobileLink === link.id
-                      ? 'text-[#008080] font-bold text-[1.4rem] bg-[#237d75]/10 border-l-4 border-[#008080]' 
+                      ? 'text-[#09637E] font-bold text-[1.4rem] bg-[#237d75]/10 border-l-4 border-[#09637E]' 
                       : 'text-gray-700 font-medium text-[1.3rem] bg-gray-100 hover:text-[#3c5b64] border-l-4 border-gray-200'
                   }`}
                   onClick={() => handleMobileLinkClick(link.id)}
@@ -338,83 +289,121 @@ useEffect(() => {
       </nav>
 
       
-      {/* Hero Container */}
-      <div className={`lg:w-[95%] lg:mx-auto w-[95%] mt-32 mx-auto bg-white/20 rounded-lg backdrop-blur-sm border border-gray-700/25`}>
-        <div className="w-[90%] mx-auto lg:pt-20 pt-4 lg:pb-16 pb-6 flex flex-col lg:flex-row lg:items-center justify-between">
-          <div className="lg:w-[50%] lg:p-12 rounded-lg"> 
-            <h1 className="flex flex-col items-center">
-              <span className={`${cinzel.className} text-[3.5rem] text-gray-100 text-center font-bold`} style={{textShadow: '0 0 20px #fff'}}>Your Smile</span>
-              <span className={`${encode_sans.className} text-2xl text-[#ffcf40] font-semibold tracking-wider -mt-3`}>
-                is our priority.
-              </span>
-            </h1>
-            <h2 className={`${schibsted_grotesk.className} text-xl leading-7.5 tracking-wide font-medium text-white mt-6`}>
-              Whether you&apos;re here for a routine checkup or a complete smile makeover, our <span className="font-bold">experienced</span> team is dedicated to giving you the care you deserve — in a space that <span className="font-bold">feels like home.</span>
-            </h2>
-            <div className="flex flex-col lg:flex-row items-center gap-4 mt-10">
-              <Link href="/appointment" className={`${styles.animate_pulse_scale} bg-[#ffdf20] text-gray-800 py-5 rounded-lg text-2xl text-center font-semibold tracking-wide w-full hover:scale-105 cursor-pointer`}>
-                Book an Appointment
-              </Link>
-              <Link href="/services" className={`${encode_sans.className} bg-transparent text-white font-semibold border-2 border-[white] text-xl text-center px-6 py-4 rounded-lg w-full hover:scale-105 cursor-pointer`}>
-                Explore Services
-              </Link>
+      {/* HERO SECTION */}
+      <section className="relative lg:w-[95%] w-[95%] mx-auto mt-18 z-10">
+        
+        {/* Hero Surface */}
+        <div className="relative bg-[#088395] shadow-b-xl pb-10">
+          
+          {/* Inner Content */}
+          <div className="relative z-10 flex flex-col lg:flex-row items-center justify-between px-6 lg:px-16 lg:py-24">
+            
+            {/* Copy */}
+            <div className="lg:w-[55%]">
+              <h1 className="flex flex-col items-center lg:items-start">
+                <span
+                  className={`${cinzel.className} text-[3.4rem] text-[#FAF9F6] font-bold`}
+                  style={{ textShadow: '0 0 20px rgba(255,255,255,0.4)' }}
+                >
+                  Your Smile
+                </span>
+                <span
+                  className={`${encode_sans.className} text-2xl text-[#FAF9F6] font-semibold tracking-wider -mt-1`}
+                >
+                  is our priority.
+                </span>
+              </h1>
+
+              <p
+                className={`${encode_sans.className} text-xl leading-9 tracking-wide font-medium text-[#FAF9F6]/90 mt-6`}
+              >
+                Whether you're here for a routine checkup or a complete smile makeover,
+                our <span className="font-bold text-[#FAF9F6]">experienced</span> team is
+                dedicated to giving you the care you deserve — in a space that
+                <span className="font-bold text-[#FAF9F6]"> feels like home.</span>
+              </p>
+
+              <div className="flex flex-col lg:flex-row gap-4 mt-8">
+                <Link
+                  href="/appointment"
+                  className={`${styles.animate_pulse_scale} bg-[#ffdf20] text-gray-800 py-5 px-8 rounded-lg text-2xl font-semibold tracking-wide text-center hover:scale-105`}
+                >
+                  Book an Appointment
+                </Link>
+
+                <Link
+                  href="/services"
+                  className={`${encode_sans.className} border-2 border-[#FAF9F6]/70 text-[#FAF9F6] text-xl px-8 py-4 rounded-lg text-center hover:bg-[#FAF9F6]/10`}
+                >
+                  Explore Services
+                </Link>
+              </div>
             </div>
           </div>
-          <div className={`${styles.corner_accent} mt-16 lg:mt-0 p-2 w-[320px] h-[320px] lg:w-[500px] lg:h-[175px] mx-auto`} suppressHydrationWarning={true}>
-            <Image src={images[currentIndex]} loading="eager" alt="Before and After of Dental Work" width={400} height={140} className={`w-full h-full object-contain rounded-lg transition-opacity duration-1000 ${fade ? 'opacity-100' : 'opacity-30'}`}></Image>
+
+          {/* Hero Media Accent (inside the surface now) */}
+          <div className={`${styles.corner_accent} mx-auto mt-10 absolute bottom-0 right-0 p-2 w-[320px] h-[320px] lg:w-[500px] lg:h-[175px]`} suppressHydrationWarning>
+            <Image src={images[currentIndex]} loading="eager" alt="Before and After of Dental Work" width={420} height={140} className={`w-full h-full object-contain rounded-lg transition-opacity duration-1000 ${fade ? 'opacity-100' : 'opacity-30'}`}/>
           </div>
         </div>
-      </div>
+
+      </section>
+
       
       <div className="lg:w-[95%] lg:mx-auto lg:my-13 mt-10 mb-0 shadow-b-xl">
-        <div className={`pb-8 mb-6 w-[95%] mx-auto bg-white/20 rounded-lg backdrop-blur-sm border border-gray-700/25`}>
-          <div className="text-center w-[90%] lg:w-[75%] mx-auto px-4 pb-10 pt-6">
-            <p className={`${encode_sans.className} inline-block text-[#8A6B00] bg-[#ffcf40] px-2.5 py-0.5 rounded-full text-xs font-semibold tracking-wide`}>Why Choose Us</p>
-            <h3 className={`${noticia_regular.className} text-3xl font-semibold text-gray-100`}>The Aurelia Dental Difference</h3>
-            <p className={`${schibsted_grotesk.className} text-[1.2rem] mt-6 text-gray-100 text-center tracking-wide font-medium`}>We deliver exceptional care through our commitment to <span className="font-bold">excellence</span>, advanced <span className="font-bold">technology</span>, and <span className="font-bold">patient-centered</span> approach.</p>
+        <div className={`pb-8 mb-6 w-[95%] mx-auto z-10 lg:w-[95%] mx-auto my-16 p-4 bg-[#088395]`}>
+          <div className="lg:w-[95%] text-center">
+            <p className={`${encode_sans.className} inline-block text-[#8A6B00] bg-[#ffdf20] px-2.5 py-0.5 rounded-full text-xs font-semibold tracking-wide`}>Why Choose Us</p>
+            <h3 className={`text-4xl font-semibold tracking-wide text-[#FAF9F6]`}>The Aurelia Dental Difference</h3>
+            <p className={`${encode_sans.className} text-[1.2rem] mt-6 text-[#FAF9F6] text-center leading-9 tracking-wide font-medium`}>We deliver exceptional care through our commitment to <span className="font-bold">excellence</span>, advanced <span className="font-bold">technology</span>, and <span className="font-bold">patient-centered</span> approach.</p>
           </div>
-          <div className="flex flex-col lg:flex-row lg:px-12 lg:py-4 gap-10">
-            <div className="bg-[#eef3f9] rounded-lg text-center w-[90%] mx-auto p-6 flex flex-col items-center shadow-md hover:shadow-lg border-2 border-[#e6eef8]">
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="size-8 mb-2 text-[#35565f]">
+          <div className="flex flex-col lg:flex-row lg:px-12 lg:py-4 gap-10 mt-8">
+            <div className="bg-[#EBF4F6] rounded-lg text-center w-[90%] mx-auto p-6 flex flex-col items-center shadow-md hover:shadow-lg border-2 border-[#e6eef8]">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="size-8 mb-2 text-[#09637E]">
                 <path fillRule="evenodd" d="M5.166 2.621v.858c-1.035.148-2.059.33-3.071.543a.75.75 0 0 0-.584.859 6.753 6.753 0 0 0 6.138 5.6 6.73 6.73 0 0 0 2.743 1.346A6.707 6.707 0 0 1 9.279 15H8.54c-1.036 0-1.875.84-1.875 1.875V19.5h-.75a2.25 2.25 0 0 0-2.25 2.25c0 .414.336.75.75.75h15a.75.75 0 0 0 .75-.75 2.25 2.25 0 0 0-2.25-2.25h-.75v-2.625c0-1.036-.84-1.875-1.875-1.875h-.739a6.706 6.706 0 0 1-1.112-3.173 6.73 6.73 0 0 0 2.743-1.347 6.753 6.753 0 0 0 6.139-5.6.75.75 0 0 0-.585-.858 47.077 47.077 0 0 0-3.07-.543V2.62a.75.75 0 0 0-.658-.744 49.22 49.22 0 0 0-6.093-.377c-2.063 0-4.096.128-6.093.377a.75.75 0 0 0-.657.744Zm0 2.629c0 1.196.312 2.32.857 3.294A5.266 5.266 0 0 1 3.16 5.337a45.6 45.6 0 0 1 2.006-.343v.256Zm13.5 0v-.256c.674.1 1.343.214 2.006.343a5.265 5.265 0 0 1-2.863 3.207 6.72 6.72 0 0 0 .857-3.294Z" clipRule="evenodd" />
               </svg>
-              <h4 className={`${noticia_regular.className} text-2xl font-semibold mb-5`}>Expert Dentists</h4>
-              <p className={`${schibsted_grotesk.className} text-lg`}>Our <span className="font-semibold">skilled</span> professionals bring <span className="font-semibold">years of experience</span> and <span className="font-semibold">advanced training</span> to every appointment, ensuring you receive the <span className="font-semibold">highest standard</span> of care.</p>
+              <h4 className={`text-2xl font-medium mb-5`}>Expert Dentists</h4>
+              <p className={`${encode_sans.className} leading-7 text-lg`}>Our <span className="font-semibold">skilled</span> professionals bring <span className="font-semibold">years of experience</span> and <span className="font-semibold">advanced training</span> to every appointment, ensuring you receive the <span className="font-semibold">highest standard</span> of care.</p>
             </div>
 
-            <div className="bg-[#eef3f9] rounded-lg text-center w-[90%] mx-auto p-6 flex flex-col items-center shadow-md hover:shadow-lg border-2 border-[#e6eef8]">
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="size-8 mb-2 text-[#35565f]">
+            <div className="bg-[#EBF4F6] rounded-lg text-center w-[90%] mx-auto p-6 flex flex-col items-center shadow-md hover:shadow-lg border-2 border-[#e6eef8]">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="size-8 mb-2 text-[#09637E]">
                 <path fillRule="evenodd" d="M7.5 6a4.5 4.5 0 1 1 9 0 4.5 4.5 0 0 1-9 0ZM3.751 20.105a8.25 8.25 0 0 1 16.498 0 .75.75 0 0 1-.437.695A18.683 18.683 0 0 1 12 22.5c-2.786 0-5.433-.608-7.812-1.7a.75.75 0 0 1-.437-.695Z" clipRule="evenodd" />
               </svg>
-              <h4 className={`${noticia_regular.className} text-2xl font-semibold mb-5`}>Personalised Experience</h4>
-              <p className={`${schibsted_grotesk.className} text-lg`}>We take the time to <span className="font-semibold">understand your needs and concerns</span>, creating a custom treatment plan that fits your lifestyle and goals.</p>
+              <h4 className={`text-2xl font-medium mb-5`}>Personalised Experience</h4>
+              <p className={`${encode_sans.className} leading-7 text-lg`}>We take the time to <span className="font-semibold">understand your needs and concerns</span>, creating a custom treatment plan that fits your lifestyle and goals.</p>
             </div>
 
-            <div className="bg-[#eef3f9] rounded-lg text-center w-[90%] mx-auto p-6 flex flex-col items-center shadow-md hover:shadow-lg border-2 border-[#e6eef8]">
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="size-8 mb-2 text-[#35565f]">
+            <div className="bg-[#EBF4F6] rounded-lg text-center w-[90%] mx-auto p-6 flex flex-col items-center shadow-md hover:shadow-lg border-2 border-[#e6eef8]">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="size-8 mb-2 text-[#09637E]">
                 <path fillRule="evenodd" d="M14.615 1.595a.75.75 0 0 1 .359.852L12.982 9.75h7.268a.75.75 0 0 1 .548 1.262l-10.5 11.25a.75.75 0 0 1-1.272-.71l1.992-7.302H3.75a.75.75 0 0 1-.548-1.262l10.5-11.25a.75.75 0 0 1 .913-.143Z" clipRule="evenodd" />
               </svg>
-              <h4 className={`${noticia_regular.className} text-[1.45rem] font-semibold mb-5`}>Cutting-Edge Technology</h4>
-              <p className={`${schibsted_grotesk.className} text-lg`}>From digital X-rays to pain-free laser treatments, we invest in the <span className="font-semibold">latest dental technology</span> to make your visits <span className="font-semibold">faster, safer, and more comfortable</span>.</p>
+              <h4 className={`text-2xl font-medium mb-5`}>Cutting-Edge Technology</h4>
+              <p className={`${encode_sans.className} leading-7 text-lg`}>From digital X-rays to pain-free laser treatments, we invest in the <span className="font-semibold">latest dental technology</span> to make your visits <span className="font-semibold">faster, safer, and more comfortable</span>.</p>
             </div>
           </div>
         </div>
-        <div className={`bg-[#eef3f9] lg:w-[95%] lg:mx-auto border-y border-[#e6eef8]`}>
+        <div className={`bg-[#EBF4F6] lg:w-[95%] lg:mx-auto border-y border-[#e6eef8]`}>
           <div className="w-[90%] mx-auto px-6 py-12 flex flex-col lg:flex-row lg:justify-between lg:items-center">
             <div className="lg:w-[50%]">
-              <span className={`${encode_sans.className} inline-block text-[#8A6B00] bg-[#ffcf40] px-2.5 py-0.5 rounded-full text-xs font-semibold tracking-wide`}>Book Now</span>
-              <p className={`${noticia_regular.className} text-4xl font-bold mb-6`}>Ready to Transform Your Smile?</p>
-              <p className={`${schibsted_grotesk.className} text-[1.2rem] mb-8 text-left tracking-wide font-medium`}>Schedule your consultation <span className="font-bold">today</span> and take the <span className="font-bold">first step</span> towards a healthier, <span className="font-bold">more beautiful smile</span>.</p>
+              <span className={`${encode_sans.className} inline-block text-[#8A6B00] bg-[#ffdf20] px-2.5 py-0.5 rounded-full text-xs font-semibold tracking-wide`}>Book Now</span>
+              <p className={`text-4xl font-bold mb-6`}>Ready to Transform Your Smile?</p>
+              <p className={`${encode_sans.className} leading-7 text-[1.2rem] mb-8 text-left tracking-wide font-medium`}>Schedule your consultation <span className="font-bold">today</span> and take the <span className="font-bold">first step</span> towards a healthier, <span className="font-bold">more beautiful smile</span>.</p>
             </div>
-            <button className={`${encode_sans.className} ${styles.animate_pulse_scale} bg-[#008080] text-white px-10 py-5 lg:py-4 rounded-lg text-2xl font-semibold tracking-wide w-full lg:w-[35%] lg:h-fit hover:scale-105 cursor-pointer`}>Book an Appointment</button>
+            <Link
+                  href="/appointment"
+                  className={`${styles.animate_pulse_scale} bg-[#ffdf20] text-gray-800 py-5 px-8 rounded-lg text-2xl font-semibold tracking-wide text-center hover:scale-105`}
+                >
+                  Book an Appointment
+                </Link>
           </div>
         </div>
-        <div className={`w-[95%] mx-auto bg-white/20 rounded-lg backdrop-blur-sm border border-gray-700/25 mt-6`}>
-          <div className="flex flex-col items-center pb-8 pt-6">
-            <p className={`${encode_sans.className} inline-block text-[#8A6B00] bg-[#ffcf40] px-2.5 py-0.5 rounded-full text-xs font-semibold tracking-wide my-1`}>User Reviews</p>
-            <h3 className={`${noticia_regular.className} text-3xl font-semibold text-gray-100`}>What our Patients Say</h3>
+        <div className={`w-[95%] mt-6 lg:w-[95%] mx-auto my-16 p-4 bg-[#088395]`}>
+          <div className="flex flex-col items-center pb-8 pt-6 ">
+            <p className={`${encode_sans.className} inline-block text-[#8A6B00] bg-[#ffdf20] px-2.5 py-0.5 rounded-full text-xs font-semibold tracking-wide my-1`}>User Reviews</p>
+            <h3 className={`tracking-wide text-3xl font-semibold text-[#FAF9F6]`}>What our Patients Say</h3>
           </div>
-          <div className="w-[75%] mx-auto pb-6">
+          <div className="w-[85%] mx-auto pb-6">
             <div>
               {isClient && (
                 <Slider {...settings}>
@@ -425,7 +414,7 @@ useEffect(() => {
                         <div className="flex gap-2 mb-4">
                           <Image src={r.img} alt="Profile Photo" width={48} height={48} className="rounded-full"></Image>
                           <div className="flex flex-col">
-                            <p className={`${schibsted_grotesk.className} font-semibold`}>{r.name}</p>
+                            <p className={`font-bold`}>{r.name}</p>
                             <div className="text-[#FFD700] text-lg -mt-1">★★★★★</div>
                           </div>
                         </div>
@@ -453,66 +442,66 @@ useEffect(() => {
           </div>
         <div className="flex flex-col items-center mb-6">
           <span className={`${cinzel.className} text-[2.5rem] font-bold text-center text-gray-100`}><span className={`${cinzel.className} text-[2rem] font-bold text-center text-white`}>Over</span> 200,000</span>
-          <span className={`${schibsted_grotesk.className} text-xl text-gray-100 -mt-2 font-semibold tracking-wider`}>patients served!</span>
+          <span className={`text-xl text-gray-100 -mt-2 font-semibold tracking-wider`}>patients served!</span>
         </div>
         </div>
       </div>
       {/* FOOTER */}
-      <div className="bg-[#004c4c] p-8 lg:p-12 border-t-4 border-[#004c4c] mt-8">
+      <div className="bg-[#7AB2B2] p-8 lg:p-12 mt-8">
         <div className="flex flex-col lg:flex-row lg:justify-between">
           <div className="">
-            <h5 className={`${noticia_regular.className} text-gray-100 text-xl font-semibold border-b border-[#FFD700] w-fit pb-1 mb-6`}>Contact Us</h5>
+            <h5 className={`${noticia_regular.className} text-2xl font-semibold border-b w-fit pb-1 mb-6`}>Contact Us</h5>
             <div className="flex flex-col gap-5">
               <div className="flex gap-6">
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="size-5 text-[#D1D5DB]">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="size-5">
                   <path strokeLinecap="round" strokeLinejoin="round" d="M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
                   <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1 1 15 0Z" />
                 </svg>
-                <p className="text-[#D1D5DB] -mt-1 text-lg tracking-wide">Shop 40, 41<br></br>
+                <p className="-mt-1 text-lg tracking-wide">Shop 40, 41<br></br>
                   Overton Plaza<br></br>
                   49 Union Street, Montego Bay, Jamaica
                 </p>
               </div>
               <div className="flex gap-6 items-center group cursor-pointer">
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="size-5 text-[#D1D5DB] group-hover:text-[#A7C4DF]">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="size-5 group-hover:text-[#A7C4DF]">
                   <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 6.75c0 8.284 6.716 15 15 15h2.25a2.25 2.25 0 0 0 2.25-2.25v-1.372c0-.516-.351-.966-.852-1.091l-4.423-1.106c-.44-.11-.902.055-1.173.417l-.97 1.293c-.282.376-.769.542-1.21.38a12.035 12.035 0 0 1-7.143-7.143c-.162-.441.004-.928.38-1.21l1.293-.97c.363-.271.527-.734.417-1.173L6.963 3.102a1.125 1.125 0 0 0-1.091-.852H4.5A2.25 2.25 0 0 0 2.25 4.5v2.25Z" />
                 </svg>
-                <a href="#" className="text-[#D1D5DB] group-hover:text-[#A7C4DF]  text-lg tracking-wide">+1 (876) 691 9136</a>
+                <a href="#" className="group-hover:text-[#A7C4DF]  text-lg tracking-wide">+1 (876) 691 9136</a>
               </div>
               <div className="flex gap-6 items-center group cursor-pointer">
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="size-5 text-[#D1D5DB] group-hover:text-[#A7C4DF]">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="size-5 group-hover:text-[#A7C4DF]">
                   <path strokeLinecap="round" strokeLinejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 0 1-2.25 2.25h-15a2.25 2.25 0 0 1-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0 0 19.5 4.5h-15a2.25 2.25 0 0 0-2.25 2.25m19.5 0v.243a2.25 2.25 0 0 1-1.07 1.916l-7.5 4.615a2.25 2.25 0 0 1-2.36 0L3.32 8.91a2.25 2.25 0 0 1-1.07-1.916V6.75" />
                 </svg>
-                <a href="#" className="text-[#D1D5DB] group-hover:text-[#A7C4DF] text-lg tracking-wide">aureliadental@gmail.com</a>
+                <a href="#" className="group-hover:text-[#A7C4DF] text-lg tracking-wide">aureliadental@gmail.com</a>
               </div>
             </div>
           </div>
           <div className="mt-12">
-            <h5 className={`${noticia_regular.className} text-gray-100 text-xl font-semibold border-b border-[#FFD700] w-fit pb-1 mb-6`}>Opening Hours</h5>
+            <h5 className={`${noticia_regular.className} text-2xl font-semibold border-b w-fit pb-1 mb-6`}>Opening Hours</h5>
             <div className="flex flex-col gap-6">
-              <div className="flex border-b border-b-gray-100 pb-1">
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="size-5 text-white mr-2">
+              <div className="flex border-b pb-1">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="size-5 mr-2">
                   <path strokeLinecap="round" strokeLinejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 0 1 2.25-2.25h13.5A2.25 2.25 0 0 1 21 7.5v11.25m-18 0A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75m-18 0v-7.5A2.25 2.25 0 0 1 5.25 9h13.5A2.25 2.25 0 0 1 21 11.25v7.5m-9-6h.008v.008H12v-.008ZM12 15h.008v.008H12V15Zm0 2.25h.008v.008H12v-.008ZM9.75 15h.008v.008H9.75V15Zm0 2.25h.008v.008H9.75v-.008ZM7.5 15h.008v.008H7.5V15Zm0 2.25h.008v.008H7.5v-.008Zm6.75-4.5h.008v.008h-.008v-.008Zm0 2.25h.008v.008h-.008V15Zm0 2.25h.008v.008h-.008v-.008Zm2.25-4.5h.008v.008H16.5v-.008Zm0 2.25h.008v.008H16.5V15Z" />
                 </svg>
-                <div className="text-[#D1D5DB] w-full flex justify-between gap-12 text-lg tracking-wide">
+                <div className="w-full flex justify-between gap-12 text-lg tracking-wide">
                   <p>MON - FRI</p>
                   <p>10:00am - 6:00pm</p>
                 </div>
               </div>
-              <div className="flex border-b border-b-gray-100 pb-1">
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="size-5 text-white mr-2">
+              <div className="flex border-b pb-1">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="size-5 mr-2">
                   <path strokeLinecap="round" strokeLinejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 0 1 2.25-2.25h13.5A2.25 2.25 0 0 1 21 7.5v11.25m-18 0A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75m-18 0v-7.5A2.25 2.25 0 0 1 5.25 9h13.5A2.25 2.25 0 0 1 21 11.25v7.5m-9-6h.008v.008H12v-.008ZM12 15h.008v.008H12V15Zm0 2.25h.008v.008H12v-.008ZM9.75 15h.008v.008H9.75V15Zm0 2.25h.008v.008H9.75v-.008ZM7.5 15h.008v.008H7.5V15Zm0 2.25h.008v.008H7.5v-.008Zm6.75-4.5h.008v.008h-.008v-.008Zm0 2.25h.008v.008h-.008V15Zm0 2.25h.008v.008h-.008v-.008Zm2.25-4.5h.008v.008H16.5v-.008Zm0 2.25h.008v.008H16.5V15Z" />
                 </svg>
-                <div className="text-[#D1D5DB] w-full flex justify-between gap-12 text-lg tracking-wide">
+                <div className="w-full flex justify-between gap-12 text-lg tracking-wide">
                   <p>SATURDAY</p>
                   <p>9:00am - 6:00pm</p>
                 </div>
               </div>
-              <div className="flex border-b border-b-gray-100 pb-1">
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="size-5 text-white mr-2">
+              <div className="flex border-b pb-1">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="size-5 mr-2">
                   <path strokeLinecap="round" strokeLinejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 0 1 2.25-2.25h13.5A2.25 2.25 0 0 1 21 7.5v11.25m-18 0A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75m-18 0v-7.5A2.25 2.25 0 0 1 5.25 9h13.5A2.25 2.25 0 0 1 21 11.25v7.5m-9-6h.008v.008H12v-.008ZM12 15h.008v.008H12V15Zm0 2.25h.008v.008H12v-.008ZM9.75 15h.008v.008H9.75V15Zm0 2.25h.008v.008H9.75v-.008ZM7.5 15h.008v.008H7.5V15Zm0 2.25h.008v.008H7.5v-.008Zm6.75-4.5h.008v.008h-.008v-.008Zm0 2.25h.008v.008h-.008V15Zm0 2.25h.008v.008h-.008v-.008Zm2.25-4.5h.008v.008H16.5v-.008Zm0 2.25h.008v.008H16.5V15Z" />
                 </svg>
-                <div className="text-[#D1D5DB] w-full flex justify-between text-lg tracking-wide">
+                <div className="w-full flex justify-between text-lg tracking-wide">
                   <p>SUNDAY</p>
                   <p>Closed</p>
                 </div>
@@ -520,79 +509,79 @@ useEffect(() => {
             </div>
           </div>
           <div className="mt-12">
-            <h5 className={`${noticia_regular.className} text-gray-100 text-xl font-semibold border-b border-[#FFD700] w-fit pb-1 mb-4`}>Quick Links</h5>
+            <h5 className={`${noticia_regular.className} text-2xl font-semibold border-b w-fit pb-1 mb-4`}>Quick Links</h5>
             <div className="flex flex-col gap-3">
               <div className="flex gap-1 items-center group cursor-pointer">
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="size-4 text-[#D1D5DB] transition-transform duration-200 ease-in-out group-hover:translate-x-1">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="size-4 transition-transform duration-200 ease-in-out group-hover:translate-x-1">
                   <path strokeLinecap="round" strokeLinejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" />
                 </svg>
-                <p className="text-[#D1D5DB] group-hover:text-[#A7C4DF] text-lg tracking-wide">Home</p>
+                <p className="group-hover:text-[#A7C4DF] text-xl tracking-wide">Home</p>
               </div>
               <div className="flex gap-1 items-center group cursor-pointer">
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="size-4 text-[#D1D5DB] transition-transform duration-200 ease-in-out group-hover:translate-x-1">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="size-4 transition-transform duration-200 ease-in-out group-hover:translate-x-1">
                   <path strokeLinecap="round" strokeLinejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" />
                 </svg>
-                <p className="text-[#D1D5DB] group-hover:text-[#A7C4DF] text-lg tracking-wide">About Us</p>
+                <p className="group-hover:text-[#A7C4DF] text-xl tracking-wide">About Us</p>
               </div>
               <div className="flex gap-1 items-center group cursor-pointer">
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="size-4 text-[#D1D5DB] transition-transform duration-200 ease-in-out group-hover:translate-x-1">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="size-4 transition-transform duration-200 ease-in-out group-hover:translate-x-1">
                   <path strokeLinecap="round" strokeLinejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" />
                 </svg>
-                <p className="text-[#D1D5DB] group-hover:text-[#A7C4DF] text-lg tracking-wide">Services</p>
+                <p className="group-hover:text-[#A7C4DF] text-xl tracking-wide">Services</p>
               </div>
               <div className="flex gap-1 items-center group cursor-pointer">
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="size-4 text-[#D1D5DB] transition-transform duration-200 ease-in-out group-hover:translate-x-1">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="size-4 transition-transform duration-200 ease-in-out group-hover:translate-x-1">
                   <path strokeLinecap="round" strokeLinejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" />
                 </svg>
-                <p className="text-[#D1D5DB] group-hover:text-[#A7C4DF] text-lg tracking-wide">Contact Us</p>
+                <p className="group-hover:text-[#A7C4DF] text-xl tracking-wide">Contact Us</p>
               </div>
             </div>
           </div>
           <div className="mt-12">
-            <h5 className={`${noticia_regular.className} text-gray-100 text-xl font-semibold border-b border-[#FFD700] w-fit pb-1 mb-4`}>Our Services</h5>
-            <div className="flex flex-col gap-3 text-[#D1D5DB]">
+            <h5 className={`${noticia_regular.className} text-2xl font-semibold border-b w-fit pb-1 mb-4`}>Our Services</h5>
+            <div className="flex flex-col gap-3">
               <div className="flex gap-1 items-center group cursor-pointer">
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="size-4 text-[#D1D5DB] transition-transform duration-200 ease-in-out group-hover:translate-x-1">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="size-4 transition-transform duration-200 ease-in-out group-hover:translate-x-1">
                   <path strokeLinecap="round" strokeLinejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" />
                 </svg>
-                <p className="text-[#D1D5DB] group-hover:text-[#A7C4DF] text-lg tracking-wide">General Dentistry</p>
+                <p className="group-hover:text-[#A7C4DF] text-xl tracking-wide">General Dentistry</p>
               </div>
               <div className="flex gap-1 items-center group cursor-pointer">
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="size-4 text-[#D1D5DB] transition-transform duration-200 ease-in-out group-hover:translate-x-1">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="size-4 transition-transform duration-200 ease-in-out group-hover:translate-x-1">
                   <path strokeLinecap="round" strokeLinejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" />
                 </svg>
-                <p className="text-[#D1D5DB] group-hover:text-[#A7C4DF] text-lg tracking-wide">Surgical Services</p>
+                <p className="group-hover:text-[#A7C4DF] text-xl tracking-wide">Surgical Services</p>
               </div>
               <div className="flex gap-1 items-center group cursor-pointer">
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="size-4 text-[#D1D5DB] transition-transform duration-200 ease-in-out group-hover:translate-x-1">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="size-4 transition-transform duration-200 ease-in-out group-hover:translate-x-1">
                   <path strokeLinecap="round" strokeLinejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" />
                 </svg>
-                <p className="text-[#D1D5DB] group-hover:text-[#A7C4DF] text-lg tracking-wide">Orthodontics</p>
+                <p className="group-hover:text-[#A7C4DF] text-xl tracking-wide">Orthodontics</p>
               </div>
               <div className="flex gap-1 items-center group cursor-pointer">
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="size-4 text-[#D1D5DB] transition-transform duration-200 ease-in-out group-hover:translate-x-1">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="size-4 transition-transform duration-200 ease-in-out group-hover:translate-x-1">
                   <path strokeLinecap="round" strokeLinejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" />
                 </svg>
-                <p className="text-[#D1D5DB] group-hover:text-[#A7C4DF] text-lg tracking-wide">Cosmetic Dentistry</p>
+                <p className="group-hover:text-[#A7C4DF] text-xl tracking-wide">Cosmetic Dentistry</p>
               </div>
             </div>
           </div>
         </div>
-        <div className="flex flex-col items-center border-t border-[#D1D5DB] mt-12 pt-6">
+        <div className="flex flex-col items-center border-tmt-12 pt-6">
           <Image src={"/aurelia-dental_logo.png"} alt={"Alternative Logo"} width={60} height={60}></Image>
-          <p className="text-[#D1D5DB]">&copy; 2026 Aurelia Dental. All rights reserved.</p>
-          <button className="p-2 rounded-full bg-[#eef3f9] my-4">
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="#35565f" className="size-6 text-[#35565f]">
+          <p>&copy; 2026 Aurelia Dental. All rights reserved.</p>
+          <button className="p-2 rounded-full bg-black my-4">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="#ffffff" className="size-6 text-[#35565f]">
               <path strokeLinecap="round" strokeLinejoin="round" d="m4.5 18.75 7.5-7.5 7.5 7.5" />
               <path strokeLinecap="round" strokeLinejoin="round" d="m4.5 12.75 7.5-7.5 7.5 7.5" />
             </svg>
           </button>
-          <p className="text-sm text-[#D1D5DB] -mb-4">Powered by <span className="underline">Omni-Ray Software Solutions</span></p>
+          <p className="text-sm -mb-4">Powered by <span className="underline">Omni-Ray Software Solutions</span></p>
         </div>
       </div>
       {/* FOOTER */}
     </div>
-    </div>
+  </>
   );
 }
 

@@ -5,6 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import localFont from "next/font/local";
+import { Menu, Calendar, ChevronRight, Phone, MapPin, Clock, Star } from 'lucide-react';
 
 const noticia_regular = localFont({
   src: "../fonts/Noticia_Text/NoticiaText-Regular.ttf",
@@ -54,176 +55,165 @@ export default function Services(){
   const [isScrolled, setIsScrolled] = useState(false);
   const [mounted, setMounted] = useState(false);
   useEffect(() => {
-  setMounted(true);
-  const handleScroll = () => {
-    setIsScrolled(window.scrollY > 0);
-  };
-  window.addEventListener('scroll', handleScroll, { passive: true });
-  return () => window.removeEventListener('scroll', handleScroll);
-}, []);
-    const serviceItems = [
-    { titleIcon: '/dental-hygiene.png',
-      title: 'Dental Cleaning', 
-      price: '10, 000',
-      image: '/cleaning-vid.gif',
-      description: 'Our <span class="font-semibold">professional</span> cleanings <span class="font-semibold">gently remove</span> plaque and tartar that daily brushing can’t reach, leaving your <span class="font-semibold">teeth polished</span> and your <span class="font-semibold">gums healthy</span>.'},
-    
-    { titleIcon: '/tooth-filling.png',
-      title: 'Tooth Filling', 
-      price: '10, 000',
-      image: '/filling-vid.gif',
-      description: 'We repair cavities discreetly with <span class="font-semibold">durable, tooth-colored</span> composite material that <span class="font-semibold">blends naturally</span> with your smile.' },
-    
-    { titleIcon: '/tooth-extraction.png',
-      title: 'Tooth Extraction', 
-      price: '10, 000',
-      image: '/extraction-img.jpg',
-      description: 'When a tooth cannot be saved, we perform <span class="font-semibold">gentle and careful</span> removal in a <span class="font-semibold">comfortable, caring</span> environment.' },
+    setMounted(true);
+    const handleScroll = () => {
+      setIsScrolled(window.scrollY > 0);
+    };
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
 
-    { titleIcon: '/root-canal.png',
-      title: 'Root Canal', 
-      price: '10, 000',
-      image: '/root-canal-vid.gif', 
-      description: 'This procedure <span class="font-semibold">relieves pain</span> and saves a severely infected tooth by <span class="font-semibold">removing damaged tissue</span> and <span class="font-semibold">sealing it</span> from further issues.' },
-      
-    { titleIcon: '/wisdom-tooth.png',
-      title: 'Wisdom Teeth', 
-      price: '10, 000',
-      image: '/wisdom-img.jpg',
-      description: 'We <span class="font-semibold">safely extract</span> impacted or problematic wisdom teeth to <span class="font-semibold">prevent</span> pain, crowding, and future oral health complications.' },
-
-    { titleIcon: '/smile.png',
-      title: 'Veneers',  
-      price: '10, 000',
-      image: '/veneers-vid.gif',
-      description: '<span class="font-semibold">Custom-crafted</span> porcelain veneers can <span class="font-semibold">transform your smile</span> — correcting chips, gaps, stains, or alignment in <span class="font-semibold">just a few visits</span>.' },
-
-    { titleIcon: '/dental-bridge.png',
-      title: 'Crowns & Bridges', 
-      price: '10, 000',
-      image: '/crowns-bridges-img.jpg', 
-      description: 'Crowns <span class="font-semibold">protect and restore</span> damaged teeth, while bridges <span class="font-semibold">replace</span> one or more <span class="font-semibold">missing teeth</span> — both <span class="font-semibold">restoring function</span> and <span class="font-semibold">natural appearance.</span>' },
-
-    { titleIcon: '/dental-implant.png',
-      title: 'Dentures', 
-      price: '10, 000',
-      image: '/dentures-img.png', 
-      description: 'We craft <span class="font-semibold">comfortable, natural-looking</span> full or partial dentures to <span class="font-semibold">replace missing teeth</span> and <span class="font-semibold">restore your ability</span> to eat, speak, and <span class="font-semibold">smile with confidence</span>.' },
-    
-    { titleIcon: '/whitening.png',
-      title: 'Teeth Whitening', 
-      price: '10, 000',
-      image: '/whitening-vid.gif',
-      description: '<span class="font-semibold">Brighten</span> your smile with <span class="font-semibold">safe, effective</span> whitening treatments.' },
-
-    { titleIcon: '/x-ray.png',
-      title: 'X-Rays & Imaging', 
-      price: '10, 000',
-      image: '/xray-vid.gif',
-      description: 'Using <span class="font-semibold">low-radiation</span> digital imaging, we see <span class="font-semibold">beneath the surface</span> to <span class="font-semibold">accurately diagnose issues</span> not visible during a regular exam.' },
-  ];
-
+    const servicesByCategory = {
+      preventive: [
+        { 
+          name: 'General Consultation', 
+          duration: '30 min', 
+          price: 'From $85',
+          description: 'Comprehensive oral health assessment and treatment planning.',
+          details: 'Our experienced dentists examine your teeth, gums, and overall oral health. We identify any issues early and create a personalized treatment plan.',
+          when: ['First visit or annual checkup', 'Dental concerns or pain', 'Second opinion needed']
+        },
+        { 
+          name: 'Dental Cleaning', 
+          duration: '45 min', 
+          price: 'From $120',
+          description: 'Professional teeth cleaning to remove plaque and tartar buildup.',
+          details: 'Our hygienists thoroughly clean your teeth, removing hardened plaque that regular brushing can\'t reach. We polish your teeth and provide personalized oral care advice.',
+          when: ['Every 6 months for healthy teeth', 'Prevent cavities and gum disease', 'Freshen breath and brighten smile']
+        },
+        { 
+          name: 'X-Rays & Imaging', 
+          duration: '15 min', 
+          price: 'From $60',
+          description: 'Digital X-rays to detect issues not visible during examination.',
+          details: 'Modern digital X-rays use minimal radiation to show detailed images of your teeth, roots, and jaw bone. Helps detect cavities, infections, and bone loss early.',
+          when: ['Part of comprehensive exam', 'Diagnosing tooth pain', 'Planning treatment procedures']
+        }
+      ],
+      restorative: [
+        { 
+          name: 'Tooth Filling', 
+          duration: '30-60 min', 
+          price: 'From $80',
+          description: 'Repair cavities with natural-looking composite fillings.',
+          details: 'We remove decay and fill the cavity with tooth-colored composite material that blends seamlessly with your natural teeth. Quick, comfortable procedure prevents further damage.',
+          when: ['Cavity or tooth decay', 'Sensitivity to hot/cold', 'Visible holes or dark spots', 'Pain when chewing']
+        },
+        { 
+          name: 'Root Canal Treatment', 
+          duration: '60-90 min', 
+          price: 'From $300',
+          description: 'Save infected teeth and eliminate pain with gentle root canal therapy.',
+          details: 'When tooth pulp becomes infected, root canal treatment removes the infection, cleans the canal, and seals it. Modern techniques make the procedure comfortable and pain-free.',
+          when: ['Severe toothache', 'Prolonged sensitivity', 'Swollen or tender gums', 'Darkening of tooth']
+        },
+        { 
+          name: 'Tooth Extraction', 
+          duration: '30-45 min', 
+          price: 'From $100',
+          description: 'Safe removal of damaged or problematic teeth.',
+          details: 'Sometimes extraction is necessary to prevent infection spread or make room for orthodontics. We use local anesthetic and gentle techniques for minimal discomfort.',
+          when: ['Severely damaged tooth', 'Advanced decay', 'Crowding issues', 'Impacted tooth']
+        },
+        { 
+          name: 'Wisdom Tooth Removal', 
+          duration: '45-90 min', 
+          price: 'From $200',
+          description: 'Expert removal of impacted or problematic wisdom teeth.',
+          details: 'Wisdom teeth often cause crowding, pain, or infections. We safely remove them to prevent future complications, using sedation options for your comfort.',
+          when: ['Pain in back of mouth', 'Swelling or infection', 'Crowding other teeth', 'Preventive removal']
+        },
+        { 
+          name: 'Crowns & Bridges', 
+          duration: '2 visits', 
+          price: 'From $500',
+          description: 'Restore damaged teeth or replace missing teeth with custom prosthetics.',
+          details: 'Crowns cap damaged teeth for strength and appearance. Bridges replace missing teeth by anchoring to neighboring teeth. Both are custom-made to match your natural smile.',
+          when: ['Cracked or broken tooth', 'After root canal', 'Missing one or more teeth', 'Severely worn tooth']
+        },
+        { 
+          name: 'Dentures', 
+          duration: 'Multiple visits', 
+          price: 'From $800',
+          description: 'Replace multiple missing teeth with comfortable, natural-looking dentures.',
+          details: 'Full or partial dentures restore your ability to eat and speak comfortably. We create custom-fitted dentures that look natural and feel secure.',
+          when: ['Missing multiple teeth', 'Full tooth loss', 'Existing dentures need replacement', 'Can\'t have implants']
+        }
+      ],
+      cosmetic: [
+        { 
+          name: 'Veneers & Smile Design', 
+          duration: '2-3 visits', 
+          price: 'From $600/tooth',
+          description: 'Transform your smile with custom porcelain veneers.',
+          details: 'Thin porcelain shells bonded to front teeth correct color, shape, and alignment issues. We design your dream smile with digital planning and expert craftsmanship.',
+          when: ['Discolored teeth', 'Chipped or worn teeth', 'Gaps between teeth', 'Misshapen teeth']
+        },
+        { 
+          name: 'Teeth Whitening', 
+          duration: '60 min', 
+          price: 'From $350',
+          description: 'Professional whitening for a brighter, more confident smile.',
+          details: 'Our professional-grade whitening system safely lightens teeth several shades in one visit. Much more effective than over-the-counter products with longer-lasting results.',
+          when: ['Stained or yellowed teeth', 'Before special events', 'After braces removal', 'Boost confidence']
+        }
+      ]
+    };
+    const [expandedService, setExpandedService] = useState<string | null>(null);
     return(
-      <div>
+      <div className="block">
         <div className={`${styles.background}`}>
-          <span></span>
-          <span></span>
-          <span></span>
-          <span></span>
-          <span></span>
-          <span></span>
-          <span></span>
-          <span></span>
-          <span></span>
-          <span></span>
-          <span></span>
-          <span></span>
-          <span></span>
-          <span></span>
-          <span></span>
-          <span></span>
-          <span></span>
-          <span></span>
-          <span></span>
-          <span></span>
-          <span></span>
-          <span></span>
-          <span></span>
-          <span></span>
-          <span></span>
-          <span></span>
-          <span></span>
-          <span></span>
-          <span></span>
-          <span></span>
-          <span></span>
-          <span></span>
-          <span></span>
-          <span></span>
-          <span></span>
-          <span></span>
-          <span></span>
-          <span></span>
-          <span></span>
-          <span></span>
-          <span></span>
-          <span></span>
-          <span></span>
-          <span></span>
-          <span></span>
-          <span></span>
-          <span></span>
-          <span></span>
-          <span></span>
-          <span></span>
+          <div></div>
+          <div></div>
+          <div></div>
         </div>
         {/* Header */}
-        <div className={`flex items-center lg:justify-between justify-between lg:px-8 px-4 pt-4 z-10 fixed top-0 w-full transition-all duration-300
-          ${mounted && isScrolled ? 'bg-[#177A7A] py-2' : 'bg-transparent py-4'}`}>
-          <Link href={"/"} className="flex items-center gap-2">
-            <Image src={"/aurelia-dental_logo.png"} alt="Logo" width={95} height={95} className="cursor-pointer"/>
-            <h1 className={`${soage.className} text-white lg:text-4xl text-[1.6rem] font-bold items-center flex flex-col mt-2 tracking-widest transition-all duration-300
-            ${isScrolled ? 'text-[1.4rem] lg:text-3xl' : ''}`}>
-              Aurelia <span className="block -mt-1">Dental</span>
-            </h1>
-          </Link>
-          <nav className={`${schibsted_grotesk.className} hidden lg:block`}>
-            <ul className="flex items-center gap-12 font-medium text-lg">
-              {navItems.map((item) => (
-                <li key={item.id}>
-                  <a
-                    href={item.href}
-                    onClick={(e) => {
-                      e.preventDefault();
-                      setActiveItem(item.id);
-                    }}
-                    className={`
-                      cursor-pointer transition-all duration-200
-                      ${activeItem === item.id 
-                        ? 'text-[#E6C84F] font-bold' 
-                        : 'text-white hover:text-[#E6C84F] hover:border-b-2 hover:border-[#E6C84F]'
-                      }
-                    `}
-                  >
-                    {item.label}
-                  </a>
-                </li>
-              ))}
-            </ul>
-          </nav>
-          <div className="flex items-center gap-2 block lg:hidden">
-            <button onClick={() => setIsOpen(prev => !prev)} className={`block lg:hidden py-2 px-4 border-2 border-white bg-gray-700/10 transition-all duration-300`}>
-              <span className={`text-white font-bold tracking-widest transition-all duration-300`}>MENU</span>
-            </button>
+          <div className={`relative backdrop-blur-md border border-white/30 shadow-lg z-20 py-2 fixed top-2 left-1/2 -translate-x-1/2 flex items-center justify-between px-4  border-gray-200/20 w-[95%] bg-[#088395]`}>
+            <Link href={"/"} className="flex items-center gap-2">
+              <Image src={"/aurelia-dental_logo.png"} alt="Logo" width={85} height={85} className="cursor-pointer"/>
+              <h1 className={`${soage.className} text-white lg:text-4xl text-[1.5rem] font-bold items-center flex flex-col mt-2 tracking-widest transition-all
+              ${isScrolled ? 'text-[1.4rem] lg:text-3xl' : ''}`}>
+                Aurelia <span className="block -mt-1">Dental</span>
+              </h1>
+            </Link>
+            <nav className={`${schibsted_grotesk.className} hidden lg:block`}>
+              <ul className="flex items-center gap-12 font-medium text-lg">
+                {navItems.map((item) => (
+                  <li key={item.id}>
+                    <a
+                      href={item.href}
+                      onClick={(e) => {
+                        e.preventDefault();
+                        setActiveItem(item.id);
+                      }}
+                      className={`
+                        cursor-pointer transition-all duration-200
+                        ${activeItem === item.id 
+                          ? 'text-[#E6C84F] font-bold' 
+                          : 'text-white hover:text-[#E6C84F] hover:border-b-2 hover:border-[#E6C84F]'
+                        }
+                      `}
+                    >
+                      {item.label}
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </nav>
+            <div className="flex items-center gap-2 block lg:hidden">
+              <button onClick={() => setIsOpen(prev => !prev)} className="block lg:hidden py-2 px-4 border-2 border-[#ffdf20] bg-gray-700/10">
+                <span className="text-[#ffdf20] font-bold tracking-widest">MENU</span>
+              </button>
+            </div>
           </div>
-          {/* Backdrop */}
-          <div 
-            className={`fixed inset-0 bg-black/40 backdrop-blur-sm z-40 transition-opacity duration-300 ${
-              isOpen ? 'opacity-100' : 'opacity-0 pointer-events-none'
-            }`}
-            onClick={closeMenu}
-          />
-        </div>
+
+        {/* Backdrop */}
+        <div 
+          className={`fixed inset-0 bg-black/40 backdrop-blur-sm z-40 transition-opacity duration-300 ${
+            isOpen ? 'opacity-100' : 'opacity-0 pointer-events-none'
+          }`}
+          onClick={closeMenu}
+        />
         {/* Mobile Nav */}
         <nav className={`fixed right-0 top-0 w-70 h-fit bg-gradient-to-br from-white to-gray-50 z-50 shadow-2xl transform transition-transform duration-500 ease-out ${
           isOpen ? 'translate-x-0' : 'translate-x-full'
@@ -270,33 +260,370 @@ export default function Services(){
             </div>
           </div>
         </nav>
-
-        <div className={`lg:mx-auto w-[95%] mx-auto bg-white/20 rounded-lg backdrop-blur-sm border border-white/20 p-3 mt-32`}>
-          <h2 className={`${cinzel.className} text-white lg:text-5xl text-[2rem] text-center font-black tracking-widest border-b border-white w-fit mx-auto`}>Our Services</h2>
-          <div className="flex flex-col gap-8 mt-6">
-            {serviceItems.map((item, index) => (
-              <div key={index} className="flex flex-col rounded-lg overflow-hidden w-[90%] mx-auto border border-white/5 shadow-md hover:shadow-lg">
-                {item.image && item.image !== '/' && (
-                  <Image src={item.image} loading="eager" alt={`${item.title} Image`} width={0} height={0} sizes="100vw" className="w-full h-auto"/>
-                )}
-                <div className="bg-gray-700/20 border border-white/5 p-4 rounded-b-lg text-white w-full">
-                  <h3 className={`${noticia_regular.className} text-yellow-300 flex items-center text-2xl font-semibold tracking-wide mb-1`}>
-                    <Image src={item.titleIcon} alt={`${item.title} Icon`} width={30} height={30} className="inline-block mr-3 mb-1"/>
-                    <span>{item.title}</span>
-                  </h3>
-                  <div className="flex items-center mb-4">
-                    <span className="text-yellow-300 text-xl mr-2">From</span>
-                    <Image src={`/dollar-sign.svg`} alt="Dollar Sign" width={25} height={25} className="inline-block"/>
-                    <span className="text-yellow-300 text-2xl font-semibold">{item.price}</span>
-                  </div>
-                  <p className={`${schibsted_grotesk.className} text-lg`} dangerouslySetInnerHTML={{ __html: item.description }}></p>
-                  <button className={`bg-[#ffdf20] rounded-lg w-full px-4 py-2 mx-auto mt-4 text-2xl text-gray-800 font-semibold tracking-wide`}>Book Now</button>
-                </div>
+    
+        
+        <div className="lg:mx-auto w-[95%] mx-auto bg-gradient-to-br from-blue-50 to-white px-4 py-8 border-b border-gray-200 relative mt-4">
+          <h1 className="text-2xl font-bold text-gray-900 mb-2">
+            Premier Dental Services in Montego Bay
+          </h1>
+          <p className="text-gray-600 mb-4">
+            Comprehensive dental care from routine cleanings to smile transformations. Expert dentists, modern equipment, and flexible scheduling.
+          </p>
+          
+          <div className="flex flex-wrap gap-3 text-sm">
+            <div className="flex items-center text-gray-700">
+              <MapPin className="w-4 h-4 mr-2 text-blue-600" />
+              Montego Bay, St. James
+            </div>
+            <div className="flex items-center text-gray-700">
+              <Star className="w-4 h-4 mr-2 text-yellow-500 fill-yellow-500" />
+              4.9 (150+ reviews)
+            </div>
+            <div className="flex items-center text-gray-700">
+              <Clock className="w-4 h-4 mr-2 text-blue-600" />
+              <div className="flex flex-col justify-center">
+                Mon-Fri 10AM-6PM
+                <span>Sat 9AM-6PM</span>
               </div>
-            ))}
-            
+            </div>
           </div>
         </div>
+
+
+        <div className="lg:mx-auto w-[95%] mx-auto p-6 mb-16 relative backdrop-blur-md border border-white/30 shadow-lg z-10 border-gray-200/20 bg-[#088395]">
+          {/* Preventative Care Section */}
+          <div className="mb-12">
+            <div className="mb-6">
+              <h2 className="text-2xl font-extrabold text-[#FAF9F6] mb-2 border-b border-white">Routine & Preventative Care</h2>
+              <p className="text-[#FAF9F6] tracking-wide font-medium">Regular checkups and cleanings that help prevent dental issues and keep your smile healthy year-round.</p>
+            </div>
+          
+            <div className="grid lg:grid-cols-3 grid-cols-1 gap-6">
+              {servicesByCategory.preventive.map((service, index) => {
+                const serviceId = `preventive-${index}`;
+                const isExpanded = expandedService === serviceId;
+                
+                return (
+                  <div key={serviceId} className="bg-white rounded-lg shadow-[0_12px_30px_rgba(0,0,0,0.18)] border border-white/40 overflow-hidden">
+                    <div className="p-4">
+                      <div className="flex items-start justify-between mb-2">
+                        <h3 className="text-xl font-semibold text-black">{service.name}</h3>
+                        <div className="text-right ml-2 flex-shrink-0">
+                          <div className="text-md font-medium">{service.price}</div>
+                          <div className="text-sm">{service.duration}</div>
+                        </div>
+                      </div>
+                
+                      <p className="text-black tracking-wide font-medium mb-3">{service.description}</p>
+                
+                      {isExpanded && (
+                        <div className="space-y-6 mt-4 pt-4 border-t border-gray-200">
+                          <div>
+                            <h4 className="text-lg font-semibold text-black mb-2">What to Expect</h4>
+                            <p className="text-black tracking-wide">{service.details}</p>
+                          </div>
+              
+                          <div>
+                            <h4 className="text-lg font-semibold text-black mb-2">When You Need This</h4>
+                            <ul className="text-black tracking-wide space-y-1">
+                              {service.when.map((item, idx) => (
+                                <li key={idx} className="flex items-start">
+                                  <span className="text-[#C99700] mr-2">•</span>
+                                  <span>{item}</span>
+                                </li>
+                              ))}
+                            </ul>
+                          </div>
+                        </div>
+                      )}
+
+                      <button className={`${styles.animate_pulse_scale} mt-4 w-full bg-[#ffdf20] text-gray-800 py-2.5 rounded-lg font-medium text-lg hover:scale-102 transition-all duration-100 cursor-pointer`}>
+                        Book {service.name}
+                      </button>
+
+                      <button onClick={() => setExpandedService(isExpanded ? null : serviceId)} className="text-sm text-blue-600 font-medium flex items-center mt-3 hover:text-blue-700 cursor-pointer">
+                        {isExpanded ? 'Show Less' : 'Learn More'}
+                        <ChevronRight
+                          className={`
+                            w-4 h-4 ml-1 transition-transform
+                            ${isExpanded ? 'rotate-90' : styles.chevronNudge}
+                          `}
+                        />
+                      </button>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* Restorative Care Section */}
+          <div className="mb-12">
+            <div className="mb-6">
+              <h2 className="text-2xl font-extrabold text-[#FAF9F6] mb-2 border-b border-white">Restorative Care</h2>
+              <p className="text-[#FAF9F6] tracking-wide font-medium">Treatments designed to repair damaged teeth, restore function, and protect your long-term oral health.</p>
+            </div>
+          
+            <div className="grid lg:grid-cols-3 grid-cols-1 gap-6">
+              {servicesByCategory.restorative.map((service, index) => {
+                const serviceId = `restorative-${index}`;
+                const isExpanded = expandedService === serviceId;
+                
+                return (
+                  <div key={serviceId} className="bg-white rounded-lg shadow-[0_12px_30px_rgba(0,0,0,0.18)] border border-white/40 overflow-hidden">
+                    <div className="p-4">
+                      <div className="flex items-start justify-between mb-2">
+                        <h3 className="text-xl font-semibold text-black">{service.name}</h3>
+                        <div className="text-right ml-2 flex-shrink-0">
+                          <div className="text-md font-medium">{service.price}</div>
+                          <div className="text-sm">{service.duration}</div>
+                        </div>
+                      </div>
+                
+                      <p className="text-black tracking-wide font-medium mb-3">{service.description}</p>
+                
+                      {isExpanded && (
+                        <div className="space-y-6 mt-4 pt-4 border-t border-gray-200">
+                          <div>
+                            <h4 className="text-lg font-semibold text-black mb-2">What to Expect</h4>
+                            <p className="text-black tracking-wide">{service.details}</p>
+                          </div>
+              
+                          <div>
+                            <h4 className="text-lg font-semibold text-black mb-2">When You Need This</h4>
+                            <ul className="text-black tracking-wide space-y-1">
+                              {service.when.map((item, idx) => (
+                                <li key={idx} className="flex items-start">
+                                  <span className="text-[#C99700] mr-2">•</span>
+                                  <span>{item}</span>
+                                </li>
+                              ))}
+                            </ul>
+                          </div>
+                        </div>
+                      )}
+
+                      <button className={`${styles.animate_pulse_scale} mt-4 w-full bg-[#ffdf20] text-gray-800 py-2.5 rounded-lg font-medium text-lg hover:scale-102 transition-all duration-100 cursor-pointer`}>
+                        Book {service.name}
+                      </button>
+
+                      <button onClick={() => setExpandedService(isExpanded ? null : serviceId)} className="text-sm text-blue-600 font-medium flex items-center mt-3 hover:text-blue-700 cursor-pointer">
+                        {isExpanded ? 'Show Less' : 'Learn More'}
+                        <ChevronRight
+                          className={`
+                            w-4 h-4 ml-1 transition-transform
+                            ${isExpanded ? 'rotate-90' : styles.chevronNudge}
+                          `}
+                        />
+                      </button>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* Cosmetic Section */}
+          <div className="mb-6">
+            <div className="mb-6">
+              <h2 className="text-2xl font-extrabold text-[#FAF9F6] mb-2 border-b border-white">Cosmetic Procedures</h2>
+              <p className="text-[#FAF9F6] tracking-wide font-medium">Enhancements that improve the appearance of your smile by refining shape, color, and alignment.</p>
+            </div>
+          
+            <div className="grid lg:grid-cols-3 grid-cols-1 gap-6">
+              {servicesByCategory.cosmetic.map((service, index) => {
+                const serviceId = `cosmetic-${index}`;
+                const isExpanded = expandedService === serviceId;
+                
+                return (
+                  <div key={serviceId} className="bg-white rounded-lg shadow-[0_12px_30px_rgba(0,0,0,0.18)] border border-white/40 overflow-hidden">
+                    <div className="p-4">
+                      <div className="flex items-start justify-between mb-2">
+                        <h3 className="text-xl font-semibold text-black">{service.name}</h3>
+                        <div className="text-right ml-2 flex-shrink-0">
+                          <div className="text-md font-medium">{service.price}</div>
+                          <div className="text-sm">{service.duration}</div>
+                        </div>
+                      </div>
+                
+                      <p className="text-black tracking-wide font-medium mb-3">{service.description}</p>
+                
+                      {isExpanded && (
+                        <div className="space-y-6 mt-4 pt-4 border-t border-gray-200">
+                          <div>
+                            <h4 className="text-lg font-semibold text-black mb-2">What to Expect</h4>
+                            <p className="text-black tracking-wide">{service.details}</p>
+                          </div>
+              
+                          <div>
+                            <h4 className="text-lg font-semibold text-black mb-2">When You Need This</h4>
+                            <ul className="text-black tracking-wide space-y-1">
+                              {service.when.map((item, idx) => (
+                                <li key={idx} className="flex items-start">
+                                  <span className="text-[#C99700] mr-2">•</span>
+                                  <span>{item}</span>
+                                </li>
+                              ))}
+                            </ul>
+                          </div>
+                        </div>
+                      )}
+
+                      <button className={`${styles.animate_pulse_scale} mt-4 w-full bg-[#ffdf20] text-gray-800 py-2.5 rounded-lg font-medium text-lg hover:scale-102 transition-all duration-100 cursor-pointer`}>
+                        Book {service.name}
+                      </button>
+
+                      <button onClick={() => setExpandedService(isExpanded ? null : serviceId)} className="text-sm text-blue-600 font-medium flex items-center mt-3 hover:text-blue-700 cursor-pointer">
+                        {isExpanded ? 'Show Less' : 'Learn More'}
+                        <ChevronRight
+                          className={`
+                            w-4 h-4 ml-1 transition-transform
+                            ${isExpanded ? 'rotate-90' : styles.chevronNudge}
+                          `}
+                        />
+                      </button>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        </div>
+
+        {/* FOOTER */}
+              <div className="relative bg-[#004c4c] p-8 lg:p-12 border-t-4 border-[#004c4c] mt-8">
+                <div className="flex flex-col lg:flex-row lg:justify-between">
+                  <div className="">
+                    <h5 className={`${noticia_regular.className} text-gray-100 text-xl font-semibold border-b border-[#FFD700] w-fit pb-1 mb-6`}>Contact Us</h5>
+                    <div className="flex flex-col gap-5">
+                      <div className="flex gap-6">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="size-5 text-[#D1D5DB]">
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1 1 15 0Z" />
+                        </svg>
+                        <p className="text-[#D1D5DB] -mt-1 text-lg tracking-wide">Shop 40, 41<br></br>
+                          Overton Plaza<br></br>
+                          49 Union Street, Montego Bay, Jamaica
+                        </p>
+                      </div>
+                      <div className="flex gap-6 items-center group cursor-pointer">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="size-5 text-[#D1D5DB] group-hover:text-[#A7C4DF]">
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 6.75c0 8.284 6.716 15 15 15h2.25a2.25 2.25 0 0 0 2.25-2.25v-1.372c0-.516-.351-.966-.852-1.091l-4.423-1.106c-.44-.11-.902.055-1.173.417l-.97 1.293c-.282.376-.769.542-1.21.38a12.035 12.035 0 0 1-7.143-7.143c-.162-.441.004-.928.38-1.21l1.293-.97c.363-.271.527-.734.417-1.173L6.963 3.102a1.125 1.125 0 0 0-1.091-.852H4.5A2.25 2.25 0 0 0 2.25 4.5v2.25Z" />
+                        </svg>
+                        <a href="#" className="text-[#D1D5DB] group-hover:text-[#A7C4DF]  text-lg tracking-wide">+1 (876) 691 9136</a>
+                      </div>
+                      <div className="flex gap-6 items-center group cursor-pointer">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="size-5 text-[#D1D5DB] group-hover:text-[#A7C4DF]">
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 0 1-2.25 2.25h-15a2.25 2.25 0 0 1-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0 0 19.5 4.5h-15a2.25 2.25 0 0 0-2.25 2.25m19.5 0v.243a2.25 2.25 0 0 1-1.07 1.916l-7.5 4.615a2.25 2.25 0 0 1-2.36 0L3.32 8.91a2.25 2.25 0 0 1-1.07-1.916V6.75" />
+                        </svg>
+                        <a href="#" className="text-[#D1D5DB] group-hover:text-[#A7C4DF] text-lg tracking-wide">aureliadental@gmail.com</a>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="mt-12">
+                    <h5 className={`${noticia_regular.className} text-gray-100 text-xl font-semibold border-b border-[#FFD700] w-fit pb-1 mb-6`}>Opening Hours</h5>
+                    <div className="flex flex-col gap-6">
+                      <div className="flex border-b border-b-gray-100 pb-1">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="size-5 text-white mr-2">
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 0 1 2.25-2.25h13.5A2.25 2.25 0 0 1 21 7.5v11.25m-18 0A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75m-18 0v-7.5A2.25 2.25 0 0 1 5.25 9h13.5A2.25 2.25 0 0 1 21 11.25v7.5m-9-6h.008v.008H12v-.008ZM12 15h.008v.008H12V15Zm0 2.25h.008v.008H12v-.008ZM9.75 15h.008v.008H9.75V15Zm0 2.25h.008v.008H9.75v-.008ZM7.5 15h.008v.008H7.5V15Zm0 2.25h.008v.008H7.5v-.008Zm6.75-4.5h.008v.008h-.008v-.008Zm0 2.25h.008v.008h-.008V15Zm0 2.25h.008v.008h-.008v-.008Zm2.25-4.5h.008v.008H16.5v-.008Zm0 2.25h.008v.008H16.5V15Z" />
+                        </svg>
+                        <div className="text-[#D1D5DB] w-full flex justify-between gap-12 text-lg tracking-wide">
+                          <p>MON - FRI</p>
+                          <p>10:00am - 6:00pm</p>
+                        </div>
+                      </div>
+                      <div className="flex border-b border-b-gray-100 pb-1">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="size-5 text-white mr-2">
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 0 1 2.25-2.25h13.5A2.25 2.25 0 0 1 21 7.5v11.25m-18 0A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75m-18 0v-7.5A2.25 2.25 0 0 1 5.25 9h13.5A2.25 2.25 0 0 1 21 11.25v7.5m-9-6h.008v.008H12v-.008ZM12 15h.008v.008H12V15Zm0 2.25h.008v.008H12v-.008ZM9.75 15h.008v.008H9.75V15Zm0 2.25h.008v.008H9.75v-.008ZM7.5 15h.008v.008H7.5V15Zm0 2.25h.008v.008H7.5v-.008Zm6.75-4.5h.008v.008h-.008v-.008Zm0 2.25h.008v.008h-.008V15Zm0 2.25h.008v.008h-.008v-.008Zm2.25-4.5h.008v.008H16.5v-.008Zm0 2.25h.008v.008H16.5V15Z" />
+                        </svg>
+                        <div className="text-[#D1D5DB] w-full flex justify-between gap-12 text-lg tracking-wide">
+                          <p>SATURDAY</p>
+                          <p>9:00am - 6:00pm</p>
+                        </div>
+                      </div>
+                      <div className="flex border-b border-b-gray-100 pb-1">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="size-5 text-white mr-2">
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 0 1 2.25-2.25h13.5A2.25 2.25 0 0 1 21 7.5v11.25m-18 0A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75m-18 0v-7.5A2.25 2.25 0 0 1 5.25 9h13.5A2.25 2.25 0 0 1 21 11.25v7.5m-9-6h.008v.008H12v-.008ZM12 15h.008v.008H12V15Zm0 2.25h.008v.008H12v-.008ZM9.75 15h.008v.008H9.75V15Zm0 2.25h.008v.008H9.75v-.008ZM7.5 15h.008v.008H7.5V15Zm0 2.25h.008v.008H7.5v-.008Zm6.75-4.5h.008v.008h-.008v-.008Zm0 2.25h.008v.008h-.008V15Zm0 2.25h.008v.008h-.008v-.008Zm2.25-4.5h.008v.008H16.5v-.008Zm0 2.25h.008v.008H16.5V15Z" />
+                        </svg>
+                        <div className="text-[#D1D5DB] w-full flex justify-between text-lg tracking-wide">
+                          <p>SUNDAY</p>
+                          <p>Closed</p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="mt-12">
+                    <h5 className={`${noticia_regular.className} text-gray-100 text-xl font-semibold border-b border-[#FFD700] w-fit pb-1 mb-4`}>Quick Links</h5>
+                    <div className="flex flex-col gap-3">
+                      <div className="flex gap-1 items-center group cursor-pointer">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="size-4 text-[#D1D5DB] transition-transform duration-200 ease-in-out group-hover:translate-x-1">
+                          <path strokeLinecap="round" strokeLinejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" />
+                        </svg>
+                        <p className="text-[#D1D5DB] group-hover:text-[#A7C4DF] text-lg tracking-wide">Home</p>
+                      </div>
+                      <div className="flex gap-1 items-center group cursor-pointer">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="size-4 text-[#D1D5DB] transition-transform duration-200 ease-in-out group-hover:translate-x-1">
+                          <path strokeLinecap="round" strokeLinejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" />
+                        </svg>
+                        <p className="text-[#D1D5DB] group-hover:text-[#A7C4DF] text-lg tracking-wide">About Us</p>
+                      </div>
+                      <div className="flex gap-1 items-center group cursor-pointer">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="size-4 text-[#D1D5DB] transition-transform duration-200 ease-in-out group-hover:translate-x-1">
+                          <path strokeLinecap="round" strokeLinejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" />
+                        </svg>
+                        <p className="text-[#D1D5DB] group-hover:text-[#A7C4DF] text-lg tracking-wide">Services</p>
+                      </div>
+                      <div className="flex gap-1 items-center group cursor-pointer">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="size-4 text-[#D1D5DB] transition-transform duration-200 ease-in-out group-hover:translate-x-1">
+                          <path strokeLinecap="round" strokeLinejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" />
+                        </svg>
+                        <p className="text-[#D1D5DB] group-hover:text-[#A7C4DF] text-lg tracking-wide">Contact Us</p>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="mt-12">
+                    <h5 className={`${noticia_regular.className} text-gray-100 text-xl font-semibold border-b border-[#FFD700] w-fit pb-1 mb-4`}>Our Services</h5>
+                    <div className="flex flex-col gap-3 text-[#D1D5DB]">
+                      <div className="flex gap-1 items-center group cursor-pointer">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="size-4 text-[#D1D5DB] transition-transform duration-200 ease-in-out group-hover:translate-x-1">
+                          <path strokeLinecap="round" strokeLinejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" />
+                        </svg>
+                        <p className="text-[#D1D5DB] group-hover:text-[#A7C4DF] text-lg tracking-wide">General Dentistry</p>
+                      </div>
+                      <div className="flex gap-1 items-center group cursor-pointer">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="size-4 text-[#D1D5DB] transition-transform duration-200 ease-in-out group-hover:translate-x-1">
+                          <path strokeLinecap="round" strokeLinejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" />
+                        </svg>
+                        <p className="text-[#D1D5DB] group-hover:text-[#A7C4DF] text-lg tracking-wide">Surgical Services</p>
+                      </div>
+                      <div className="flex gap-1 items-center group cursor-pointer">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="size-4 text-[#D1D5DB] transition-transform duration-200 ease-in-out group-hover:translate-x-1">
+                          <path strokeLinecap="round" strokeLinejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" />
+                        </svg>
+                        <p className="text-[#D1D5DB] group-hover:text-[#A7C4DF] text-lg tracking-wide">Orthodontics</p>
+                      </div>
+                      <div className="flex gap-1 items-center group cursor-pointer">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="size-4 text-[#D1D5DB] transition-transform duration-200 ease-in-out group-hover:translate-x-1">
+                          <path strokeLinecap="round" strokeLinejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" />
+                        </svg>
+                        <p className="text-[#D1D5DB] group-hover:text-[#A7C4DF] text-lg tracking-wide">Cosmetic Dentistry</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div className="flex flex-col items-center border-t border-[#D1D5DB] mt-12 pt-6">
+                  <Image src={"/aurelia-dental_logo.png"} alt={"Alternative Logo"} width={60} height={60}></Image>
+                  <p className="text-[#D1D5DB]">&copy; 2026 Aurelia Dental. All rights reserved.</p>
+                  <button className="p-2 rounded-full bg-[#eef3f9] my-4">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="#35565f" className="size-6 text-[#35565f]">
+                      <path strokeLinecap="round" strokeLinejoin="round" d="m4.5 18.75 7.5-7.5 7.5 7.5" />
+                      <path strokeLinecap="round" strokeLinejoin="round" d="m4.5 12.75 7.5-7.5 7.5 7.5" />
+                    </svg>
+                  </button>
+                  <p className="text-sm text-[#D1D5DB] -mb-4">Powered by <span className="underline">Omni-Ray Software Solutions</span></p>
+                </div>
+              </div>
+              {/* FOOTER */}
       </div>
     )
 }

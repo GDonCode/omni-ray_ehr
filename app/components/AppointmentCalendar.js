@@ -84,7 +84,7 @@ export default function AppointmentCalendar({ onSelectSlot }){
     const slots = ['9:00 AM', '11:00 AM', '1:00 PM', '3:00 PM'];
     return(
         <>
-            <div className='p-4 flex flex-col gap-6 items-center'>
+            <div className='-mt-2 p-4 flex flex-col gap-6 items-center'>
     <div className='flex items-center gap-10'>
         <button onClick={handlePrevious} className='bg-white/10 border border-white/20 rounded-full p-2 cursor-pointer hover:bg-white/20 transition-all select-none'>
             <Image src={"/chevron-left.svg"} alt="" width={30} height={30}></Image>
@@ -102,10 +102,10 @@ export default function AppointmentCalendar({ onSelectSlot }){
             const dayKey = `${day.monthAbbr}-${day.dayNumber}`;
             const isDaySelected = selectedSlot.dayKey === dayKey;
             return (
-                <div key={index} className='flex flex-col min-w-[200px] lg:min-w-0 lg:flex-row lg:w-full border-2 border-white/20 rounded-lg bg-white/5 backdrop-blur-sm overflow-hidden hover:border-white/30 transition-all flex-shrink-0'>
-                    <div className={`bg-white/10 flex flex-col p-4 text-center justify-center items-center lg:min-w-[100px] transition-all duration-300 ${
+                <div key={index} className='flex flex-col min-w-[200px] lg:min-w-0 lg:flex-row lg:w-full border-2 border-white/20 bg-white/5 backdrop-blur-sm overflow-hidden hover:border-white/30 transition-all flex-shrink-0'>
+                    <div className={`flex flex-col p-4 text-center justify-center items-center lg:min-w-[100px] transition-all duration-300 ${
                         isDaySelected 
-                            ? 'bg-gradient-to-br from-[#5bbce4]/40 to-[#5bbce4]/30' 
+                            ? 'bg-[#177A7A] border-4 border-[#FFD700]' 
                             : 'bg-white/10'
                     }`}>
                         <span className={`${encode_sans.className} text-white/80 text-sm`}>{day.weekday}</span>
@@ -114,7 +114,7 @@ export default function AppointmentCalendar({ onSelectSlot }){
                     </div>
                     <div className='text-center p-4 flex flex-col lg:flex-wrap lg:flex-row lg:justify-center gap-4'>
                         {slots.map((slot, idx) => (
-                            <button key={idx} onClick={() => handleSlotClick(dayKey, slot)} className={`bg-white/10 border-2 border-white/20 rounded-lg py-4 px-6 font-bold cursor-pointer select-none transition-all duration-300 hover:bg-white/20 hover:scale-105 text-white/90 ${selectedSlot.dayKey === dayKey && selectedSlot.slot === slot ? 'bg-gradient-to-br from-[#5bbce4]/40 to-[#5bbce4]/30 border-none text-white shadow-lg ring-4 ring-[#FFD700]' : ''}`}>
+                            <button key={idx} onClick={() => handleSlotClick(dayKey, slot)} className={`border-2 border-white/20 py-4 px-6 font-bold cursor-pointer select-none transition-all duration-300 hover:bg-white/20 hover:scale-105 text-white/90 ${selectedSlot.dayKey === dayKey && selectedSlot.slot === slot ? 'bg-[#177A7A] border-none text-white shadow-lg ring-4 ring-[#FFD700]' : ''}`}>
                                 {slot}
                             </button>
                         ))}
