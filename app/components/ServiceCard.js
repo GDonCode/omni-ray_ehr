@@ -1,3 +1,21 @@
+import localFont from "next/font/local";
+
+const levenim = localFont ({
+  src: "../fonts/Levenim_MT/levenim-mt.ttf"
+})
+const cinzel = localFont ({
+  src: "../fonts/Cinzel/CinzelDecorative-Regular.otf"
+})
+const open_sans = localFont ({
+  src: "../fonts/OpenSans/OpenSans-SemiBold.ttf"
+})
+const inter_heading = localFont ({
+  src: "../fonts/Inter/Inter-Medium.otf"
+})
+const inter = localFont ({
+  src: "../fonts/Inter/Inter-Regular.otf"
+})
+
 export default function ServiceCard({ service, isSelected, onSelect }) {
   return (
     <div
@@ -5,7 +23,7 @@ export default function ServiceCard({ service, isSelected, onSelect }) {
       className={`
         relative p-5 flex flex-col cursor-pointer
         backdrop-blur-lg
-        bg-[#088395] border border-white/20 shadow-lg
+        bg-white border border-white/20 shadow-lg rounded-sm
         transition-all duration-200 ease-out
         hover:-translate-y-1
         hover:shadow-xl
@@ -14,7 +32,7 @@ export default function ServiceCard({ service, isSelected, onSelect }) {
           ? `
             bg-[#177A7A]
             border-[#FFD700]
-            ring-2 ring-[#FFD700]
+            ring-4 ring-[#FFD700]
             shadow-[0_12px_30px_rgba(255,215,0,0.3)]
             scale-[1.04]
           `
@@ -32,12 +50,12 @@ export default function ServiceCard({ service, isSelected, onSelect }) {
       )}
 
       {/* Service Name */}
-      <h3 className={`text-xl font-bold mb-4 pr-6 leading-tight ${isSelected ? 'text-[#FAF9F6]' : 'text-[#FAF9F6]'}`}>
+      <h3 className={`${inter_heading.className} text-2xl tracking-tight font-bold mb-4 pr-6 leading-tight text-[#036d6d]`}>
         {service.name}
       </h3>
 
       {/* Brief Description - Shortened */}
-      <p className={`text-lg leading-relaxed line-clamp-2 text-[#FAF9F6]`}>
+      <p className={`${inter.className} text-lg tracking-wideleading-relaxed line-clamp-2 text-[#181818]`}>
         {service.description}
       </p>
 
@@ -45,15 +63,15 @@ export default function ServiceCard({ service, isSelected, onSelect }) {
       <div className="mt-6 space-y-1.5">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-1.5">
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className={`w-3.5 h-3.5 ${isSelected ? 'text-[#FFD700]' : 'text-white/50'}`}>
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={3} stroke="currentColor" className={`w-3.5 h-3.5 text-[#036D6D]`}>
               <path strokeLinecap="round" strokeLinejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
             </svg>
-            <span className={`text-md font-medium ${isSelected ? 'text-[#FFD700]' : 'text-[#FAF9F6]'}`}>
+            <span className={`${inter.className} text-md font-bold text-[#036D6D]`}>
               {service.duration}
             </span>
           </div>
           
-          <div className={`text-lg font-bold ${isSelected ? 'text-[#FFD700]' : 'text-[#FAF9F6]'}`}>
+          <div className={`text-lg font-bold text-[#036D6D]`}>
             {service.price}
           </div>
         </div>

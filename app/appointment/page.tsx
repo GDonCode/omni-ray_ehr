@@ -1,29 +1,53 @@
 'use client'
 
-import {useEffect, useState} from "react";
+import {useEffect, useState, useCallback} from "react";
 import AppointmentCalendar from "../components/AppointmentCalendar";
 import ServiceCard from '../components/ServiceCard';
 import StepIndicator from '../components/StepIndicator';
 import Image from "next/image";
 import Link from "next/link";
 import styles from "./new_appointment.module.css";
+import { Mail, Phone, Calendar, Clock } from "lucide-react";
 import localFont from "next/font/local";
-const noticia_regular = localFont({
-  src: "../fonts/Noticia_Text/NoticiaText-Regular.ttf"
-});
-const schibsted_grotesk = localFont({
-  src: "../fonts/Schibsted_Grotesk/SchibstedGrotesk-VariableFont_wght.ttf"
+
+const levenim = localFont ({
+  src: "../fonts/Levenim_MT/levenim-mt.ttf"
 })
-const encode_sans = localFont ({
-  src: "../fonts/Encode_Sans/EncodeSans-VariableFont_wdth,wght.ttf"
+const cinzel = localFont ({
+  src: "../fonts/Cinzel/CinzelDecorative-Regular.otf"
 })
-const soage = localFont ({
-  src: "../fonts/Soage PersonalUseOnly/Soage PersonalUseOnly.ttf",
-  display: 'swap',
-  preload: true
+const open_sans = localFont ({
+  src: "../fonts/OpenSans/OpenSans-SemiBold.ttf"
+})
+const inter_heading = localFont ({
+  src: "../fonts/Inter/Inter-Medium.otf"
+})
+const inter = localFont ({
+  src: "../fonts/Inter/Inter-Regular.otf"
 })
 
 export default function NewAppointment (){
+    const [bookingData, setBookingData] = useState({
+        // From Step 1
+        selectedService: null as string | null,  // Add type annotation here
+        
+        // From Step 2
+        selectedDate: null as Date | null,
+        selectedTime: null as string | null,
+              
+        // From Step 3
+        personalInfo: {
+          firstName: '',
+          lastName: '',
+          email: '',
+          phone: '',
+          dob: '',       
+          notes: '', 
+          terms: false
+        }
+      });
+
+
     const [contactMethod, setContactMethod] = useState('email');
     const [contactValue, setContactValue] = useState('');
 
@@ -125,28 +149,6 @@ export default function NewAppointment (){
         ]
       };
 
-      const [bookingData, setBookingData] = useState({
-        // From Step 1
-        selectedService: null as string | null,  // Add type annotation here
-        
-        // From Step 2
-        selectedDate: null as Date | null,
-        selectedTime: null as string | null,
-              
-        // From Step 3
-        personalInfo: {
-          firstName: '',
-          lastName: '',
-          email: '',
-          phone: '',
-          dob: '',
-          street: '',
-          city: '',
-          parish: '',
-          notes: ''
-        }
-      });
-
     // SERVICE TILE LOGIC --------- SERVICE TILE LOGIC --------- SERVICE TILE LOGIC --------- SERVICE TILE LOGIC --------- SERVICE TILE LOGIC ---------
     const handleServiceSelect = (serviceTitle: string) => {
       setBookingData(prevData => ({
@@ -154,7 +156,6 @@ export default function NewAppointment (){
         selectedService: prevData.selectedService === serviceTitle ? null : serviceTitle
       }));
 
-      console.log(bookingData.selectedService);
     };
   
     const [currentStep, setCurrentStep] = useState(1);
@@ -163,7 +164,32 @@ export default function NewAppointment (){
       dayKey: string | null;
       slot: string | null;
     }; 
-    const [confirmedSlot, setConfirmedSlot] = useState<Slot | null>(null);
+
+    const handleSlotSelection = useCallback((slot: Slot) => {
+      if (slot.dayKey && slot.slot) {
+        const [monthAbbr, day] = slot.dayKey.split('-');
+        const monthMap: { [key: string]: number } = {
+          'Jan': 0, 'Feb': 1, 'Mar': 2, 'Apr': 3, 'May': 4, 'Jun': 5,
+          'Jul': 6, 'Aug': 7, 'Sep': 8, 'Oct': 9, 'Nov': 10, 'Dec': 11
+        };
+        
+        const currentYear = new Date().getFullYear();
+        const selectedDate = new Date(currentYear, monthMap[monthAbbr], parseInt(day));
+        
+        setBookingData(prev => ({
+          ...prev,
+          selectedDate: selectedDate,
+          selectedTime: slot.slot
+        }));
+      } else {
+        setBookingData(prev => ({
+          ...prev,
+          selectedDate: null,
+          selectedTime: null
+        }));
+      }
+    }, []);
+
 
     const [isOpen, setIsOpen] = useState(false);
     const [activeItem, setActiveItem] = useState('home');
@@ -187,29 +213,37 @@ export default function NewAppointment (){
     closeMenu();
   };
   
-    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
-      const { name, value } = e.target;
-      setBookingData({
-        ...bookingData,
+    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
+      const target = e.target as HTMLInputElement;
+      const { name, value, type } = target;
+      const checked = target.checked;
+      
+      setBookingData(prev => ({
+        ...prev,
         personalInfo: {
-          ...bookingData.personalInfo,
-          [name]: value
+          ...prev.personalInfo,
+          [name]: type === 'checkbox' ? checked : value
         }
-      });
+      }));
     };
 
     const [errors, setErrors] = useState<string[]>([]);
     const validatePersonalInfo = () => {
       const errors: string[] = [];
-      const { firstName, lastName, email, phone, dob } = bookingData.personalInfo;
+      const { firstName, lastName, email, phone, dob, terms } = bookingData.personalInfo;
 
+      const nameRegex = /^[A-Za-z\s'-]+$/;
       // Required field validations
       if (!firstName || firstName.trim() === '') {
         errors.push('First name is required');
+      } else if (!nameRegex.test(firstName)) {
+        errors.push('First name can only contain letters');
       }
 
       if (!lastName || lastName.trim() === '') {
         errors.push('Last name is required');
+      } else if (!nameRegex.test(lastName)) {
+        errors.push('Last name can only contain letters');
       }
 
       if (!email || email.trim() === '') {
@@ -248,6 +282,10 @@ export default function NewAppointment (){
         }
       }
 
+      if (!terms) {
+        errors.push('You must agree to the terms and conditions');
+      }
+
 
       return errors;
     };
@@ -258,6 +296,7 @@ export default function NewAppointment (){
                 
       if (validationErrors.length === 0) {
         setCurrentStep(4);
+        console.log(bookingData);
       }
     };
 
@@ -276,19 +315,16 @@ export default function NewAppointment (){
     return (
     <>
       <div className={`${styles.background}`}>
-        <div></div>
-        <div></div>
-        <div></div>
       </div>
       {/* Header */}
-      <div className={`backdrop-blur-md border border-white/30 shadow-lg z-20 py-2 fixed top-2 left-1/2 -translate-x-1/2 flex items-center justify-between px-4  border-gray-200/20 w-[95%] bg-[#088395]`}>
+      <div className={`backdrop-blur-md shadow-lg z-20 py-2 fixed top-0 flex items-center justify-between px-4 w-full bg-[#036d6d]`}>
         <Link href={"/"} className="flex items-center gap-2">
-          <Image src={"/aurelia-dental_logo.png"} alt="Logo" width={85} height={85} className="cursor-pointer"/>
-          <h1 className={`${soage.className} text-white lg:text-4xl text-[1.55rem] font-bold items-center flex flex-col mt-2 tracking-widest`}>
+          <Image src={"/aurelia-dental_logo.png"} alt="Logo" width={75} height={75} className="cursor-pointer"/>
+          <h1 className={`${levenim.className} text-white lg:text-4xl text-2xl font-bold items-center flex flex-col mt-2 tracking-widest`}>
             Aurelia <span className="block -mt-1 text-white">Dental</span>
           </h1>
         </Link>
-        <nav className={`${schibsted_grotesk.className} hidden lg:block`}>
+        <nav className={`${inter.className} hidden lg:block`}>
           <ul className="flex items-center gap-12 font-medium text-lg">
             {navItems.map((item) => (
               <li key={item.id}>
@@ -313,42 +349,29 @@ export default function NewAppointment (){
           </ul>
         </nav>
         <div className="flex items-center gap-2 lg:hidden ml-auto mr-1">
-          <button onClick={() => setIsOpen(prev => !prev)} className="block lg:hidden py-2 px-4 border-2 border-[#ffdf20] bg-gray-700/10">
-            <span className="text-[#ffdf20] font-bold tracking-widest">MENU</span>
+          <button onClick={() => setIsOpen(prev => !prev)} className="block lg:hidden py-2 px-4 border-2 border-[#eccb1b] bg-[#eccb1b] rounded-xs">
+            <span className={`${inter_heading.className} text-[#181818] font-extrabold tracking-widest`}>MENU</span>
           </button>
         </div>
       </div>
       
-      {/* Backdrop */}
-        <div 
-          className={`fixed inset-0 bg-black/40 backdrop-blur-sm z-40 transition-opacity duration-300 ${
-            isOpen ? 'opacity-100' : 'opacity-0 pointer-events-none'
-          }`}
-          onClick={closeMenu}
-        />
       {/* Mobile Nav */}
-      <nav className={`fixed right-0 top-0 w-70 h-fit bg-gradient-to-br from-white to-gray-50 z-50 shadow-2xl transform transition-transform duration-500 ease-out ${
-        isOpen ? 'translate-x-0' : 'translate-x-full'
-      }`}>
+      <nav className={`fixed right-0 top-0 w-70 h-fit bg-gradient-to-br from-white to-gray-50 z-50 shadow-2xl transform transition-transform duration-500 ease-out ${isOpen ? 'translate-x-0' : 'translate-x-full'}`}>
+        
         {/* Close Button */}
         <div className="flex items-center block lg:hidden px-8 py-4">
-          <button onClick={toggleMenu} className="ml-auto block lg:hidden py-2 px-4 border-3 border-[#09637E]">
-            <span className="text-[#09637E] font-extrabold text-xl tracking-widest">X</span>
+          <button onClick={toggleMenu} className="ml-auto block lg:hidden py-2 px-4 border-3 border-[#069494]">
+            <span className="text-[#069494] font-extrabold text-xl tracking-widest">X</span>
           </button>
         </div>
-        
+          
         {/* Menu Items */}
         <div className="px-8 py-4">
           <ul className="space-y-4">
             {navItems.map((link) => (
               <li key={link.id}>
-                <a 
-                  href={link.href}
-                  className={`block py-3 px-4 rounded-lg transition-all ${
-                    activeMobileLink === link.id
-                      ? 'text-[#09637E] font-bold text-[1.4rem] bg-[#237d75]/10 border-l-4 border-[#09637E]' 
-                      : 'text-gray-700 font-medium text-[1.3rem] bg-gray-100 hover:text-[#3c5b64] border-l-4 border-gray-200'
-                  }`}
+                <a href={link.href} 
+                  className={`block py-3 px-4 rounded-lg transition-all ${activeMobileLink === link.id ? 'text-[#faf9f6] font-bold text-[1.4rem] bg-[#069494] border-l-8 border-[#036d6d]' : 'text-gray-700 font-medium text-[1.3rem] bg-gray-200 hover:text-[#3c5b64] border-l-4 border-gray-300'}`}
                   onClick={() => handleMobileLinkClick(link.id)}
                 >
                   {link.label}
@@ -372,8 +395,15 @@ export default function NewAppointment (){
           </div>
         </div>
       </nav>
+      {/* Backdrop */}
+      <div className={`fixed inset-0 bg-black/40 backdrop-blur-sm z-40 transition-opacity duration-300 ${
+          isOpen ? 'opacity-100' : 'opacity-0 pointer-events-none'
+        }`}
+        onClick={closeMenu}
+      >
+      </div>
         
-      <div className="relative w-[95%] mx-auto pt-28">
+      <div className="relative w-[95%] mx-auto pt-22">
         {/* Step Indicator always mounted */}
         <div className="flex flex-col md:flex-row md:w-[80%] gap-2 md:items-end mb-6 pt-4 w-full">
           <StepIndicator currentStep={currentStep} />
@@ -381,27 +411,16 @@ export default function NewAppointment (){
 
         {currentStep === 1 && (
           <div className="px-4 py-0 relative max-w-7xl mx-auto">
-            
-            {/* Helper text with link to services page */}
-            <div className="mb-2">
-              <p className="text-white/60 text-sm">
-                Not sure which service you need?{' '}
-                <a 
-                  href="/services" 
-                  className="text-[#ffdf20] hover:text-[#FFD700]/80 underline decoration-[#FFD700]/30 hover:decoration-[#FFD700]/60 transition-colors"
-                >
-                  Browse all services
-                </a>
-              </p>
-            </div>
+
             {/* Preventative Services */}
             <div className="mb-14">
               <div className="flex items-center gap-3 mb-5">
-                <h2 className={`text-2xl font-bold text-[#FAF9F6]`}>
+                <Image src={"/number-1.png"} alt="Number 1" width={20} height={20}></Image>
+                <h2 className={`${inter_heading.className} text-2xl font-bold text-[#faf9f6]`}>
                   Preventative Care
                 </h2>
               </div>
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                 {servicesByCategory.preventive.map((service, index) => (
                   <ServiceCard 
                     key={`preventive-${index}`}
@@ -413,26 +432,15 @@ export default function NewAppointment (){
               </div>
             </div>
 
-            {/* Helper text with link to services page */}
-            <div className="mb-2">
-              <p className="text-white/60 text-sm">
-                Not sure which service you need?{' '}
-                <a 
-                  href="/services" 
-                  className="text-[#ffdf20] hover:text-[#FFD700]/80 underline decoration-[#FFD700]/30 hover:decoration-[#FFD700]/60 transition-colors"
-                >
-                  Browse all services
-                </a>
-              </p>
-            </div>
             {/* Restorative Services */}
             <div className="mb-14">
               <div className="flex items-center gap-3 mb-5">
-                <h2 className={`text-2xl font-bold text-white`}>
+                <Image src={"/number-2.png"} alt="Number 2" width={20} height={20}></Image>
+                <h2 className={`${inter_heading.className} text-2xl font-bold text-[#faf9f6]`}>
                   Restorative Care
                 </h2>
               </div>
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                 {servicesByCategory.restorative.map((service, index) => (
                   <ServiceCard 
                     key={`restorative-${index}`}
@@ -444,26 +452,15 @@ export default function NewAppointment (){
               </div>
             </div>
 
-            {/* Helper text with link to services page */}
-            <div className="mb-2">
-              <p className="text-white/60 text-sm">
-                Not sure which service you need?{' '}
-                <a 
-                  href="/services" 
-                  className="text-[#ffdf20] hover:text-[#FFD700]/80 underline decoration-[#FFD700]/30 hover:decoration-[#FFD700]/60 transition-colors"
-                >
-                  Browse all services
-                </a>
-              </p>
-            </div>
             {/* Cosmetic Services */}
             <div className="mb-8">
               <div className="flex items-center gap-3 mb-5">
-                <h2 className={`text-2xl font-bold text-white`}>
+                <Image src={"/number-3.png"} alt="Number 3" width={20} height={20}></Image>
+                <h2 className={`${inter_heading.className} text-2xl font-bold text-[#faf9f6]`}>
                   Cosmetic Dentistry
                 </h2>
               </div>
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                 {servicesByCategory.cosmetic.map((service, index) => (
                   <ServiceCard 
                     key={`cosmetic-${index}`}
@@ -475,29 +472,51 @@ export default function NewAppointment (){
               </div>
             </div>
 
+            {/* Helper text with link to services page */}
+            <div className="mb-2">
+              <p className={`${inter.className} text-[#Faf9f6] text-md`}>
+                Not sure which service you need?{' '}
+                <a 
+                  href="/services" 
+                  className="text-[#ffdf20] hover:text-[#FFD700]/80 underline decoration-[#FFD700]/30 hover:decoration-[#FFD700]/60 transition-colors"
+                >
+                  Browse all services
+                </a>
+              </p>
+            </div>
             {/* Floating Next Button - Enhanced */}
-            {bookingData.selectedService && (
-              <button onClick={() => setCurrentStep(2)} className={`${encode_sans.className} ${!bookingData.selectedService ? 'hidden' : ''} bg-[#FFD700] absolute fixed bottom-10 right-4 z-100 text-gray-900 rounded-lg px-8 py-4 hover:scale-105 cursor-pointer text-2xl mt-10 lg:mt-20 font-semibold shadow-md flex gap-2 items-center`}>
-                      Next
-                      <Image src={"/arrow-right.svg"} alt="arrow right" width={30} height={30}></Image>
-                    </button>
-            )}
+            {(() => {
+              console.log(bookingData);
+              return bookingData.selectedService &&  (
+                <button onClick={() => setCurrentStep(2)} className={`${inter.className} bg-[#FFD700] text-gray-900 absolute fixed bottom-10 right-4 z-100 rounded-lg px-8 py-4 hover:scale-105 cursor-pointer text-2xl mt-10 lg:mt-20 font-semibold shadow-md flex gap-2 items-center`}>
+                  Next
+                  <Image src={"/arrow-right.svg"} alt="arrow right" width={30} height={30}></Image>
+                </button>
+              );
+            })()}
           </div>
         )}
 
         {currentStep === 2 && (
-          <div className={`relative`}>
-            <AppointmentCalendar onSelectSlot={setConfirmedSlot}/>
-            <button onClick={() => setCurrentStep(1)} className={`${encode_sans.className} bg-[#FFD700] text-gray-900 absolute fixed bottom-10 right-48 lg:right-50 z-100 rounded-lg px-8 py-4 hover:scale-105 cursor-pointer text-xl lg:text-2xl mt-10 lg:mt-20 font-semibold shadow-md flex gap-2 items-center`}>
+          <div className="relative">
+            <AppointmentCalendar 
+              onSelectSlot={handleSlotSelection}
+              selectedDate={bookingData.selectedDate}
+              selectedTime={bookingData.selectedTime}
+            />
+            <button onClick={() => setCurrentStep(1)} className={`${inter.className} bg-[#FFD700] text-gray-900 absolute fixed bottom-10 right-48 lg:right-50 z-100 rounded-lg px-8 py-4 hover:scale-105 cursor-pointer text-xl lg:text-2xl mt-10 lg:mt-20 font-semibold shadow-md flex gap-2 items-center`}>
               <Image src={"/arrow-left.svg"} alt="arrow left" width={30} height={30}></Image>
               Previous
             </button>
-            {confirmedSlot?.dayKey && confirmedSlot?.slot && (
-              <button onClick={() => setCurrentStep(3)} className={`${encode_sans.className} bg-[#FFD700] text-gray-900 absolute fixed bottom-10 right-4 z-100 rounded-lg px-8 py-4 hover:scale-105 cursor-pointer text-2xl mt-10 lg:mt-20 font-semibold shadow-md flex gap-2 items-center`}>
-                Next
-                <Image src={"/arrow-right.svg"} alt="arrow right" width={30} height={30}></Image>
-              </button>
-            )}
+            {(() => {
+              console.log(bookingData);
+              return bookingData.selectedDate && bookingData.selectedTime && (
+                <button onClick={() => setCurrentStep(3)} className={`${inter.className} bg-[#FFD700] text-gray-900 absolute fixed bottom-10 right-4 z-100 rounded-lg px-8 py-4 hover:scale-105 cursor-pointer text-2xl mt-10 lg:mt-20 font-semibold shadow-md flex gap-2 items-center`}>
+                  Next
+                  <Image src={"/arrow-right.svg"} alt="arrow right" width={30} height={30}></Image>
+                </button>
+              );
+            })()}
           </div>
         )}
 
@@ -508,7 +527,7 @@ export default function NewAppointment (){
             }}>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
-                  <label htmlFor="firstName" className="block text-xl font-medium text-white mb-2">
+                  <label htmlFor="firstName" className={`${inter_heading.className} block text-xl font-medium text-[#faf9f6] mb-2`}>
                     First Name *
                   </label>
                   <input
@@ -516,7 +535,7 @@ export default function NewAppointment (){
                     id="firstName"
                     name="firstName"
                     required
-                    className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-lg text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-[#FFD700] focus:border-transparent transition-all"
+                    className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-md text-[#faf9f6] text-xl placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-[#FFD700] focus:border-transparent transition-all"
                     placeholder="Enter your first name"
                     value={bookingData.personalInfo.firstName}
                     onChange={handleInputChange}
@@ -524,7 +543,7 @@ export default function NewAppointment (){
                 </div>
 
                 <div>
-                  <label htmlFor="lastName" className="block text-xl font-medium text-white mb-2">
+                  <label htmlFor="lastName" className={`${inter_heading.className} block text-xl font-medium text-[#faf9f6] mb-2`}>
                     Last Name *
                   </label>
                   <input
@@ -532,7 +551,7 @@ export default function NewAppointment (){
                     id="lastName"
                     name="lastName"
                     required
-                    className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-lg text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-[#FFD700] focus:border-transparent transition-all"
+                    className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-md text-[#faf9f6] text-xl placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-[#FFD700] focus:border-transparent transition-all"
                     placeholder="Enter your last name"
                     value={bookingData.personalInfo.lastName}
                     onChange={handleInputChange}
@@ -542,7 +561,7 @@ export default function NewAppointment (){
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div>
-                    <label htmlFor="email" className="block text-xl font-medium text-white mb-2">
+                    <label htmlFor="email" className={`${inter_heading.className} block text-xl font-medium text-[#faf9f6] mb-2`}>
                       Email Address *
                     </label>
                     <input
@@ -550,7 +569,7 @@ export default function NewAppointment (){
                       id="email"
                       name="email"
                       required
-                      className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-lg text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-[#FFD700] focus:border-transparent transition-all"
+                      className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-md text-[#faf9f6] text-xl placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-[#FFD700] focus:border-transparent transition-all"
                       placeholder="your.email@example.com"
                       value={bookingData.personalInfo.email}
                       onChange={handleInputChange}
@@ -558,7 +577,7 @@ export default function NewAppointment (){
                   </div>
 
                   <div>
-                    <label htmlFor="phone" className="block text-xl font-medium text-white mb-2">
+                    <label htmlFor="phone" className={`${inter_heading.className} block text-xl font-medium text-[#faf9f6] mb-2`}>
                       Phone Number *
                     </label>
                     <input
@@ -566,7 +585,7 @@ export default function NewAppointment (){
                       id="phone"
                       name="phone"
                       required
-                      className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-lg text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-[#FFD700] focus:border-transparent transition-all"
+                      className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-md text-[#faf9f6] text-xl placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-[#FFD700] focus:border-transparent transition-all"
                       placeholder="(876) 123-4567"
                       value={bookingData.personalInfo.phone}
                       onChange={handleInputChange}
@@ -575,7 +594,7 @@ export default function NewAppointment (){
                 </div>
 
                 <div>
-                  <label htmlFor="dob" className="block text-xl font-medium text-white mb-2">
+                  <label htmlFor="dob" className={`${inter_heading.className} block text-xl font-medium text-[#faf9f6] mb-2`}>
                     Date of Birth *
                   </label>
                   <input
@@ -583,81 +602,20 @@ export default function NewAppointment (){
                     id="dob"
                     name="dob"
                     required
-                    className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-lg text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-[#FFD700] focus:border-transparent transition-all"
+                    className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-md text-[#faf9f6] text-xl placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-[#FFD700] focus:border-transparent transition-all"
                     value={bookingData.personalInfo.dob}
                     onChange={handleInputChange}
                   />
                 </div>
 
                 <div>
-                  <label htmlFor="address" className="block text-xl font-medium text-white mb-2">
-                    Address
-                  </label>
-                  <input
-                    type="text"
-                    id="address"
-                    name="address"
-                    className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-lg text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-[#FFD700] focus:border-transparent transition-all"
-                    placeholder="Street address"
-                    value={bookingData.personalInfo.street}
-                    onChange={handleInputChange}
-                  />
-                </div>
-
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                  <div>
-                    <label htmlFor="city" className="block text-xl font-medium text-white mb-2">
-                      City
-                    </label>
-                    <input
-                      type="text"
-                      id="city"
-                      name="city"
-                      className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-lg text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-[#FFD700] focus:border-transparent transition-all"
-                      placeholder="City"
-                      value={bookingData.personalInfo.city}
-                      onChange={handleInputChange}
-                    />
-                  </div>
-
-                  <div>
-                    <label htmlFor="parish" className="block text-xl font-medium text-white mb-2">
-                      Parish
-                    </label>
-                    <select
-                      id="parish"
-                      name="parish"
-                      className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-[#FFD700] focus:border-transparent transition-all"
-                      value={bookingData.personalInfo.parish}
-                      onChange={handleInputChange}
-                    >
-                      <option value="">Select Parish</option>
-                      <option value="kingston">Kingston</option>
-                      <option value="st-andrew">St. Andrew</option>
-                      <option value="st-thomas">St. Thomas</option>
-                      <option value="portland">Portland</option>
-                      <option value="st-mary">St. Mary</option>
-                      <option value="st-ann">St. Ann</option>
-                      <option value="trelawny">Trelawny</option>
-                      <option value="st-james">St. James</option>
-                      <option value="hanover">Hanover</option>
-                      <option value="westmoreland">Westmoreland</option>
-                      <option value="st-elizabeth">St. Elizabeth</option>
-                      <option value="manchester">Manchester</option>
-                      <option value="clarendon">Clarendon</option>
-                      <option value="st-catherine">St. Catherine</option>
-                    </select>
-                  </div>
-                </div>
-
-                <div>
-                  <label htmlFor="notes" className="block text-xl font-medium text-white mb-2">
+                  <label htmlFor="notes" className={`${inter_heading.className} block text-xl font-medium text-[#faf9f6] mb-2`}>
                     Additional Notes
                   </label>
                   <textarea
                     id="notes"
                     name="notes"
-                    className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-lg text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-[#FFD700] focus:border-transparent transition-all resize-none"
+                    className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-md text-[#faf9f6] text-xl placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-[#FFD700] focus:border-transparent transition-all resize-none"
                     placeholder="Any special requests or information we should know?"
                     value={bookingData.personalInfo.notes}
                     onChange={handleInputChange}
@@ -670,9 +628,11 @@ export default function NewAppointment (){
                     id="terms"
                     name="terms"
                     required
-                    className="mt-1 w-5 h-5 rounded border-white/20 bg-white/10 text-[#FFD700] focus:ring-2 focus:ring-[#FFD700] focus:ring-offset-0"
+                    checked={bookingData.personalInfo.terms}
+                    onChange={handleInputChange}
+                    className="mt-1 w-10 h-10 rounded border-white/20 bg-white/10 text-[#FFD700] focus:ring-2 focus:ring-[#FFD700] focus:ring-offset-0"
                   />
-                  <label htmlFor="terms" className="text-xl text-white/90">
+                  <label htmlFor="terms" className={`${inter.className} text-xl text-white/90`}>
                     I agree to the <a href="#" className="text-[#FFD700] hover:underline">terms and conditions</a> and <a href="#" className="text-[#FFD700] hover:underline">privacy policy</a> *
                   </label>
                 </div>
@@ -689,82 +649,79 @@ export default function NewAppointment (){
                 <div className="flex gap-4 pt-4">
                   <button
                     type="button"
-                    className="px-8 py-3 bg-white/10 border border-white/20 text-white rounded-lg hover:bg-white/20 transition-all font-medium"
+                    className="px-8 py-3 bg-white/10 border border-white/20 text-[#faf9f6] text-md rounded-md hover:bg-white/20 transition-all font-medium"
                     onClick={() => setCurrentStep(2)}
                   >
                     Back
                   </button>
                   <button
                     type="submit"
-                    className="flex-1 px-8 py-3 bg-[#FFD700] text-gray-900 rounded-lg hover:bg-[#FFC700] transition-all font-semibold"
+                    className="flex-1 px-8 py-3 bg-[#FFD700] text-[#181818] text-xl rounded-md hover:bg-[#FFC700] transition-all font-semibold"
                     onClick={handleContinue}
                   >
                     Continue to Review
                   </button>
                 </div>
-              </form>
-            </div>
+            </form>
+          </div>
         )}
 
         {currentStep === 4 && (
-            <div className={` mt-28 p-4 relative`}>
-              <div className="flex flex-col md:flex-row md:w-[80%] gap-2 md:items-end mb-6 mt-4 w-[100%]">
-                <div className="flex gap-2 items-center mb-4">
-                  <Image src={"/number-4.png"} alt="First" width={25} height={25}></Image>
-                  <h2 className={`${noticia_regular.className} text-2xl font-semibold border-b-2 border-yellow-400 w-fit text-white`}>Appointment Summary</h2>
-                </div>
-              </div>
-
+            <div className={`-mt-4 p-4 relative`}>
               <div className="max-w-3xl mx-auto">
-                {/* Personal Information Card */}
-                <div className="bg-white/10 backdrop-blur-sm border-2 border-white/20 rounded-xl p-8 mb-6 shadow-lg relative">
-                  <div className="text-sm text-white/50 uppercase tracking-wider font-semibold mb-4 border-b-2">
+                <div className="bg-[#EAF3F7] backdrop-blur-sm border-2 border-white/20 rounded-md p-6 py-4 mb-6 shadow-lg relative">
+                  <div className={`${inter_heading.className} text-sm text-[#222428] uppercase mb-4 border-b`}>
                     Personal Information
                   </div>
                   <div className="flex justify-between items-start flex-col md:flex-row gap-4">
                     <div className="flex-1">
-                      <div className="text-3xl font-bold text-white mb-3 leading-tight">
-                        John Doe
+                      <div className={`${inter_heading.className} text-3xl font-semibold text-[#036d6d] mb-4`}>
+                        {bookingData.personalInfo.firstName} {bookingData.personalInfo.lastName}
                       </div>
-                      <div className="text-lg text-white/90 mb-2 flex">
-                        <Image src={"/mail.svg"} alt="Email" width={23} height={23} className="mr-3"></Image>
-                        johndoe@email.com
+                      <div className={`${inter.className} text-xl text-[#181818] mb-4 tracking-wide flex items-center`}>
+                        <Mail className="w-5 h-5 mr-3 text-[#181818]" />
+                        {bookingData.personalInfo.email}
                       </div>
-                      <div className="text-lg text-white/80 mb-6 flex">
-                        <Image src={"/phone.svg"} alt="Email" width={23} height={23} className="mr-3"></Image>
-                        +1 (876) 555-0123
+                      <div className={`${inter.className} text-xl text-[#181818] tracking-wide mb-10 flex items-center`}>
+                        <Phone className="w-5 h-5 mr-3 text-[#181818]" />
+                        {bookingData.personalInfo.phone}
                       </div>
                       <button 
-                        className="bg-yellow-400 border-2 border-yellow-400/40 text-gray-900 px-5 py-2.5 rounded-lg font-semibold text-md hover:bg-yellow-400 hover:text-blue-900 hover:border-yellow-400 transition-all duration-300 hover:scale-105 flex items-center gap-2 self-end md:self-start"
+                        className="bg-[#eccb1b] border-2 border-[#eccb1b] text-[#181818] px-5 py-2.5 rounded-md font-semibold text-md hover:bg-yellow-400 hover:border-yellow-400 transition-all duration-300 hover:scale-105 flex items-center gap-2 self-end md:self-start"
                         onClick={() => setCurrentStep(3)}
                       >
-                        <Image src={"/edit.svg"} alt="Email" width={23} height={23}></Image>
+                        <Image src={"/edit.svg"} alt="Edit" width={23} height={23}></Image>
                         Edit Details
                       </button>
                     </div>
                   </div>
-
-                  <div className="text-sm text-white/50 uppercase tracking-wider font-semibold mb-4 mt-12 border-b-2">
+                  <div className={`${inter_heading.className} text-sm text-[#222428] uppercase mb-4 border-b mt-8`}>
                     Selected Service
                   </div>
                   <div className="flex justify-between items-start flex-col md:flex-row gap-4">
                     <div className="flex-1">
-                      <div className="text-3xl font-bold text-white mb-3 leading-tight">
-                        Dental Checkup
+                      <div className={`${inter_heading.className} text-3xl font-semibold text-[#036d6d] mb-4`}>
+                        {bookingData.selectedService || 'No Service Selected'}
                       </div>
-                      <div className="text-lg text-white/90 mb-2 flex">
-                        <Image src={"/calendar.svg"} alt="Email" width={23} height={23} className="mr-3"></Image>
-                        01/08/2026
+                      <div className={`${inter.className} text-xl text-[#181818] tracking-wide mb-4 flex items-center`}>
+                        <Calendar className="w-5 h-5 mr-3 text-[#181818]" />
+                        {bookingData.selectedDate 
+                          ? new Date(bookingData.selectedDate).toLocaleDateString('en-US', { 
+                              month: 'short', 
+                              day: 'numeric', 
+                              year: 'numeric' 
+                            })
+                          : 'No Date Selected'}
                       </div>
-                      <div className="text-lg text-white/80 flex mb-6">
-                        <Image src={"/clock.svg"} alt="Email" width={23} height={23} className="mr-3"></Image>
-                        11: 00 AM
+                      <div className={`${inter.className} text-xl text-[#181818] tracking-wide mb-10 flex items-center`}>
+                        <Clock className="w-5 h-5 mr-3 text-[#181818]" />
+                        {bookingData.selectedTime || 'No Time Selected'}
                       </div>
                       <button 
-                        className="bg-yellow-400 border-2 border-yellow-400/40 text-gray-900 px-5 py-2.5 rounded-lg font-semibold text-md hover:bg-yellow-400 hover:text-blue-900 hover:border-yellow-400 transition-all duration-300 hover:scale-105 flex items-center gap-2 self-end md:self-start"
+                        className="bg-[#eccb1b] border-2 border-[#eccb1b] text-[#181818] px-5 py-2.5 rounded-md font-semibold text-md hover:bg-yellow-400 hover:border-yellow-400 transition-all duration-300 hover:scale-105 flex items-center gap-2 self-end md:self-start"
                         onClick={() => setCurrentStep(1)}
                       >
-                        <Image src={"/edit.svg"} alt="Email" width={23} height={23}></Image>
+                        <Image src={"/edit.svg"} alt="Edit" width={23} height={23}></Image>
                         Edit Details
                       </button>
                     </div>
@@ -779,7 +736,7 @@ export default function NewAppointment (){
             <div className="relative bg-[#004c4c] p-8 lg:p-12 border-t-4 border-[#004c4c] mt-12">
               <div className="flex flex-col lg:flex-row lg:justify-between">
                 <div className="">
-                  <h5 className={`${noticia_regular.className} text-gray-100 text-xl font-semibold border-b border-[#FFD700] w-fit pb-1 mb-6`}>Contact Us</h5>
+                  <h5 className={`${inter.className} text-gray-100 text-xl font-semibold border-b border-[#FFD700] w-fit pb-1 mb-6`}>Contact Us</h5>
                   <div className="flex flex-col gap-5">
                     <div className="flex gap-6">
                       <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="size-5 text-[#D1D5DB]">
@@ -806,7 +763,7 @@ export default function NewAppointment (){
                   </div>
                 </div>
                 <div className="mt-12">
-                  <h5 className={`${noticia_regular.className} text-gray-100 text-xl font-semibold border-b border-[#FFD700] w-fit pb-1 mb-6`}>Opening Hours</h5>
+                  <h5 className={`${inter.className} text-gray-100 text-xl font-semibold border-b border-[#FFD700] w-fit pb-1 mb-6`}>Opening Hours</h5>
                   <div className="flex flex-col gap-6">
                     <div className="flex border-b border-b-gray-100 pb-1">
                       <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="size-5 text-white mr-2">
@@ -838,7 +795,7 @@ export default function NewAppointment (){
                   </div>
                 </div>
                 <div className="mt-12">
-                  <h5 className={`${noticia_regular.className} text-gray-100 text-xl font-semibold border-b border-[#FFD700] w-fit pb-1 mb-4`}>Quick Links</h5>
+                  <h5 className={`${inter.className} text-gray-100 text-xl font-semibold border-b border-[#FFD700] w-fit pb-1 mb-4`}>Quick Links</h5>
                   <div className="flex flex-col gap-3">
                     <div className="flex gap-1 items-center group cursor-pointer">
                       <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="size-4 text-[#D1D5DB] transition-transform duration-200 ease-in-out group-hover:translate-x-1">
@@ -867,7 +824,7 @@ export default function NewAppointment (){
                   </div>
                 </div>
                 <div className="mt-12">
-                  <h5 className={`${noticia_regular.className} text-gray-100 text-xl font-semibold border-b border-[#FFD700] w-fit pb-1 mb-4`}>Our Services</h5>
+                  <h5 className={`${inter.className} text-gray-100 text-xl font-semibold border-b border-[#FFD700] w-fit pb-1 mb-4`}>Our Services</h5>
                   <div className="flex flex-col gap-3 text-[#D1D5DB]">
                     <div className="flex gap-1 items-center group cursor-pointer">
                       <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="size-4 text-[#D1D5DB] transition-transform duration-200 ease-in-out group-hover:translate-x-1">

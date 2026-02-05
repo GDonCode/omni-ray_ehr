@@ -12,17 +12,37 @@ const STEP_TITLES = [
   'Confirmation',
 ];
 
+import localFont from "next/font/local";
+
+const levenim = localFont ({
+  src: "../fonts/Levenim_MT/levenim-mt.ttf"
+})
+const cinzel = localFont ({
+  src: "../fonts/Cinzel/CinzelDecorative-Regular.otf"
+})
+const open_sans = localFont ({
+  src: "../fonts/OpenSans/OpenSans-SemiBold.ttf"
+})
+const inter_heading = localFont ({
+  src: "../fonts/Inter/Inter-Medium.otf"
+})
+const inter = localFont ({
+  src: "../fonts/Inter/Inter-Regular.otf"
+})
+
+
 export default function StepIndicator({ currentStep }: StepIndicatorProps) {
   return (
     <>
     <div className="w-full flex justify-center mb-1">
       <h2
-        className="
+        className={`
+          ${inter_heading.className}
           text-2xl md:text-3xl
           font-semibold
           text-[#ffdf20]
           transition-all duration-300
-        "
+        `}
       >
         {STEP_TITLES[currentStep - 1]}
       </h2>
@@ -41,7 +61,7 @@ export default function StepIndicator({ currentStep }: StepIndicatorProps) {
                 className={`
                   relative
                   w-8 h-8 rounded-full flex items-center justify-center
-                  font-semibold text-sm
+                  font-semibold
                   transition-all duration-300 ease-out
                   
                   ${isCompleted && 'bg-[#ffdf20]/90 text-gray-900'}
