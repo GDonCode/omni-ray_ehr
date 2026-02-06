@@ -1,6 +1,8 @@
 'use client'
 
+
 import {useEffect, useState, useCallback} from "react";
+import { useRouter, useSearchParams } from 'next/navigation';
 import AppointmentCalendar from "../components/AppointmentCalendar";
 import ServiceCard from '../components/ServiceCard';
 import StepIndicator from '../components/StepIndicator';
@@ -26,31 +28,132 @@ const inter = localFont ({
   src: "../fonts/Inter/Inter-Regular.otf"
 })
 
+type ContactMethod = 'email' | 'whatsapp' | null;
+type PersonalInfo = {
+  firstName: string;
+  lastName: string;
+  email: string;
+  phone: string;
+  contactMethod: ContactMethod;
+  dob: string;
+  notes: string;
+  terms: boolean;
+};
+
+type BookingData = {
+  selectedService: string | null;
+  selectedDate: Date | null;
+  selectedTime: string | null;
+  personalInfo: PersonalInfo;
+};
+
 export default function NewAppointment (){
-    const [bookingData, setBookingData] = useState({
-        // From Step 1
-        selectedService: null as string | null,  // Add type annotation here
-        
-        // From Step 2
-        selectedDate: null as Date | null,
-        selectedTime: null as string | null,
-              
-        // From Step 3
-        personalInfo: {
-          firstName: '',
-          lastName: '',
-          email: '',
-          phone: '',
-          dob: '',       
-          notes: '', 
-          terms: false
+  const [bookingData, setBookingData] = useState<BookingData>({
+      selectedService: null,
+      selectedDate: null,
+      selectedTime: null,
+      personalInfo: {
+        firstName: '',
+        lastName: '',
+        email: '',
+        phone: '',
+        dob: '',   
+        contactMethod: null,    
+        notes: '', 
+        terms: false
+      }
+    });
+
+
+    const router = useRouter();
+    const searchParams = useSearchParams();
+    
+    const [currentStep, setCurrentStep] = useState(1);
+    const [maxReachedStep, setMaxReachedStep] = useState(1);
+    const [mounted, setMounted] = useState(false);
+
+     useEffect(() => {
+      setMounted(true);
+      
+      const savedBookingData = sessionStorage.getItem('bookingData');
+      if (savedBookingData) {
+        const parsed = JSON.parse(savedBookingData);
+        if (parsed.selectedDate) {
+          parsed.selectedDate = new Date(parsed.selectedDate);
         }
-      });
+        setBookingData(parsed);
+      }
 
+      const savedStep = sessionStorage.getItem('currentStep');
+      if (savedStep) {
+        setCurrentStep(parseInt(savedStep));
+      }
 
-    const [contactMethod, setContactMethod] = useState('email');
-    const [contactValue, setContactValue] = useState('');
+      const savedMaxStep = sessionStorage.getItem('maxReachedStep');
+      if (savedMaxStep) {
+        setMaxReachedStep(parseInt(savedMaxStep));
+      }
+    }, []);
 
+    // Save bookingData to sessionStorage whenever it changes
+    useEffect(() => {
+      if (mounted) {
+        sessionStorage.setItem('bookingData', JSON.stringify(bookingData));
+      }
+    }, [bookingData, mounted]);
+
+    // Save currentStep to sessionStorage whenever it changes
+    useEffect(() => {
+      if (mounted) {
+        sessionStorage.setItem('currentStep', currentStep.toString());
+      }
+    }, [currentStep, mounted]);
+
+    // Save maxReachedStep to sessionStorage whenever it changes
+    useEffect(() => {
+      if (mounted) {
+        sessionStorage.setItem('maxReachedStep', maxReachedStep.toString());
+      }
+    }, [maxReachedStep, mounted]);
+
+    // Sync with URL hash
+    useEffect(() => {
+      const handleHashChange = () => {
+        const hash = window.location.hash;
+        const stepMatch = hash.match(/#step-(\d+)/);
+        if (stepMatch) {
+          const step = parseInt(stepMatch[1]);
+          if (step >= 1 && step <= 5 && step <= maxReachedStep) {
+            setCurrentStep(step);
+          }
+        }
+      };
+
+      handleHashChange();
+      window.addEventListener('hashchange', handleHashChange);
+      return () => window.removeEventListener('hashchange', handleHashChange);
+    }, [maxReachedStep]);
+
+    // Update URL hash and step TOGETHER
+    const updateStep = (newStep: number) => {
+      setCurrentStep(newStep);
+      setMaxReachedStep(Math.max(maxReachedStep, newStep));
+      window.history.pushState(null, '', `#step-${newStep}`);
+    };
+
+    // Handle step indicator clicks
+    const handleStepClick = (step: number) => {
+      if (step <= maxReachedStep) {
+        updateStep(step);
+      }
+    };
+
+    // Optional: Clear data after successful booking (call this after step 5)
+    const clearBookingData = () => {
+      sessionStorage.removeItem('bookingData');
+      sessionStorage.removeItem('currentStep');
+      sessionStorage.removeItem('maxReachedStep');
+    };
     // SERVICE TILE LOGIC --------- SERVICE TILE LOGIC --------- SERVICE TILE LOGIC --------- SERVICE TILE LOGIC --------- SERVICE TILE LOGIC ---------
       const servicesByCategory = {
         preventive: [
@@ -158,7 +261,6 @@ export default function NewAppointment (){
 
     };
   
-    const [currentStep, setCurrentStep] = useState(1);
     
     type Slot = {
       dayKey: string | null;
@@ -208,10 +310,10 @@ export default function NewAppointment (){
     };
 
     const [activeMobileLink, setActiveMobileLink] = useState('home');
-  const handleMobileLinkClick = (linkName: string) => {
-    setActiveMobileLink(linkName);
-    closeMenu();
-  };
+    const handleMobileLinkClick = (linkName: string) => {
+      setActiveMobileLink(linkName);
+      closeMenu();
+    };
   
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
       const target = e.target as HTMLInputElement;
@@ -232,12 +334,14 @@ export default function NewAppointment (){
       const errors: string[] = [];
       const { firstName, lastName, email, phone, dob, terms } = bookingData.personalInfo;
 
-      const nameRegex = /^[A-Za-z\s'-]+$/;
+      const nameRegex = /^[A-Za-z\s'-]{2,}$/;
       // Required field validations
       if (!firstName || firstName.trim() === '') {
         errors.push('First name is required');
       } else if (!nameRegex.test(firstName)) {
         errors.push('First name can only contain letters');
+      } else if (firstName.trim().length < 2) {
+        errors.push('First name must be at least 2 characters long');
       }
 
       if (!lastName || lastName.trim() === '') {
@@ -295,13 +399,12 @@ export default function NewAppointment (){
       setErrors(validationErrors);
                 
       if (validationErrors.length === 0) {
-        setCurrentStep(4);
+        updateStep(4);
         console.log(bookingData);
       }
     };
 
     const [isScrolled, setIsScrolled] = useState(false);
-    const [mounted, setMounted] = useState(false);
     useEffect(() => {
       setMounted(true);
       const handleScroll = () => {
@@ -311,7 +414,34 @@ export default function NewAppointment (){
       return () => window.removeEventListener('scroll', handleScroll);
     }, []);
 
-      
+    useEffect(() => {
+      if (currentStep === 1 && bookingData.selectedService && mounted) {
+        // Small delay to ensure DOM is ready
+        setTimeout(() => {
+          const selectedCard = document.querySelector(`[data-service-name="${bookingData.selectedService}"]`);
+          if (selectedCard) {
+            selectedCard.scrollIntoView({
+              behavior: 'smooth',
+              block: 'center',
+              inline: 'nearest'
+            });
+          }
+        }, 300);
+      }
+    }, [currentStep, bookingData.selectedService, mounted]);
+
+    const isPersonalInfoComplete = () => {
+      const { firstName, lastName, email, phone, contactMethod, dob, terms } = bookingData.personalInfo;
+      return (
+        firstName.trim() !== '' && 
+        lastName.trim() !== '' && 
+        email.trim() !== '' && 
+        phone.trim() !== '' && 
+        dob.trim() !== '' && 
+        contactMethod !== null &&
+        terms === true
+      );
+    };
     return (
     <>
       <div className={`${styles.background}`}>
@@ -406,95 +536,98 @@ export default function NewAppointment (){
       <div className="relative w-[95%] mx-auto pt-22">
         {/* Step Indicator always mounted */}
         <div className="flex flex-col md:flex-row md:w-[80%] gap-2 md:items-end mb-6 pt-4 w-full">
-          <StepIndicator currentStep={currentStep} />
+          <StepIndicator currentStep={currentStep} onStepClick={handleStepClick}maxReachedStep={maxReachedStep}/>
         </div>
 
         {currentStep === 1 && (
-          <div className="px-4 py-0 relative max-w-7xl mx-auto">
+  <div className="px-4 py-0 relative max-w-7xl mx-auto">
+    {/* Preventative Services */}
+    <div className="mb-14">
+      <div className="flex items-center gap-3 mb-5">
+        <Image src={"/number-1.png"} alt="Number 1" width={20} height={20}></Image>
+        <h2 className={`${inter_heading.className} text-2xl font-bold text-[#faf9f6]`}>
+          Preventative Care
+        </h2>
+      </div>
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+        {servicesByCategory.preventive.map((service, index) => (
+          <ServiceCard 
+            key={`preventive-${index}`}
+            service={service}
+            isSelected={bookingData.selectedService === service.name}
+            onSelect={() => handleServiceSelect(service.name)}
+            data-service-name={service.name}
+          />
+        ))}
+      </div>
+    </div>
 
-            {/* Preventative Services */}
-            <div className="mb-14">
-              <div className="flex items-center gap-3 mb-5">
-                <Image src={"/number-1.png"} alt="Number 1" width={20} height={20}></Image>
-                <h2 className={`${inter_heading.className} text-2xl font-bold text-[#faf9f6]`}>
-                  Preventative Care
-                </h2>
-              </div>
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                {servicesByCategory.preventive.map((service, index) => (
-                  <ServiceCard 
-                    key={`preventive-${index}`}
-                    service={service}
-                    isSelected={bookingData.selectedService === service.name}
-                    onSelect={() => handleServiceSelect(service.name)}
-                  />
-                ))}
-              </div>
-            </div>
+    {/* Restorative Services */}
+    <div className="mb-14">
+      <div className="flex items-center gap-3 mb-5">
+        <Image src={"/number-2.png"} alt="Number 2" width={20} height={20}></Image>
+        <h2 className={`${inter_heading.className} text-2xl font-bold text-[#faf9f6]`}>
+          Restorative Care
+        </h2>
+      </div>
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+        {servicesByCategory.restorative.map((service, index) => (
+          <ServiceCard 
+            key={`restorative-${index}`}
+            service={service}
+            isSelected={bookingData.selectedService === service.name}
+            onSelect={() => handleServiceSelect(service.name)}
+            data-service-name={service.name}
+          />
+        ))}
+      </div>
+    </div>
 
-            {/* Restorative Services */}
-            <div className="mb-14">
-              <div className="flex items-center gap-3 mb-5">
-                <Image src={"/number-2.png"} alt="Number 2" width={20} height={20}></Image>
-                <h2 className={`${inter_heading.className} text-2xl font-bold text-[#faf9f6]`}>
-                  Restorative Care
-                </h2>
-              </div>
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                {servicesByCategory.restorative.map((service, index) => (
-                  <ServiceCard 
-                    key={`restorative-${index}`}
-                    service={service}
-                    isSelected={bookingData.selectedService === service.name}
-                    onSelect={() => handleServiceSelect(service.name)}
-                  />
-                ))}
-              </div>
-            </div>
+    {/* Cosmetic Services */}
+    <div className="mb-8">
+      <div className="flex items-center gap-3 mb-5">
+        <Image src={"/number-3.png"} alt="Number 3" width={20} height={20}></Image>
+        <h2 className={`${inter_heading.className} text-2xl font-bold text-[#faf9f6]`}>
+          Cosmetic Dentistry
+        </h2>
+      </div>
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+        {servicesByCategory.cosmetic.map((service, index) => (
+          <ServiceCard 
+            key={`cosmetic-${index}`}
+            service={service}
+            isSelected={bookingData.selectedService === service.name}
+            onSelect={() => handleServiceSelect(service.name)}
+            data-service-name={service.name}
+          />
+        ))}
+      </div>
+    </div>
 
-            {/* Cosmetic Services */}
-            <div className="mb-8">
-              <div className="flex items-center gap-3 mb-5">
-                <Image src={"/number-3.png"} alt="Number 3" width={20} height={20}></Image>
-                <h2 className={`${inter_heading.className} text-2xl font-bold text-[#faf9f6]`}>
-                  Cosmetic Dentistry
-                </h2>
-              </div>
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                {servicesByCategory.cosmetic.map((service, index) => (
-                  <ServiceCard 
-                    key={`cosmetic-${index}`}
-                    service={service}
-                    isSelected={bookingData.selectedService === service.name}
-                    onSelect={() => handleServiceSelect(service.name)}
-                  />
-                ))}
-              </div>
-            </div>
+    {/* Helper text */}
+    <div className="mb-2">
+      <p className={`${inter.className} text-[#Faf9f6] text-md`}>
+        Not sure which service you need?{' '}
+        <a 
+          href="/services" 
+          className="text-[#ffdf20] hover:text-[#FFD700]/80 underline decoration-[#FFD700]/30 hover:decoration-[#FFD700]/60 transition-colors"
+        >
+          Browse all services
+        </a>
+      </p>
+    </div>
 
-            {/* Helper text with link to services page */}
-            <div className="mb-2">
-              <p className={`${inter.className} text-[#Faf9f6] text-md`}>
-                Not sure which service you need?{' '}
-                <a 
-                  href="/services" 
-                  className="text-[#ffdf20] hover:text-[#FFD700]/80 underline decoration-[#FFD700]/30 hover:decoration-[#FFD700]/60 transition-colors"
-                >
-                  Browse all services
-                </a>
-              </p>
-            </div>
-            {/* Floating Next Button - Enhanced */}
-            {(() => {
-              console.log(bookingData);
-              return bookingData.selectedService &&  (
-                <button onClick={() => setCurrentStep(2)} className={`${inter.className} bg-[#FFD700] text-gray-900 absolute fixed bottom-10 right-4 z-100 rounded-lg px-8 py-4 hover:scale-105 cursor-pointer text-2xl mt-10 lg:mt-20 font-semibold shadow-md flex gap-2 items-center`}>
-                  Next
-                  <Image src={"/arrow-right.svg"} alt="arrow right" width={30} height={30}></Image>
-                </button>
-              );
-            })()}
-          </div>
+    {/* Floating Next Button */}
+    {bookingData.selectedService && (
+      <button 
+        onClick={() => updateStep(2)} 
+        className={`${inter.className} bg-[#FFD700] text-gray-900 absolute fixed bottom-10 right-4 z-100 rounded-lg px-8 py-4 hover:scale-105 cursor-pointer text-2xl mt-10 lg:mt-20 font-semibold shadow-md flex gap-2 items-center`}
+      >
+        Next
+        <Image src={"/arrow-right.svg"} alt="arrow right" width={30} height={30}></Image>
+      </button>
+    )}
+  </div>
         )}
 
         {currentStep === 2 && (
@@ -504,14 +637,14 @@ export default function NewAppointment (){
               selectedDate={bookingData.selectedDate}
               selectedTime={bookingData.selectedTime}
             />
-            <button onClick={() => setCurrentStep(1)} className={`${inter.className} bg-[#FFD700] text-gray-900 absolute fixed bottom-10 right-48 lg:right-50 z-100 rounded-lg px-8 py-4 hover:scale-105 cursor-pointer text-xl lg:text-2xl mt-10 lg:mt-20 font-semibold shadow-md flex gap-2 items-center`}>
+            <button onClick={() => updateStep(1)} className={`${inter.className} bg-[#FFD700] text-gray-900 absolute fixed bottom-10 right-48 lg:right-50 z-100 rounded-lg px-8 py-4 hover:scale-105 cursor-pointer text-xl lg:text-2xl mt-10 lg:mt-20 font-semibold shadow-md flex gap-2 items-center`}>
               <Image src={"/arrow-left.svg"} alt="arrow left" width={30} height={30}></Image>
               Previous
             </button>
             {(() => {
               console.log(bookingData);
               return bookingData.selectedDate && bookingData.selectedTime && (
-                <button onClick={() => setCurrentStep(3)} className={`${inter.className} bg-[#FFD700] text-gray-900 absolute fixed bottom-10 right-4 z-100 rounded-lg px-8 py-4 hover:scale-105 cursor-pointer text-2xl mt-10 lg:mt-20 font-semibold shadow-md flex gap-2 items-center`}>
+                <button onClick={() => updateStep(3)} className={`${inter.className} bg-[#FFD700] text-gray-900 absolute fixed bottom-10 right-4 z-100 rounded-lg px-8 py-4 hover:scale-105 cursor-pointer text-2xl mt-10 lg:mt-20 font-semibold shadow-md flex gap-2 items-center`}>
                   Next
                   <Image src={"/arrow-right.svg"} alt="arrow right" width={30} height={30}></Image>
                 </button>
@@ -594,6 +727,42 @@ export default function NewAppointment (){
                 </div>
 
                 <div>
+                  <label className={`${inter_heading.className} block text-xl font-medium text-[#faf9f6] mb-2`}>
+                    Preferred Contact Method *
+                  </label>
+                  <div className="flex flex-wrap gap-4">
+                    {/* Email */}
+                    <label className="flex items-center gap-3 px-4 py-3 bg-white/10 border border-white/20 rounded-md cursor-pointer transition-all hover:bg-white/15">
+                      <input
+                        type="radio"
+                        name="contactMethod"
+                        value="email"
+                        checked={bookingData.personalInfo.contactMethod === 'email'}
+                        onChange={handleInputChange}
+                        required
+                        className="accent-[#FFD700] w-5 h-5"
+                      />
+                      <span className="text-[#faf9f6] text-xl">Email</span>
+                    </label>
+
+                    {/* Email */}
+                    <label className="flex items-center gap-3 px-4 py-3 bg-white/10 border border-white/20 rounded-md cursor-pointer transition-all hover:bg-white/15">
+                      <input
+                        type="radio"
+                        name="contactMethod"
+                        value="whatsapp"
+                        checked={bookingData.personalInfo.contactMethod === 'whatsapp'}
+                        onChange={handleInputChange}
+                        required
+                        className="accent-[#FFD700] w-5 h-5"
+                      />
+                      <span className="text-[#faf9f6] text-xl">Whatsapp</span>
+                    </label>
+
+                  </div>
+                </div>
+
+                <div>
                   <label htmlFor="dob" className={`${inter_heading.className} block text-xl font-medium text-[#faf9f6] mb-2`}>
                     Date of Birth *
                   </label>
@@ -646,21 +815,20 @@ export default function NewAppointment (){
                     </ul>
                   </div>
                 )}
-                <div className="flex gap-4 pt-4">
-                  <button
-                    type="button"
-                    className="px-8 py-3 bg-white/10 border border-white/20 text-[#faf9f6] text-md rounded-md hover:bg-white/20 transition-all font-medium"
-                    onClick={() => setCurrentStep(2)}
-                  >
-                    Back
+                <div className="relative">
+                  <button onClick={() => updateStep(1)} className={`${inter.className} bg-[#FFD700] text-gray-900 absolute fixed bottom-10 right-48 lg:right-50 z-100 rounded-lg px-8 py-4 hover:scale-105 cursor-pointer text-xl lg:text-2xl mt-10 lg:mt-20 font-semibold shadow-md flex gap-2 items-center`}>
+                    <Image src={"/arrow-left.svg"} alt="arrow left" width={30} height={30}></Image>
+                    Previous
                   </button>
-                  <button
-                    type="submit"
-                    className="flex-1 px-8 py-3 bg-[#FFD700] text-[#181818] text-xl rounded-md hover:bg-[#FFC700] transition-all font-semibold"
-                    onClick={handleContinue}
-                  >
-                    Continue to Review
-                  </button>
+                  {isPersonalInfoComplete() && (
+                    <button 
+                      onClick={handleContinue} 
+                      className={`${inter.className} bg-[#FFD700] text-gray-900 absolute fixed bottom-10 right-4 z-100 rounded-lg px-8 py-4 hover:scale-105 cursor-pointer text-2xl mt-10 lg:mt-20 font-semibold shadow-md flex gap-2 items-center`}
+                    >
+                      Next
+                      <Image src={"/arrow-right.svg"} alt="arrow right" width={30} height={30}></Image>
+                    </button>
+                  )}
                 </div>
             </form>
           </div>
@@ -688,7 +856,7 @@ export default function NewAppointment (){
                       </div>
                       <button 
                         className="bg-[#eccb1b] border-2 border-[#eccb1b] text-[#181818] px-5 py-2.5 rounded-md font-semibold text-md hover:bg-yellow-400 hover:border-yellow-400 transition-all duration-300 hover:scale-105 flex items-center gap-2 self-end md:self-start"
-                        onClick={() => setCurrentStep(3)}
+                        onClick={() => updateStep(3)}
                       >
                         <Image src={"/edit.svg"} alt="Edit" width={23} height={23}></Image>
                         Edit Details
@@ -719,7 +887,7 @@ export default function NewAppointment (){
                       </div>
                       <button 
                         className="bg-[#eccb1b] border-2 border-[#eccb1b] text-[#181818] px-5 py-2.5 rounded-md font-semibold text-md hover:bg-yellow-400 hover:border-yellow-400 transition-all duration-300 hover:scale-105 flex items-center gap-2 self-end md:self-start"
-                        onClick={() => setCurrentStep(1)}
+                        onClick={() => updateStep(1)}
                       >
                         <Image src={"/edit.svg"} alt="Edit" width={23} height={23}></Image>
                         Edit Details
@@ -727,145 +895,170 @@ export default function NewAppointment (){
                     </div>
                   </div>
                 </div>
+                <div className="flex gap-4 pt-4">
+                  <button
+                    type="button"
+                    className="px-8 py-3 bg-white/10 border border-white/20 text-[#faf9f6] text-md rounded-md hover:bg-white/20 transition-all font-medium"
+                    onClick={() => updateStep(3)}
+                  >
+                    Back
+                  </button>
+                  <button
+                    type="button"
+                    className="flex-1 px-8 py-3 bg-[#FFD700] text-[#181818] text-xl rounded-md hover:bg-[#FFC700] transition-all font-semibold"
+                    onClick={() => {
+                      console.log(bookingData);
+                      updateStep(5);
+                    }}
+                  >
+                    CONFIRM APPOINTMENT
+                  </button>
+                </div>
               </div>
             </div>
+        )}
+
+        {currentStep === 5 && (
+          <div>
+          
+          </div>
         )}
       </div>
 
       {/* FOOTER */}
-            <div className="relative bg-[#004c4c] p-8 lg:p-12 border-t-4 border-[#004c4c] mt-12">
-              <div className="flex flex-col lg:flex-row lg:justify-between">
-                <div className="">
-                  <h5 className={`${inter.className} text-gray-100 text-xl font-semibold border-b border-[#FFD700] w-fit pb-1 mb-6`}>Contact Us</h5>
-                  <div className="flex flex-col gap-5">
-                    <div className="flex gap-6">
-                      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="size-5 text-[#D1D5DB]">
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1 1 15 0Z" />
-                      </svg>
-                      <p className="text-[#D1D5DB] -mt-1 text-lg tracking-wide">Shop 40, 41<br></br>
-                        Overton Plaza<br></br>
-                        49 Union Street, Montego Bay, Jamaica
-                      </p>
-                    </div>
-                    <div className="flex gap-6 items-center group cursor-pointer">
-                      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="size-5 text-[#D1D5DB] group-hover:text-[#A7C4DF]">
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 6.75c0 8.284 6.716 15 15 15h2.25a2.25 2.25 0 0 0 2.25-2.25v-1.372c0-.516-.351-.966-.852-1.091l-4.423-1.106c-.44-.11-.902.055-1.173.417l-.97 1.293c-.282.376-.769.542-1.21.38a12.035 12.035 0 0 1-7.143-7.143c-.162-.441.004-.928.38-1.21l1.293-.97c.363-.271.527-.734.417-1.173L6.963 3.102a1.125 1.125 0 0 0-1.091-.852H4.5A2.25 2.25 0 0 0 2.25 4.5v2.25Z" />
-                      </svg>
-                      <a href="#" className="text-[#D1D5DB] group-hover:text-[#A7C4DF]  text-lg tracking-wide">+1 (876) 691 9136</a>
-                    </div>
-                    <div className="flex gap-6 items-center group cursor-pointer">
-                      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="size-5 text-[#D1D5DB] group-hover:text-[#A7C4DF]">
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 0 1-2.25 2.25h-15a2.25 2.25 0 0 1-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0 0 19.5 4.5h-15a2.25 2.25 0 0 0-2.25 2.25m19.5 0v.243a2.25 2.25 0 0 1-1.07 1.916l-7.5 4.615a2.25 2.25 0 0 1-2.36 0L3.32 8.91a2.25 2.25 0 0 1-1.07-1.916V6.75" />
-                      </svg>
-                      <a href="#" className="text-[#D1D5DB] group-hover:text-[#A7C4DF] text-lg tracking-wide">aureliadental@gmail.com</a>
-                    </div>
-                  </div>
-                </div>
-                <div className="mt-12">
-                  <h5 className={`${inter.className} text-gray-100 text-xl font-semibold border-b border-[#FFD700] w-fit pb-1 mb-6`}>Opening Hours</h5>
-                  <div className="flex flex-col gap-6">
-                    <div className="flex border-b border-b-gray-100 pb-1">
-                      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="size-5 text-white mr-2">
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 0 1 2.25-2.25h13.5A2.25 2.25 0 0 1 21 7.5v11.25m-18 0A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75m-18 0v-7.5A2.25 2.25 0 0 1 5.25 9h13.5A2.25 2.25 0 0 1 21 11.25v7.5m-9-6h.008v.008H12v-.008ZM12 15h.008v.008H12V15Zm0 2.25h.008v.008H12v-.008ZM9.75 15h.008v.008H9.75V15Zm0 2.25h.008v.008H9.75v-.008ZM7.5 15h.008v.008H7.5V15Zm0 2.25h.008v.008H7.5v-.008Zm6.75-4.5h.008v.008h-.008v-.008Zm0 2.25h.008v.008h-.008V15Zm0 2.25h.008v.008h-.008v-.008Zm2.25-4.5h.008v.008H16.5v-.008Zm0 2.25h.008v.008H16.5V15Z" />
-                      </svg>
-                      <div className="text-[#D1D5DB] w-full flex justify-between gap-12 text-lg tracking-wide">
-                        <p>MON - FRI</p>
-                        <p>10:00am - 6:00pm</p>
-                      </div>
-                    </div>
-                    <div className="flex border-b border-b-gray-100 pb-1">
-                      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="size-5 text-white mr-2">
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 0 1 2.25-2.25h13.5A2.25 2.25 0 0 1 21 7.5v11.25m-18 0A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75m-18 0v-7.5A2.25 2.25 0 0 1 5.25 9h13.5A2.25 2.25 0 0 1 21 11.25v7.5m-9-6h.008v.008H12v-.008ZM12 15h.008v.008H12V15Zm0 2.25h.008v.008H12v-.008ZM9.75 15h.008v.008H9.75V15Zm0 2.25h.008v.008H9.75v-.008ZM7.5 15h.008v.008H7.5V15Zm0 2.25h.008v.008H7.5v-.008Zm6.75-4.5h.008v.008h-.008v-.008Zm0 2.25h.008v.008h-.008V15Zm0 2.25h.008v.008h-.008v-.008Zm2.25-4.5h.008v.008H16.5v-.008Zm0 2.25h.008v.008H16.5V15Z" />
-                      </svg>
-                      <div className="text-[#D1D5DB] w-full flex justify-between gap-12 text-lg tracking-wide">
-                        <p>SATURDAY</p>
-                        <p>9:00am - 6:00pm</p>
-                      </div>
-                    </div>
-                    <div className="flex border-b border-b-gray-100 pb-1">
-                      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="size-5 text-white mr-2">
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 0 1 2.25-2.25h13.5A2.25 2.25 0 0 1 21 7.5v11.25m-18 0A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75m-18 0v-7.5A2.25 2.25 0 0 1 5.25 9h13.5A2.25 2.25 0 0 1 21 11.25v7.5m-9-6h.008v.008H12v-.008ZM12 15h.008v.008H12V15Zm0 2.25h.008v.008H12v-.008ZM9.75 15h.008v.008H9.75V15Zm0 2.25h.008v.008H9.75v-.008ZM7.5 15h.008v.008H7.5V15Zm0 2.25h.008v.008H7.5v-.008Zm6.75-4.5h.008v.008h-.008v-.008Zm0 2.25h.008v.008h-.008V15Zm0 2.25h.008v.008h-.008v-.008Zm2.25-4.5h.008v.008H16.5v-.008Zm0 2.25h.008v.008H16.5V15Z" />
-                      </svg>
-                      <div className="text-[#D1D5DB] w-full flex justify-between text-lg tracking-wide">
-                        <p>SUNDAY</p>
-                        <p>Closed</p>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                <div className="mt-12">
-                  <h5 className={`${inter.className} text-gray-100 text-xl font-semibold border-b border-[#FFD700] w-fit pb-1 mb-4`}>Quick Links</h5>
-                  <div className="flex flex-col gap-3">
-                    <div className="flex gap-1 items-center group cursor-pointer">
-                      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="size-4 text-[#D1D5DB] transition-transform duration-200 ease-in-out group-hover:translate-x-1">
-                        <path strokeLinecap="round" strokeLinejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" />
-                      </svg>
-                      <p className="text-[#D1D5DB] group-hover:text-[#A7C4DF] text-lg tracking-wide">Home</p>
-                    </div>
-                    <div className="flex gap-1 items-center group cursor-pointer">
-                      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="size-4 text-[#D1D5DB] transition-transform duration-200 ease-in-out group-hover:translate-x-1">
-                        <path strokeLinecap="round" strokeLinejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" />
-                      </svg>
-                      <p className="text-[#D1D5DB] group-hover:text-[#A7C4DF] text-lg tracking-wide">About Us</p>
-                    </div>
-                    <div className="flex gap-1 items-center group cursor-pointer">
-                      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="size-4 text-[#D1D5DB] transition-transform duration-200 ease-in-out group-hover:translate-x-1">
-                        <path strokeLinecap="round" strokeLinejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" />
-                      </svg>
-                      <p className="text-[#D1D5DB] group-hover:text-[#A7C4DF] text-lg tracking-wide">Services</p>
-                    </div>
-                    <div className="flex gap-1 items-center group cursor-pointer">
-                      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="size-4 text-[#D1D5DB] transition-transform duration-200 ease-in-out group-hover:translate-x-1">
-                        <path strokeLinecap="round" strokeLinejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" />
-                      </svg>
-                      <p className="text-[#D1D5DB] group-hover:text-[#A7C4DF] text-lg tracking-wide">Contact Us</p>
-                    </div>
-                  </div>
-                </div>
-                <div className="mt-12">
-                  <h5 className={`${inter.className} text-gray-100 text-xl font-semibold border-b border-[#FFD700] w-fit pb-1 mb-4`}>Our Services</h5>
-                  <div className="flex flex-col gap-3 text-[#D1D5DB]">
-                    <div className="flex gap-1 items-center group cursor-pointer">
-                      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="size-4 text-[#D1D5DB] transition-transform duration-200 ease-in-out group-hover:translate-x-1">
-                        <path strokeLinecap="round" strokeLinejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" />
-                      </svg>
-                      <p className="text-[#D1D5DB] group-hover:text-[#A7C4DF] text-lg tracking-wide">General Dentistry</p>
-                    </div>
-                    <div className="flex gap-1 items-center group cursor-pointer">
-                      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="size-4 text-[#D1D5DB] transition-transform duration-200 ease-in-out group-hover:translate-x-1">
-                        <path strokeLinecap="round" strokeLinejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" />
-                      </svg>
-                      <p className="text-[#D1D5DB] group-hover:text-[#A7C4DF] text-lg tracking-wide">Surgical Services</p>
-                    </div>
-                    <div className="flex gap-1 items-center group cursor-pointer">
-                      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="size-4 text-[#D1D5DB] transition-transform duration-200 ease-in-out group-hover:translate-x-1">
-                        <path strokeLinecap="round" strokeLinejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" />
-                      </svg>
-                      <p className="text-[#D1D5DB] group-hover:text-[#A7C4DF] text-lg tracking-wide">Orthodontics</p>
-                    </div>
-                    <div className="flex gap-1 items-center group cursor-pointer">
-                      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="size-4 text-[#D1D5DB] transition-transform duration-200 ease-in-out group-hover:translate-x-1">
-                        <path strokeLinecap="round" strokeLinejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" />
-                      </svg>
-                      <p className="text-[#D1D5DB] group-hover:text-[#A7C4DF] text-lg tracking-wide">Cosmetic Dentistry</p>
-                    </div>
-                  </div>
-                </div>
+      <div className="relative bg-[#004c4c] p-8 lg:p-12 border-t-4 border-[#004c4c] mt-12">
+        <div className="flex flex-col lg:flex-row lg:justify-between">
+          <div className="">
+            <h5 className={`${inter.className} text-gray-100 text-xl font-semibold border-b border-[#FFD700] w-fit pb-1 mb-6`}>Contact Us</h5>
+            <div className="flex flex-col gap-5">
+              <div className="flex gap-6">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="size-5 text-[#D1D5DB]">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1 1 15 0Z" />
+                </svg>
+                <p className="text-[#D1D5DB] -mt-1 text-lg tracking-wide">Shop 40, 41<br></br>
+                  Overton Plaza<br></br>
+                  49 Union Street, Montego Bay, Jamaica
+                </p>
               </div>
-              <div className="flex flex-col items-center border-t border-[#D1D5DB] mt-12 pt-6">
-                <Image src={"/aurelia-dental_logo.png"} alt={"Alternative Logo"} width={60} height={60}></Image>
-                <p className="text-[#D1D5DB]">&copy; 2026 Aurelia Dental. All rights reserved.</p>
-                <button className="p-2 rounded-full bg-[#eef3f9] my-4">
-                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="#35565f" className="size-6 text-[#35565f]">
-                    <path strokeLinecap="round" strokeLinejoin="round" d="m4.5 18.75 7.5-7.5 7.5 7.5" />
-                    <path strokeLinecap="round" strokeLinejoin="round" d="m4.5 12.75 7.5-7.5 7.5 7.5" />
-                  </svg>
-                </button>
-                <p className="text-sm text-[#D1D5DB] -mb-4">Powered by <span className="underline">Omni-Ray Software Solutions</span></p>
+              <div className="flex gap-6 items-center group cursor-pointer">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="size-5 text-[#D1D5DB] group-hover:text-[#A7C4DF]">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 6.75c0 8.284 6.716 15 15 15h2.25a2.25 2.25 0 0 0 2.25-2.25v-1.372c0-.516-.351-.966-.852-1.091l-4.423-1.106c-.44-.11-.902.055-1.173.417l-.97 1.293c-.282.376-.769.542-1.21.38a12.035 12.035 0 0 1-7.143-7.143c-.162-.441.004-.928.38-1.21l1.293-.97c.363-.271.527-.734.417-1.173L6.963 3.102a1.125 1.125 0 0 0-1.091-.852H4.5A2.25 2.25 0 0 0 2.25 4.5v2.25Z" />
+                </svg>
+                <a href="#" className="text-[#D1D5DB] group-hover:text-[#A7C4DF]  text-lg tracking-wide">+1 (876) 691 9136</a>
+              </div>
+              <div className="flex gap-6 items-center group cursor-pointer">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="size-5 text-[#D1D5DB] group-hover:text-[#A7C4DF]">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 0 1-2.25 2.25h-15a2.25 2.25 0 0 1-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0 0 19.5 4.5h-15a2.25 2.25 0 0 0-2.25 2.25m19.5 0v.243a2.25 2.25 0 0 1-1.07 1.916l-7.5 4.615a2.25 2.25 0 0 1-2.36 0L3.32 8.91a2.25 2.25 0 0 1-1.07-1.916V6.75" />
+                </svg>
+                <a href="#" className="text-[#D1D5DB] group-hover:text-[#A7C4DF] text-lg tracking-wide">aureliadental@gmail.com</a>
               </div>
             </div>
-            {/* FOOTER */}
-    </>
-    )
+          </div>
+          <div className="mt-12">
+            <h5 className={`${inter.className} text-gray-100 text-xl font-semibold border-b border-[#FFD700] w-fit pb-1 mb-6`}>Opening Hours</h5>
+            <div className="flex flex-col gap-6">
+              <div className="flex border-b border-b-gray-100 pb-1">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="size-5 text-white mr-2">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 0 1 2.25-2.25h13.5A2.25 2.25 0 0 1 21 7.5v11.25m-18 0A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75m-18 0v-7.5A2.25 2.25 0 0 1 5.25 9h13.5A2.25 2.25 0 0 1 21 11.25v7.5m-9-6h.008v.008H12v-.008ZM12 15h.008v.008H12V15Zm0 2.25h.008v.008H12v-.008ZM9.75 15h.008v.008H9.75V15Zm0 2.25h.008v.008H9.75v-.008ZM7.5 15h.008v.008H7.5V15Zm0 2.25h.008v.008H7.5v-.008Zm6.75-4.5h.008v.008h-.008v-.008Zm0 2.25h.008v.008h-.008V15Zm0 2.25h.008v.008h-.008v-.008Zm2.25-4.5h.008v.008H16.5v-.008Zm0 2.25h.008v.008H16.5V15Z" />
+                </svg>
+                <div className="text-[#D1D5DB] w-full flex justify-between gap-12 text-lg tracking-wide">
+                  <p>MON - FRI</p>
+                  <p>10:00am - 6:00pm</p>
+                </div>
+              </div>
+              <div className="flex border-b border-b-gray-100 pb-1">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="size-5 text-white mr-2">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 0 1 2.25-2.25h13.5A2.25 2.25 0 0 1 21 7.5v11.25m-18 0A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75m-18 0v-7.5A2.25 2.25 0 0 1 5.25 9h13.5A2.25 2.25 0 0 1 21 11.25v7.5m-9-6h.008v.008H12v-.008ZM12 15h.008v.008H12V15Zm0 2.25h.008v.008H12v-.008ZM9.75 15h.008v.008H9.75V15Zm0 2.25h.008v.008H9.75v-.008ZM7.5 15h.008v.008H7.5V15Zm0 2.25h.008v.008H7.5v-.008Zm6.75-4.5h.008v.008h-.008v-.008Zm0 2.25h.008v.008h-.008V15Zm0 2.25h.008v.008h-.008v-.008Zm2.25-4.5h.008v.008H16.5v-.008Zm0 2.25h.008v.008H16.5V15Z" />
+                </svg>
+                <div className="text-[#D1D5DB] w-full flex justify-between gap-12 text-lg tracking-wide">
+                  <p>SATURDAY</p>
+                  <p>9:00am - 6:00pm</p>
+                </div>
+              </div>
+              <div className="flex border-b border-b-gray-100 pb-1">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="size-5 text-white mr-2">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 0 1 2.25-2.25h13.5A2.25 2.25 0 0 1 21 7.5v11.25m-18 0A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75m-18 0v-7.5A2.25 2.25 0 0 1 5.25 9h13.5A2.25 2.25 0 0 1 21 11.25v7.5m-9-6h.008v.008H12v-.008ZM12 15h.008v.008H12V15Zm0 2.25h.008v.008H12v-.008ZM9.75 15h.008v.008H9.75V15Zm0 2.25h.008v.008H9.75v-.008ZM7.5 15h.008v.008H7.5V15Zm0 2.25h.008v.008H7.5v-.008Zm6.75-4.5h.008v.008h-.008v-.008Zm0 2.25h.008v.008h-.008V15Zm0 2.25h.008v.008h-.008v-.008Zm2.25-4.5h.008v.008H16.5v-.008Zm0 2.25h.008v.008H16.5V15Z" />
+                </svg>
+                <div className="text-[#D1D5DB] w-full flex justify-between text-lg tracking-wide">
+                  <p>SUNDAY</p>
+                  <p>Closed</p>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div className="mt-12">
+            <h5 className={`${inter.className} text-gray-100 text-xl font-semibold border-b border-[#FFD700] w-fit pb-1 mb-4`}>Quick Links</h5>
+            <div className="flex flex-col gap-3">
+              <div className="flex gap-1 items-center group cursor-pointer">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="size-4 text-[#D1D5DB] transition-transform duration-200 ease-in-out group-hover:translate-x-1">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" />
+                </svg>
+                <p className="text-[#D1D5DB] group-hover:text-[#A7C4DF] text-lg tracking-wide">Home</p>
+              </div>
+              <div className="flex gap-1 items-center group cursor-pointer">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="size-4 text-[#D1D5DB] transition-transform duration-200 ease-in-out group-hover:translate-x-1">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" />
+                </svg>
+                <p className="text-[#D1D5DB] group-hover:text-[#A7C4DF] text-lg tracking-wide">About Us</p>
+              </div>
+              <div className="flex gap-1 items-center group cursor-pointer">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="size-4 text-[#D1D5DB] transition-transform duration-200 ease-in-out group-hover:translate-x-1">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" />
+                </svg>
+                <p className="text-[#D1D5DB] group-hover:text-[#A7C4DF] text-lg tracking-wide">Services</p>
+              </div>
+              <div className="flex gap-1 items-center group cursor-pointer">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="size-4 text-[#D1D5DB] transition-transform duration-200 ease-in-out group-hover:translate-x-1">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" />
+                </svg>
+                <p className="text-[#D1D5DB] group-hover:text-[#A7C4DF] text-lg tracking-wide">Contact Us</p>
+              </div>
+            </div>
+          </div>
+          <div className="mt-12">
+            <h5 className={`${inter.className} text-gray-100 text-xl font-semibold border-b border-[#FFD700] w-fit pb-1 mb-4`}>Our Services</h5>
+            <div className="flex flex-col gap-3 text-[#D1D5DB]">
+              <div className="flex gap-1 items-center group cursor-pointer">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="size-4 text-[#D1D5DB] transition-transform duration-200 ease-in-out group-hover:translate-x-1">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" />
+                </svg>
+                <p className="text-[#D1D5DB] group-hover:text-[#A7C4DF] text-lg tracking-wide">General Dentistry</p>
+              </div>
+              <div className="flex gap-1 items-center group cursor-pointer">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="size-4 text-[#D1D5DB] transition-transform duration-200 ease-in-out group-hover:translate-x-1">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" />
+                </svg>
+                <p className="text-[#D1D5DB] group-hover:text-[#A7C4DF] text-lg tracking-wide">Surgical Services</p>
+              </div>
+              <div className="flex gap-1 items-center group cursor-pointer">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="size-4 text-[#D1D5DB] transition-transform duration-200 ease-in-out group-hover:translate-x-1">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" />
+                </svg>
+                <p className="text-[#D1D5DB] group-hover:text-[#A7C4DF] text-lg tracking-wide">Orthodontics</p>
+              </div>
+              <div className="flex gap-1 items-center group cursor-pointer">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="size-4 text-[#D1D5DB] transition-transform duration-200 ease-in-out group-hover:translate-x-1">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" />
+                </svg>
+                <p className="text-[#D1D5DB] group-hover:text-[#A7C4DF] text-lg tracking-wide">Cosmetic Dentistry</p>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div className="flex flex-col items-center border-t border-[#D1D5DB] mt-12 pt-6">
+          <Image src={"/aurelia-dental_logo.png"} alt={"Alternative Logo"} width={60} height={60}></Image>
+            <p className="text-[#D1D5DB]">&copy; 2026 Aurelia Dental. All rights reserved.</p>
+            <button className="p-2 rounded-full bg-[#eef3f9] my-4">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="#35565f" className="size-6 text-[#35565f]">
+                <path strokeLinecap="round" strokeLinejoin="round" d="m4.5 18.75 7.5-7.5 7.5 7.5" />
+                <path strokeLinecap="round" strokeLinejoin="round" d="m4.5 12.75 7.5-7.5 7.5 7.5" />
+              </svg>
+            </button>
+            <p className="text-sm text-[#D1D5DB] -mb-4">Powered by <span className="underline">Omni-Ray Software Solutions</span></p>
+        </div>
+      </div>
+    {/* FOOTER */}
+  </>
+  )
 }

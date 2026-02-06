@@ -283,7 +283,7 @@ useEffect(() => {
         {/* YOUR SMILE Heading */}
         <h1 className="flex flex-col items-center mb-8">
           <span
-            className={`${cinzel.className} text-5xl lg:text-6xl text-[#FAF9F6] font-bold`}
+            className={`${cinzel.className} text-[3.25rem] lg:text-6xl text-[#FAF9F6] font-bold`}
             style={{ textShadow: '0 0 30px rgba(255,255,255,0.8)' }}
           >
             YOUR SMILE

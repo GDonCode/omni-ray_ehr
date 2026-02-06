@@ -2,6 +2,8 @@ import React from 'react';
 
 interface StepIndicatorProps {
   currentStep: number;
+  onStepClick?: (step: number) => void;
+  maxReachedStep?: number;
 }
 
 const STEP_TITLES = [
@@ -30,8 +32,7 @@ const inter = localFont ({
   src: "../fonts/Inter/Inter-Regular.otf"
 })
 
-
-export default function StepIndicator({ currentStep }: StepIndicatorProps) {
+export default function StepIndicator({ currentStep, onStepClick, maxReachedStep = currentStep }: StepIndicatorProps) {
   return (
     <>
     <div className="w-full flex justify-center mb-1">
@@ -52,12 +53,14 @@ export default function StepIndicator({ currentStep }: StepIndicatorProps) {
         const step = index + 1;
         const isCompleted = currentStep > step;
         const isCurrent = currentStep === step;
-
+        const isClickable = step <= maxReachedStep;
+        
         return (
           <React.Fragment key={step}>
             {/* Step */}
             <div className="flex flex-col items-center gap-2 min-w-[72px]">
               <div
+                onClick={() => isClickable && onStepClick?.(step)}
                 className={`
                   relative
                   w-8 h-8 rounded-full flex items-center justify-center
@@ -67,6 +70,8 @@ export default function StepIndicator({ currentStep }: StepIndicatorProps) {
                   ${isCompleted && 'bg-[#ffdf20]/90 text-gray-900'}
                   ${isCurrent && 'bg-[#ffdf20] text-[#1C1C1C] scale-110 shadow-[0_0_0_6px_rgba(245,183,0,0.15)]'}
                   ${!isCompleted && !isCurrent && 'bg-[#0D4D5C] text-white border border-[#F5B700]/60'}
+                  ${isClickable && 'cursor-pointer hover:scale-105 active:scale-95'}
+                  ${!isClickable && 'cursor-not-allowed opacity-60'}
                 `}
               >
                 {isCompleted ? (
@@ -83,7 +88,6 @@ export default function StepIndicator({ currentStep }: StepIndicatorProps) {
                 )}
               </div>
             </div>
-
             {/* Connector */}
             {step < STEP_TITLES.length && (
               <div className="relative flex items-center h-8">

@@ -16,10 +16,30 @@ const inter = localFont ({
   src: "../fonts/Inter/Inter-Regular.otf"
 })
 
-export default function ServiceCard({ service, isSelected, onSelect }) {
+interface ServiceCardProps {
+  service: {
+    name: string;
+    duration: string;
+    price: string;
+    description: string;
+    details: string;
+    when: string[];
+  };
+  isSelected: boolean;
+  onSelect: () => void;
+  'data-service-name'?: string; // Add this
+}
+
+export default function ServiceCard({ 
+  service, 
+  isSelected, 
+  onSelect,
+  'data-service-name': dataServiceName 
+}: ServiceCardProps) {
   return (
     <div
       onClick={onSelect}
+      data-service-name={dataServiceName}
       className={`
         relative p-5 flex flex-col cursor-pointer
         backdrop-blur-lg
