@@ -1,7 +1,7 @@
 'use client'
 
 
-import {useEffect, useState, useCallback} from "react";
+import {useEffect, useState, useCallback, useRef} from "react";
 import { useRouter, useSearchParams } from 'next/navigation';
 import AppointmentCalendar from "../components/AppointmentCalendar";
 import ServiceCard from '../components/ServiceCard';
@@ -11,6 +11,8 @@ import Link from "next/link";
 import styles from "./new_appointment.module.css";
 import { Mail, Phone, Calendar, Clock } from "lucide-react";
 import localFont from "next/font/local";
+import { clear } from "console";
+
 
 const levenim = localFont ({
   src: "../fonts/Levenim_MT/levenim-mt.ttf"
@@ -26,6 +28,12 @@ const inter_heading = localFont ({
 })
 const inter = localFont ({
   src: "../fonts/Inter/Inter-Regular.otf"
+})
+const tt_wellingtons_demi = localFont ({
+  src: "../fonts/TT_Wellingtons/TT Wellingtons Trial DemiBold.otf"
+})
+const tt_wellingtons = localFont ({
+  src: "../fonts/TT_Wellingtons/TT Wellingtons Trial Regular.otf"
 })
 
 type ContactMethod = 'email' | 'whatsapp' | null;
@@ -47,7 +55,37 @@ type BookingData = {
   personalInfo: PersonalInfo;
 };
 
+async function sendAppointmentEmail(bookingData: BookingData) {
+  try {
+    const response = await fetch('/api/send-appointment', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(bookingData),
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error(data.error || 'Failed to send appointment request');
+    }
+
+    return { success: true, data };
+  } catch (error) {
+    console.error('Error sending appointment:', error);
+    return { 
+      success: false, 
+      error: error instanceof Error ? error.message : 'Unknown error' 
+    };
+  }
+}
 export default function NewAppointment (){
+  
+    const router = useRouter();
+    const searchParams = useSearchParams();
+    const hasLoadedFromUrl = useRef(false);
+
   const [bookingData, setBookingData] = useState<BookingData>({
       selectedService: null,
       selectedDate: null,
@@ -64,36 +102,113 @@ export default function NewAppointment (){
       }
     });
 
+    useEffect(() => {
+    if (hasLoadedFromUrl.current) return;
+    
+    const service = searchParams.get('service');
+    console.log('Retrieved service from URL:', service);
+    
+    if (service) {
+      hasLoadedFromUrl.current = true;
+      setBookingData(prev => ({
+        ...prev,
+        selectedService: service
+      }));
+    }
+  }, [searchParams]);
 
-    const router = useRouter();
-    const searchParams = useSearchParams();
     
     const [currentStep, setCurrentStep] = useState(1);
     const [maxReachedStep, setMaxReachedStep] = useState(1);
     const [mounted, setMounted] = useState(false);
 
-     useEffect(() => {
-      setMounted(true);
-      
-      const savedBookingData = sessionStorage.getItem('bookingData');
-      if (savedBookingData) {
-        const parsed = JSON.parse(savedBookingData);
-        if (parsed.selectedDate) {
-          parsed.selectedDate = new Date(parsed.selectedDate);
+    useEffect(() => {
+    setMounted(true);
+    
+    // Get URL service first
+    const urlService = searchParams.get('service');
+    const savedStep = sessionStorage.getItem('currentStep');
+    const savedBookingData = sessionStorage.getItem('bookingData');
+    const shouldReset = () => {
+    // Parse booking data once
+    const parsed = savedBookingData ? JSON.parse(savedBookingData) : null;
+    
+    // If no booking data exists at all, no need to reset
+    if (!parsed) {
+      return false;
+    }
+    
+    // Only check step 5 if we actually have booking data
+    if (savedStep === '5' && !parsed?.selectedService) {
+      return true;
+    }
+    
+    // Check expiration regardless of step
+    if (parsed?.timestamp) {
+      const age = Date.now() - parsed.timestamp;
+      if (age > 30 * 60 * 1000) {
+        return true;
+      }
+    }
+    
+    return false;
+  };
+
+    if (shouldReset()) {
+      // Clear everything and start fresh
+      clearBookingData();
+      setBookingData({
+        selectedService: urlService || null,
+        selectedDate: null,
+        selectedTime: null,
+        personalInfo: {
+          firstName: '',
+          lastName: '',
+          email: '',
+          phone: '',
+          dob: '',
+          contactMethod: null,
+          notes: '',
+          terms: false
         }
-        setBookingData(parsed);
-      }
+      });
+      setCurrentStep(1);
+      setMaxReachedStep(1);
+      return;
+    }
 
-      const savedStep = sessionStorage.getItem('currentStep');
-      if (savedStep) {
-        setCurrentStep(parseInt(savedStep));
+    
+   
+    if (savedBookingData) {
+      const parsed = JSON.parse(savedBookingData);
+      if (parsed.selectedDate) {
+        parsed.selectedDate = new Date(parsed.selectedDate);
       }
+      
+      // Merge: URL service takes priority over sessionStorage
+      if (urlService) {
+        parsed.selectedService = urlService;
+      }
+      
+      setBookingData(parsed);
+    } else if (urlService) {
+      // No sessionStorage but we have URL service
+      setBookingData(prev => ({
+        ...prev,
+        selectedService: urlService
+      }));
+    }
 
-      const savedMaxStep = sessionStorage.getItem('maxReachedStep');
-      if (savedMaxStep) {
-        setMaxReachedStep(parseInt(savedMaxStep));
-      }
-    }, []);
+    
+    if (savedStep) {
+      setCurrentStep(parseInt(savedStep));
+    }
+
+    const savedMaxStep = sessionStorage.getItem('maxReachedStep');
+    if (savedMaxStep) {
+      setMaxReachedStep(parseInt(savedMaxStep));
+    }
+  }, [searchParams]);
 
     // Save bookingData to sessionStorage whenever it changes
     useEffect(() => {
@@ -154,6 +269,8 @@ export default function NewAppointment (){
       sessionStorage.removeItem('currentStep');
       sessionStorage.removeItem('maxReachedStep');
     };
+
+    
     // SERVICE TILE LOGIC --------- SERVICE TILE LOGIC --------- SERVICE TILE LOGIC --------- SERVICE TILE LOGIC --------- SERVICE TILE LOGIC ---------
       const servicesByCategory = {
         preventive: [
@@ -294,7 +411,7 @@ export default function NewAppointment (){
 
 
     const [isOpen, setIsOpen] = useState(false);
-    const [activeItem, setActiveItem] = useState('home');
+    const [activeItem, setActiveItem] = useState(null);
     const navItems = [
       { id: 'home', label: 'Home', href: '/' },
       { id: 'services', label: 'Services', href: '/services' },
@@ -309,7 +426,7 @@ export default function NewAppointment (){
       setIsOpen(false);
     };
 
-    const [activeMobileLink, setActiveMobileLink] = useState('home');
+    const [activeMobileLink, setActiveMobileLink] = useState<string | null>(null);
     const handleMobileLinkClick = (linkName: string) => {
       setActiveMobileLink(linkName);
       closeMenu();
@@ -442,47 +559,77 @@ export default function NewAppointment (){
         terms === true
       );
     };
+
+    const [isLoading, setIsLoading] = useState(false);
+    const [emailStatus, setEmailStatus] = useState<'idle' | 'success' | 'error'>('idle');
+    const handleConfirm = async () => {
+      console.log(bookingData);
+      setIsLoading(true);
+      setEmailStatus('idle');
+
+      // Send the email
+      const result = await sendAppointmentEmail(bookingData);
+
+      setIsLoading(false);
+
+      if (result.success) {
+        setEmailStatus('success');
+        // Move to next step after successful email send
+        updateStep(5);
+      } else {
+        setEmailStatus('error');
+        // Optionally show error to user
+        alert('Failed to send appointment request. Please try again.');
+      }
+    };
     return (
     <>
       <div className={`${styles.background}`}>
       </div>
       {/* Header */}
-      <div className={`backdrop-blur-md shadow-lg z-20 py-2 fixed top-0 flex items-center justify-between px-4 w-full bg-[#036d6d]`}>
-        <Link href={"/"} className="flex items-center gap-2">
-          <Image src={"/aurelia-dental_logo.png"} alt="Logo" width={75} height={75} className="cursor-pointer"/>
-          <h1 className={`${levenim.className} text-white lg:text-4xl text-2xl font-bold items-center flex flex-col mt-2 tracking-widest`}>
-            Aurelia <span className="block -mt-1 text-white">Dental</span>
-          </h1>
-        </Link>
-        <nav className={`${inter.className} hidden lg:block`}>
-          <ul className="flex items-center gap-12 font-medium text-lg">
-            {navItems.map((item) => (
-              <li key={item.id}>
-                <a
-                  href={item.href}
-                  onClick={(e) => {
-                    e.preventDefault();
-                    setActiveItem(item.id);
-                  }}
-                  className={`
-                    cursor-pointer transition-all duration-200
-                    ${activeItem === item.id 
-                      ? 'text-[#E6C84F] font-bold' 
-                      : 'text-white hover:text-[#E6C84F] hover:border-b-2 hover:border-[#E6C84F]'
-                    }
-                  `}
-                >
-                  {item.label}
-                </a>
-              </li>
-            ))}
-          </ul>
-        </nav>
-        <div className="flex items-center gap-2 lg:hidden ml-auto mr-1">
-          <button onClick={() => setIsOpen(prev => !prev)} className="block lg:hidden py-2 px-4 border-2 border-[#eccb1b] bg-[#eccb1b] rounded-xs">
-            <span className={`${inter_heading.className} text-[#181818] font-extrabold tracking-widest`}>MENU</span>
-          </button>
-        </div>
+      <div className={`backdrop-blur-md shadow-lg z-20 fixed top-0 w-full flex flex-col`}>
+        <Link href={"https://www.google.com/maps?client=firefox-b-d&um=1&ie=UTF-8&fb=1&gl=jm&sa=X&geocode=Kess0v_mK9qOMblqgL_gLwtH&daddr=40-41,+Overton+Plaza,+49+Union+Street,+Montego+Bay"} className={`${inter_heading.className} w-full bg-[#82bfbf] text-[#181818] text-[0.8rem] lg:text-[1rem] flex items-center gap-1 py-2 px-2`}> 
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor" className="size-4 text-[#181818] group-hover:scale-105 transition-all">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
+              <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1 1 15 0Z" />
+            </svg>
+            <p className={`${tt_wellingtons_demi.className}`}>Shop 40, 41 Overton Plaza</p>
+            <p className={`${tt_wellingtons_demi.className} text-right ml-auto`}>click for map</p>
+          </Link>
+          <div className="w-full bg-[#036d6d] px-4 lg:px-14 flex items-center justify-between py-2">
+            <Link href={"/"} className="flex items-center gap-3 lg:gap-5">
+              <Image src={"/aurelia-dental_logo.png"} alt="Logo" width={75} height={75} className="cursor-pointer lg:w-[90px] lg:h-[90px]"/>
+              <h1 className={`${levenim.className} text-[#f6d212] font-medium lg:text-5xl text-[2rem] items-center flex flex-col tracking-widest`}>
+                aurelia <span className="block -mt-3 lg:-mt-2 ml-3 lg:ml-10 text-white text-[1.5rem] lg:text-[2rem] font-medium uppercase">Dental</span>
+              </h1>
+            </Link>
+            <nav className={`${tt_wellingtons_demi.className} hidden lg:block`}>
+              <ul className="flex items-center gap-12 font-medium text-xl">
+                {navItems.map((item) => (
+                  <li key={item.id}>
+                    <a
+                      href={item.href}
+                      className={`
+                        cursor-pointer transition-all duration-200
+                        ${activeItem === item.id 
+                          ? 'text-[#f6d212] font-bold border-b-2 border-[#f6d212]' 
+                          : 'text-white hover:text-[#f6d212] hover:border-b-2 hover:border-[#f6d212]'
+                        }
+                      `}
+                    >
+                      {item.label}
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </nav>
+            <div className="flex items-center gap-2 lg:hidden ml-auto mr-1">
+              <button onClick={() => setIsOpen(prev => !prev)} className="block lg:hidden py-2 px-4 rounded-xs border-2 border-[#ffd808] bg-[#ffd808]">
+                <span className={`${tt_wellingtons_demi.className} text-[#181818] font-extrabold tracking-widest`}>MENU</span>
+              </button>
+            </div>
+          </div>
+
       </div>
       
       {/* Mobile Nav */}
@@ -532,102 +679,111 @@ export default function NewAppointment (){
         onClick={closeMenu}
       >
       </div>
-        
-      <div className="relative w-[95%] mx-auto pt-22">
-        {/* Step Indicator always mounted */}
-        <div className="flex flex-col md:flex-row md:w-[80%] gap-2 md:items-end mb-6 pt-4 w-full">
-          <StepIndicator currentStep={currentStep} onStepClick={handleStepClick}maxReachedStep={maxReachedStep}/>
-        </div>
+      
+      {/* Step Indicator always mounted */}
+      {currentStep <= 3 && (
+      <div className="flex flex-col md:flex-row gap-2 md:items-end mb-6 lg:mt-36 mt-31 w-full bg-[#058080] relative">
+        <StepIndicator currentStep={currentStep} onStepClick={handleStepClick} maxReachedStep={maxReachedStep}/>
+      </div>
+      )}
 
+      <div className="relative w-[95%] mx-auto">
         {currentStep === 1 && (
-  <div className="px-4 py-0 relative max-w-7xl mx-auto">
-    {/* Preventative Services */}
-    <div className="mb-14">
-      <div className="flex items-center gap-3 mb-5">
-        <Image src={"/number-1.png"} alt="Number 1" width={20} height={20}></Image>
-        <h2 className={`${inter_heading.className} text-2xl font-bold text-[#faf9f6]`}>
-          Preventative Care
-        </h2>
-      </div>
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-        {servicesByCategory.preventive.map((service, index) => (
-          <ServiceCard 
-            key={`preventive-${index}`}
-            service={service}
-            isSelected={bookingData.selectedService === service.name}
-            onSelect={() => handleServiceSelect(service.name)}
-            data-service-name={service.name}
-          />
-        ))}
-      </div>
-    </div>
+          <div className="px-4 py-0 relative max-w-7xl mx-auto">
+            {/* Preventative Services */}
+            <div className="mb-14">
+              <div className="flex items-center gap-3 mb-5">
+                <Image src={"/number_1.png"} alt="Number 1" width={20} height={20}></Image>
+                <h2 className={`${tt_wellingtons_demi.className} text-2xl font-bold text-[#024c4c]`}>
+                  Preventative Care
+                </h2>
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                {servicesByCategory.preventive.map((service, index) => {
+                  const isSelected = bookingData.selectedService === service.name;
+                  
+                  // Debug log
+                  console.log('Service:', service.name, '| Selected Service:', bookingData.selectedService, '| isSelected:', isSelected);
+                  
+                  return (
+                    <ServiceCard 
+                      key={`preventive-${index}`}
+                      service={service}
+                      isSelected={isSelected}
+                      onSelect={() => handleServiceSelect(service.name)}
+                      data-service-name={service.name}
+                    />
+                  );
+                })}
+              </div>
+            </div>
 
-    {/* Restorative Services */}
-    <div className="mb-14">
-      <div className="flex items-center gap-3 mb-5">
-        <Image src={"/number-2.png"} alt="Number 2" width={20} height={20}></Image>
-        <h2 className={`${inter_heading.className} text-2xl font-bold text-[#faf9f6]`}>
-          Restorative Care
-        </h2>
-      </div>
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-        {servicesByCategory.restorative.map((service, index) => (
-          <ServiceCard 
-            key={`restorative-${index}`}
-            service={service}
-            isSelected={bookingData.selectedService === service.name}
-            onSelect={() => handleServiceSelect(service.name)}
-            data-service-name={service.name}
-          />
-        ))}
-      </div>
-    </div>
+            {/* Restorative Services */}
+            <div className="mb-14">
+              <div className="flex items-center gap-3 mb-5">
+                <Image src={"/number_2.png"} alt="Number 2" width={20} height={20}></Image>
+                <h2 className={`${tt_wellingtons_demi.className} text-2xl font-bold text-[#024c4c]`}>
+                  Restorative Care
+                </h2>
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                {servicesByCategory.restorative.map((service, index) => (
+                  <ServiceCard 
+                    key={`restorative-${index}`}
+                    service={service}
+                    isSelected={bookingData.selectedService === service.name}
+                    onSelect={() => handleServiceSelect(service.name)}
+                    data-service-name={service.name}
+                  />
+                ))}
+              </div>
+            </div>
 
-    {/* Cosmetic Services */}
-    <div className="mb-8">
-      <div className="flex items-center gap-3 mb-5">
-        <Image src={"/number-3.png"} alt="Number 3" width={20} height={20}></Image>
-        <h2 className={`${inter_heading.className} text-2xl font-bold text-[#faf9f6]`}>
-          Cosmetic Dentistry
-        </h2>
-      </div>
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-        {servicesByCategory.cosmetic.map((service, index) => (
-          <ServiceCard 
-            key={`cosmetic-${index}`}
-            service={service}
-            isSelected={bookingData.selectedService === service.name}
-            onSelect={() => handleServiceSelect(service.name)}
-            data-service-name={service.name}
-          />
-        ))}
-      </div>
-    </div>
+            {/* Cosmetic Services */}
+            <div className="mb-8">
+              <div className="flex items-center gap-3 mb-5">
+                <Image src={"/number_3.png"} alt="Number 3" width={20} height={20}></Image>
+                <h2 className={`${tt_wellingtons_demi.className} text-2xl font-bold text-[#024c4c]`}>
+                  Cosmetic Dentistry
+                </h2>
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                {servicesByCategory.cosmetic.map((service, index) => (
+                  <ServiceCard 
+                    key={`cosmetic-${index}`}
+                    service={service}
+                    isSelected={bookingData.selectedService === service.name}
+                    onSelect={() => handleServiceSelect(service.name)}
+                    data-service-name={service.name}
+                  />
+                ))}
+              </div>
+            </div>
 
-    {/* Helper text */}
-    <div className="mb-2">
-      <p className={`${inter.className} text-[#Faf9f6] text-md`}>
-        Not sure which service you need?{' '}
-        <a 
-          href="/services" 
-          className="text-[#ffdf20] hover:text-[#FFD700]/80 underline decoration-[#FFD700]/30 hover:decoration-[#FFD700]/60 transition-colors"
-        >
-          Browse all services
-        </a>
-      </p>
-    </div>
+            {/* Helper text */}
+            <div className="mb-2">
+              <p className={`${inter.className} text-[#Faf9f6] text-md`}>
+                Not sure which service you need?{' '}
+                <a 
+                  href="/services" 
+                  className="text-[#ffdf20] hover:text-[#FFD700]/80 underline decoration-[#FFD700]/30 hover:decoration-[#FFD700]/60 transition-colors"
+                >
+                  Browse all services
+                </a>
+              </p>
+            </div>
 
-    {/* Floating Next Button */}
-    {bookingData.selectedService && (
-      <button 
-        onClick={() => updateStep(2)} 
-        className={`${inter.className} bg-[#FFD700] text-gray-900 absolute fixed bottom-10 right-4 z-100 rounded-lg px-8 py-4 hover:scale-105 cursor-pointer text-2xl mt-10 lg:mt-20 font-semibold shadow-md flex gap-2 items-center`}
-      >
-        Next
-        <Image src={"/arrow-right.svg"} alt="arrow right" width={30} height={30}></Image>
-      </button>
-    )}
-  </div>
+            {/* Floating Next Button */}
+            {bookingData.selectedService && (
+              <button 
+                onClick={() => updateStep(2)} 
+                className={`${inter.className} bg-[#FFD700] text-gray-900 absolute fixed bottom-10 right-4 z-100 rounded-lg px-8 py-4 hover:scale-105 cursor-pointer text-2xl mt-10 lg:mt-20 font-semibold shadow-md flex gap-2 items-center`}
+              >
+                Next
+                <Image src={"/arrow-right.svg"} alt="arrow right" width={30} height={30}></Image>
+              </button>
+            )}
+          </div>
         )}
 
         {currentStep === 2 && (
@@ -655,12 +811,12 @@ export default function NewAppointment (){
 
         {currentStep === 3 && (
           <div className={`-mt-4 p-4 relative`}>
-            <form className="space-y-6" onSubmit={(e) => {
+            <form className="space-y-8" onSubmit={(e) => {
               e.preventDefault();
             }}>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div>
-                  <label htmlFor="firstName" className={`${inter_heading.className} block text-xl font-medium text-[#faf9f6] mb-2`}>
+                <div className="text-[#036d6d]">
+                  <label htmlFor="firstName" className={`${tt_wellingtons_demi.className} block text-xl font-medium text-[#036d6d] mb-2`}>
                     First Name *
                   </label>
                   <input
@@ -668,15 +824,15 @@ export default function NewAppointment (){
                     id="firstName"
                     name="firstName"
                     required
-                    className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-md text-[#faf9f6] text-xl placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-[#FFD700] focus:border-transparent transition-all"
+                    className={`${tt_wellingtons_demi.className} w-full px-4 py-3 bg-white border border-2 border-[#036d6d] rounded-md text-[#036d6d] placeholder:text-[#036d6d]/50 font-medium text-xl focus:outline-none focus:ring-2 focus:ring-[#FFD700] focus:border-transparent transition-all`}
                     placeholder="Enter your first name"
                     value={bookingData.personalInfo.firstName}
                     onChange={handleInputChange}
                   />
                 </div>
 
-                <div>
-                  <label htmlFor="lastName" className={`${inter_heading.className} block text-xl font-medium text-[#faf9f6] mb-2`}>
+                <div className="text-[#036d6d]">
+                  <label htmlFor="lastName" className={`${tt_wellingtons_demi.className} block text-xl font-medium text-[#036d6d] mb-2`}>
                     Last Name *
                   </label>
                   <input
@@ -684,7 +840,7 @@ export default function NewAppointment (){
                     id="lastName"
                     name="lastName"
                     required
-                    className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-md text-[#faf9f6] text-xl placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-[#FFD700] focus:border-transparent transition-all"
+                    className={`${tt_wellingtons_demi.className} w-full px-4 py-3 bg-white border border-2 border-[#036d6d] rounded-md text-[#036d6d] placeholder:text-[#036d6d]/50 font-medium text-xl focus:outline-none focus:ring-2 focus:ring-[#FFD700] focus:border-transparent transition-all`}
                     placeholder="Enter your last name"
                     value={bookingData.personalInfo.lastName}
                     onChange={handleInputChange}
@@ -694,7 +850,7 @@ export default function NewAppointment (){
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div>
-                    <label htmlFor="email" className={`${inter_heading.className} block text-xl font-medium text-[#faf9f6] mb-2`}>
+                    <label htmlFor="email" className={`${tt_wellingtons_demi.className} block text-xl font-medium text-[#036d6d] mb-2`}>
                       Email Address *
                     </label>
                     <input
@@ -702,7 +858,7 @@ export default function NewAppointment (){
                       id="email"
                       name="email"
                       required
-                      className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-md text-[#faf9f6] text-xl placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-[#FFD700] focus:border-transparent transition-all"
+                      className={`${tt_wellingtons_demi.className} w-full px-4 py-3 bg-white border border-2 border-[#036d6d] rounded-md text-[#036d6d] placeholder:text-[#036d6d]/50 font-medium text-xl focus:outline-none focus:ring-2 focus:ring-[#FFD700] focus:border-transparent transition-all`}
                       placeholder="your.email@example.com"
                       value={bookingData.personalInfo.email}
                       onChange={handleInputChange}
@@ -710,7 +866,7 @@ export default function NewAppointment (){
                   </div>
 
                   <div>
-                    <label htmlFor="phone" className={`${inter_heading.className} block text-xl font-medium text-[#faf9f6] mb-2`}>
+                    <label htmlFor="phone" className={`${tt_wellingtons_demi.className} block text-xl font-medium text-[#036d6d] mb-2`}>
                       Phone Number *
                     </label>
                     <input
@@ -718,7 +874,7 @@ export default function NewAppointment (){
                       id="phone"
                       name="phone"
                       required
-                      className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-md text-[#faf9f6] text-xl placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-[#FFD700] focus:border-transparent transition-all"
+                      className={`${inter.className} w-full px-4 py-3 bg-white border border-2 border-[#036d6d] rounded-md text-[#036d6d] placeholder:text-[#036d6d]/50 font-bold text-xl focus:outline-none focus:ring-2 focus:ring-[#FFD700] focus:border-transparent transition-all`}
                       placeholder="(876) 123-4567"
                       value={bookingData.personalInfo.phone}
                       onChange={handleInputChange}
@@ -727,12 +883,12 @@ export default function NewAppointment (){
                 </div>
 
                 <div>
-                  <label className={`${inter_heading.className} block text-xl font-medium text-[#faf9f6] mb-2`}>
+                  <label className={`${tt_wellingtons_demi.className} block text-xl font-medium text-[#036d6d] mb-2`}>
                     Preferred Contact Method *
                   </label>
                   <div className="flex flex-wrap gap-4">
                     {/* Email */}
-                    <label className="flex items-center gap-3 px-4 py-3 bg-white/10 border border-white/20 rounded-md cursor-pointer transition-all hover:bg-white/15">
+                    <label className="flex items-center gap-3 px-4 py-3 bg-white border border-2 border-[#036d6d] rounded-md cursor-pointer transition-all hover:bg-white/15">
                       <input
                         type="radio"
                         name="contactMethod"
@@ -742,11 +898,11 @@ export default function NewAppointment (){
                         required
                         className="accent-[#FFD700] w-5 h-5"
                       />
-                      <span className="text-[#faf9f6] text-xl">Email</span>
+                      <span className={`${tt_wellingtons_demi.className} text-[#036d6d] text-xl`}>Email</span>
                     </label>
 
                     {/* Email */}
-                    <label className="flex items-center gap-3 px-4 py-3 bg-white/10 border border-white/20 rounded-md cursor-pointer transition-all hover:bg-white/15">
+                    <label className="flex items-center gap-3 px-4 py-3 bg-white border border-2 border-[#036d6d] rounded-md cursor-pointer transition-all hover:bg-white/15">
                       <input
                         type="radio"
                         name="contactMethod"
@@ -756,14 +912,14 @@ export default function NewAppointment (){
                         required
                         className="accent-[#FFD700] w-5 h-5"
                       />
-                      <span className="text-[#faf9f6] text-xl">Whatsapp</span>
+                      <span className={`${tt_wellingtons_demi.className} text-[#036d6d] text-xl`}>Whatsapp</span>
                     </label>
 
                   </div>
                 </div>
 
                 <div>
-                  <label htmlFor="dob" className={`${inter_heading.className} block text-xl font-medium text-[#faf9f6] mb-2`}>
+                  <label htmlFor="dob" className={`${inter_heading.className} block text-xl font-medium text-[#036d6d] mb-2`}>
                     Date of Birth *
                   </label>
                   <input
@@ -771,20 +927,20 @@ export default function NewAppointment (){
                     id="dob"
                     name="dob"
                     required
-                    className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-md text-[#faf9f6] text-xl placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-[#FFD700] focus:border-transparent transition-all"
+                    className="w-full px-4 py-3 bg-white border-2 border-[#036d6d] rounded-md text-[#036d6d] placeholder:text-[#036d6d]/50 font-medium text-xl text-xl focus:outline-none focus:ring-2 focus:ring-[#FFD700] focus:border-transparent transition-all"
                     value={bookingData.personalInfo.dob}
                     onChange={handleInputChange}
                   />
                 </div>
 
                 <div>
-                  <label htmlFor="notes" className={`${inter_heading.className} block text-xl font-medium text-[#faf9f6] mb-2`}>
+                  <label htmlFor="notes" className={`${inter_heading.className} block text-xl font-medium text-[#036d6d] mb-2`}>
                     Additional Notes
                   </label>
                   <textarea
                     id="notes"
                     name="notes"
-                    className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-md text-[#faf9f6] text-xl placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-[#FFD700] focus:border-transparent transition-all resize-none"
+                    className={`${tt_wellingtons_demi.className} w-full px-4 py-3 bg-white border-2 border-[#036d6d] rounded-md text-[#036d6d] placeholder:text-[#036d6d]/50 font-medium text-xl text-xl focus:outline-none focus:ring-2 focus:ring-[#FFD700] focus:border-transparent transition-all resize-none`}
                     placeholder="Any special requests or information we should know?"
                     value={bookingData.personalInfo.notes}
                     onChange={handleInputChange}
@@ -799,16 +955,16 @@ export default function NewAppointment (){
                     required
                     checked={bookingData.personalInfo.terms}
                     onChange={handleInputChange}
-                    className="mt-1 w-10 h-10 rounded border-white/20 bg-white/10 text-[#FFD700] focus:ring-2 focus:ring-[#FFD700] focus:ring-offset-0"
+                    className="mt-1 w-6 h-6 rounded border-[#036d6d] bg-white text-[#FFD700] focus:ring-2 focus:ring-[#FFD700] focus:ring-offset-0"
                   />
-                  <label htmlFor="terms" className={`${inter.className} text-xl text-white/90`}>
-                    I agree to the <a href="#" className="text-[#FFD700] hover:underline">terms and conditions</a> and <a href="#" className="text-[#FFD700] hover:underline">privacy policy</a> *
+                  <label htmlFor="terms" className={`${inter.className} text-xl text-[#181818]`}>
+                    I agree to the <a href="#" className="text-[#036d6d] underline">terms and conditions</a> and <a href="#" className="text-[#036d6d] underline">privacy policy</a> *
                   </label>
                 </div>
 
                 {errors.length > 0 && (
                   <div className="p-4 bg-red-500/20 border border-red-500/50 rounded-lg">
-                    <ul className="list-disc list-inside text-red-200 space-y-1">
+                    <ul className={`${tt_wellingtons_demi.className} list-disc list-inside text-[#181818] font-semibold space-y-1`}>
                       {errors.map((error, index) => (
                         <li key={index}>{error}</li>
                       ))}
@@ -816,7 +972,7 @@ export default function NewAppointment (){
                   </div>
                 )}
                 <div className="relative">
-                  <button onClick={() => updateStep(1)} className={`${inter.className} bg-[#FFD700] text-gray-900 absolute fixed bottom-10 right-48 lg:right-50 z-100 rounded-lg px-8 py-4 hover:scale-105 cursor-pointer text-xl lg:text-2xl mt-10 lg:mt-20 font-semibold shadow-md flex gap-2 items-center`}>
+                  <button onClick={() => updateStep(2)} className={`${inter.className} bg-[#FFD700] text-gray-900 absolute fixed bottom-10 right-48 lg:right-50 z-100 rounded-lg px-8 py-4 hover:scale-105 cursor-pointer text-xl lg:text-2xl mt-10 lg:mt-20 font-semibold shadow-md flex gap-2 items-center`}>
                     <Image src={"/arrow-left.svg"} alt="arrow left" width={30} height={30}></Image>
                     Previous
                   </button>
@@ -835,23 +991,23 @@ export default function NewAppointment (){
         )}
 
         {currentStep === 4 && (
-            <div className={`-mt-4 p-4 relative`}>
+            <div className={`-mt-4 p-4 lg:mt-36 mt-31 relative`}>
               <div className="max-w-3xl mx-auto">
-                <div className="bg-[#EAF3F7] backdrop-blur-sm border-2 border-white/20 rounded-md p-6 py-4 mb-6 shadow-lg relative">
-                  <div className={`${inter_heading.className} text-sm text-[#222428] uppercase mb-4 border-b`}>
+                <div className="bg-white backdrop-blur-sm border-2 border-white/20 rounded-md p-6 py-4 mb-6 shadow-lg relative">
+                  <div className={`${tt_wellingtons_demi.className} text-sm text-[#024c4c] uppercase mb-4 border-b`}>
                     Personal Information
                   </div>
                   <div className="flex justify-between items-start flex-col md:flex-row gap-4">
                     <div className="flex-1">
-                      <div className={`${inter_heading.className} text-3xl font-semibold text-[#036d6d] mb-4`}>
+                      <div className={`${tt_wellingtons_demi.className} text-3xl font-semibold text-[#036d6d] mb-4`}>
                         {bookingData.personalInfo.firstName} {bookingData.personalInfo.lastName}
                       </div>
-                      <div className={`${inter.className} text-xl text-[#181818] mb-4 tracking-wide flex items-center`}>
-                        <Mail className="w-5 h-5 mr-3 text-[#181818]" />
+                      <div className={`${inter.className} text-xl font-medium text-[#024c4c] mb-4 tracking-wide flex items-center`}>
+                        <Mail className="w-5 h-5 mr-3 text-[#024c4c]" />
                         {bookingData.personalInfo.email}
                       </div>
-                      <div className={`${inter.className} text-xl text-[#181818] tracking-wide mb-10 flex items-center`}>
-                        <Phone className="w-5 h-5 mr-3 text-[#181818]" />
+                      <div className={`${inter.className} text-xl font-medium text-[#024c4c] tracking-wider mb-10 flex items-center`}>
+                        <Phone className="w-5 h-5 mr-3 text-[#024c4c]" />
                         {bookingData.personalInfo.phone}
                       </div>
                       <button 
@@ -863,16 +1019,16 @@ export default function NewAppointment (){
                       </button>
                     </div>
                   </div>
-                  <div className={`${inter_heading.className} text-sm text-[#222428] uppercase mb-4 border-b mt-8`}>
+                  <div className={`${tt_wellingtons_demi.className} text-sm text-[#024c4c] uppercase mb-4 border-b mt-8`}>
                     Selected Service
                   </div>
                   <div className="flex justify-between items-start flex-col md:flex-row gap-4">
                     <div className="flex-1">
-                      <div className={`${inter_heading.className} text-3xl font-semibold text-[#036d6d] mb-4`}>
+                      <div className={`${tt_wellingtons_demi.className} text-3xl font-semibold text-[#036d6d] mb-4`}>
                         {bookingData.selectedService || 'No Service Selected'}
                       </div>
-                      <div className={`${inter.className} text-xl text-[#181818] tracking-wide mb-4 flex items-center`}>
-                        <Calendar className="w-5 h-5 mr-3 text-[#181818]" />
+                      <div className={`${inter.className} text-xl font-medium text-[#024c4c] tracking-wider mb-4 flex items-center`}>
+                        <Calendar className="w-5 h-5 mr-3 text-[#024c4c]" />
                         {bookingData.selectedDate 
                           ? new Date(bookingData.selectedDate).toLocaleDateString('en-US', { 
                               month: 'short', 
@@ -881,8 +1037,8 @@ export default function NewAppointment (){
                             })
                           : 'No Date Selected'}
                       </div>
-                      <div className={`${inter.className} text-xl text-[#181818] tracking-wide mb-10 flex items-center`}>
-                        <Clock className="w-5 h-5 mr-3 text-[#181818]" />
+                      <div className={`${inter.className} font-medium text-xl text-[#024c4c] tracking-wide mb-10 flex items-center`}>
+                        <Clock className="w-5 h-5 mr-3 text-[#024c4c]" />
                         {bookingData.selectedTime || 'No Time Selected'}
                       </div>
                       <button 
@@ -898,20 +1054,47 @@ export default function NewAppointment (){
                 <div className="flex gap-4 pt-4">
                   <button
                     type="button"
-                    className="px-8 py-3 bg-white/10 border border-white/20 text-[#faf9f6] text-md rounded-md hover:bg-white/20 transition-all font-medium"
+                    className={`${tt_wellingtons_demi.className} px-8 py-3 bg-white/10 border-3 border-[#036d6d] text-[#036d6d] text-lg rounded-md hover:bg-white/20 transition-all font-medium`}
                     onClick={() => updateStep(3)}
                   >
                     Back
                   </button>
                   <button
                     type="button"
-                    className="flex-1 px-8 py-3 bg-[#FFD700] text-[#181818] text-xl rounded-md hover:bg-[#FFC700] transition-all font-semibold"
+                    className={`${tt_wellingtons_demi.className} flex-1 px-8 py-3 bg-[#eccb1b] text-[#181818] text-xl rounded-md hover:bg-[#FFC700] transition-all font-semibold disabled:opacity-50 disabled:cursor-not-allowed`}
                     onClick={() => {
-                      console.log(bookingData);
-                      updateStep(5);
+                      clearBookingData();
+                      handleConfirm();
                     }}
+                    disabled={isLoading}
                   >
-                    CONFIRM APPOINTMENT
+                    {isLoading ? (
+                      <span className="flex items-center justify-center gap-2">
+                        <svg 
+                          className="animate-spin h-5 w-5" 
+                          xmlns="http://www.w3.org/2000/svg" 
+                          fill="none" 
+                          viewBox="0 0 24 24"
+                        >
+                          <circle 
+                            className="opacity-25" 
+                            cx="12" 
+                            cy="12" 
+                            r="10" 
+                            stroke="currentColor" 
+                            strokeWidth="4"
+                          />
+                          <path 
+                            className="opacity-75" 
+                            fill="currentColor" 
+                            d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                          />
+                        </svg>
+                        SENDING...
+                      </span>
+                    ) : (
+                      'CONFIRM APPOINTMENT'
+                    )}
                   </button>
                 </div>
               </div>
@@ -919,14 +1102,38 @@ export default function NewAppointment (){
         )}
 
         {currentStep === 5 && (
-          <div>
-          
+          <div className="flex flex-col gap-6 pb-6 px-2 -mt-2 lg:pt-42 pt-38">
+            <div>
+              <h1 className={`${tt_wellingtons_demi.className} text-2xl font-bold text-[#036d6d] mb-4`}>We've Received Your Appointment Request</h1>
+              <p className={`${tt_wellingtons.className} text-[#181818] leading-8 text-[1.2rem]`}>Thank you for choosing Aurelia Dental! We have received your appointment request and will review it shortly.</p>
+            </div>
+            <div>
+              <h2 className={`${tt_wellingtons_demi.className} text-xl font-bold text-[#036d6d] mb-4`}>What Happens Next?</h2>
+              <p className={`${tt_wellingtons.className} text-[#181818] leading-8 text-[1.2rem]`}>Our scheduling team will contact you within one business day using your preferred contact method to confirm your appointment date and time.<br/> We'll work with you to find a time that fits your schedule.</p>
+            </div>
+            <div>
+              <h2 className={`${tt_wellingtons_demi.className} text-xl font-bold text-[#036d6d] mb-4`}>In the meantime...</h2>
+              <p className={`${tt_wellingtons.className} text-[#181818] leading-8 text-[1.2rem]`}>If you have any questions or need to make changes to your request, reach out to us at <Link href="tel:+18766919136" className={`${inter.className} font-bold underline text-[#036d6d]`}>+1 (876) 691 9136</Link> or <Link href="mailto:aureliadental@gmail.com" className={`${inter.className} font-bold underline text-[#036d6d]`}>aureliadental@gmail.com</Link>. <br/> We look forward to seeing you soon and providing you with excellent dental care!</p>
+            </div>
+            <div className="flex flex-col items-center justify-center mt-2">
+              <button onClick={() => {
+                  clearBookingData();
+                  router.push('/');
+                }} 
+                className={`${tt_wellingtons_demi.className} mt-4 px-8 py-4 w-[85%] bg-[#036d6d] text-white text-xl rounded-md hover:bg-[#024c4c] transition-all font-medium`}
+              >
+                Back to Home
+              </button>
+              <button onClick={() => router.push('/services')} className={`${tt_wellingtons_demi.className} mt-4 px-8 py-4 w-[85%]  bg-[#eccb1b] text-[#181818] text-xl rounded-md hover:bg-[#FFC700] transition-all font-medium`}>
+                View Our Services
+              </button>
+            </div>
           </div>
         )}
       </div>
 
       {/* FOOTER */}
-      <div className="relative bg-[#004c4c] p-8 lg:p-12 border-t-4 border-[#004c4c] mt-12">
+      <div className="relative bg-[#004c4c] p-8 lg:p-12 border-t-4 border-[#004c4c]">
         <div className="flex flex-col lg:flex-row lg:justify-between">
           <div className="">
             <h5 className={`${inter.className} text-gray-100 text-xl font-semibold border-b border-[#FFD700] w-fit pb-1 mb-6`}>Contact Us</h5>

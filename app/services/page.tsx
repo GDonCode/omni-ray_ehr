@@ -3,7 +3,9 @@
 import styles from "./services.module.css";
 import Image from "next/image";
 import Link from "next/link";
+import { useLocation } from 'react-router-dom';
 import { useEffect, useState } from "react";
+import { useRouter } from 'next/navigation';
 import localFont from "next/font/local";
 import { Menu, Calendar, ChevronRight, DollarSign, MapPin, Clock, Star } from 'lucide-react';
 
@@ -22,9 +24,49 @@ const inter_heading = localFont ({
 const inter = localFont ({
   src: "../fonts/Inter/Inter-Regular.otf"
 })
+const tt_wellingtons_demi = localFont ({
+  src: "../fonts/TT_Wellingtons/TT Wellingtons Trial DemiBold.otf"
+})
+const tt_wellingtons = localFont ({
+  src: "../fonts/TT_Wellingtons/TT Wellingtons Trial Regular.otf"
+})
 
-export default function Services(){
-  const [activeItem, setActiveItem] = useState('home');
+type ContactMethod = 'email' | 'whatsapp' | null;
+type PersonalInfo = {
+  firstName: string;
+  lastName: string;
+  email: string;
+  phone: string;
+  contactMethod: ContactMethod;
+  dob: string;
+  notes: string;
+  terms: boolean;
+};
+
+type BookingData = {
+  selectedService: string | null;
+  selectedDate: Date | null;
+  selectedTime: string | null;
+  personalInfo: PersonalInfo;
+};
+
+export default function Services(){ const router = useRouter();
+  const [bookingData, setBookingData] = useState<BookingData>({
+        selectedService: null,
+        selectedDate: null,
+        selectedTime: null,
+        personalInfo: {
+          firstName: '',
+          lastName: '',
+          email: '',
+          phone: '',
+          dob: '',   
+          contactMethod: null,    
+          notes: '', 
+          terms: false
+        }
+      });
+  const [activeItem, setActiveItem] = useState<string>('services');
   const navItems = [
     { id: 'home', label: 'Home', href: '/' },
     { id: 'services', label: 'Services', href: '#' },
@@ -32,6 +74,18 @@ export default function Services(){
     { id: 'help', label: 'Help', href: '/help' },
     { id: 'contact', label: 'Contact', href: '/contact' }
   ];
+  useEffect(() => {
+    const currentPath = window.location.pathname;
+    const currentItem = navItems.find(item => {
+      // For other pages
+      return currentPath.startsWith(item.href) && item.href !== '/';
+    });
+    
+    if (currentItem) {
+      setActiveItem(currentItem.id);
+    }
+  }, []);
+
 
   const [isOpen, setIsOpen] = useState(false);
    const toggleMenu = () => {
@@ -63,24 +117,25 @@ export default function Services(){
         { 
           name: 'General Consultation', 
           duration: '30 min', 
-          price: 'From $85',
-          description: 'Comprehensive oral health assessment and treatment planning.',
+          price: '13,000',
+          description: 'Complete oral health assessment to find and fix any issues.',
           details: 'Our experienced dentists examine your teeth, gums, and overall oral health. We identify any issues early and create a personalized treatment plan.',
           when: ['First visit or annual checkup', 'Dental concerns or pain', 'Second opinion needed']
         },
         { 
           name: 'Dental Cleaning', 
-          duration: '45 min', 
-          price: 'From $120',
-          description: 'Professional teeth cleaning to remove plaque and tartar buildup.',
+          icon: '/service_icons/tooth-cleaning_036d6d.png',
+          duration: '60 min', 
+          price: '15,000',
+          description: 'A+ teeth cleaning to remove plaque and tartar buildup.',
           details: 'Our hygienists thoroughly clean your teeth, removing hardened plaque that regular brushing can\'t reach. We polish your teeth and provide personalized oral care advice.',
           when: ['Every 6 months for healthy teeth', 'Prevent cavities and gum disease', 'Freshen breath and brighten smile']
         },
         { 
           name: 'X-Rays & Imaging', 
           duration: '15 min', 
-          price: 'From $60',
-          description: 'Digital X-rays to detect issues not visible during examination.',
+          price: '10,000',
+          description: 'Clear digital imaging to detect issues inside a tooth.',
           details: 'Modern digital X-rays use minimal radiation to show detailed images of your teeth, roots, and jaw bone. Helps detect cavities, infections, and bone loss early.',
           when: ['Part of comprehensive exam', 'Diagnosing tooth pain', 'Planning treatment procedures']
         }
@@ -88,49 +143,49 @@ export default function Services(){
       restorative: [
         { 
           name: 'Tooth Filling', 
-          duration: '30-60 min', 
-          price: 'From $80',
-          description: 'Repair cavities with natural-looking composite fillings.',
+          duration: '20 min per filling', 
+          price: '13,000 ~',
+          description: 'Repair cavities with solid composite fillings.',
           details: 'We remove decay and fill the cavity with tooth-colored composite material that blends seamlessly with your natural teeth. Quick, comfortable procedure prevents further damage.',
           when: ['Cavity or tooth decay', 'Sensitivity to hot/cold', 'Visible holes or dark spots', 'Pain when chewing']
         },
         { 
           name: 'Root Canal Treatment', 
-          duration: '60-90 min', 
-          price: 'From $300',
-          description: 'Save infected teeth and eliminate pain with gentle root canal therapy.',
+          duration: 'may require multiple visits', 
+          price: '45,000 ~',
+          description: 'Precise operation to safely repair an infected tooth.',
           details: 'When tooth pulp becomes infected, root canal treatment removes the infection, cleans the canal, and seals it. Modern techniques make the procedure comfortable and pain-free.',
           when: ['Severe toothache', 'Prolonged sensitivity', 'Swollen or tender gums', 'Darkening of tooth']
         },
         { 
           name: 'Tooth Extraction', 
           duration: '30-45 min', 
-          price: 'From $100',
-          description: 'Safe removal of damaged or problematic teeth.',
+          price: '15,000',
+          description: 'Cleanly remove any damaged or problematic teeth.',
           details: 'Sometimes extraction is necessary to prevent infection spread or make room for orthodontics. We use local anesthetic and gentle techniques for minimal discomfort.',
           when: ['Severely damaged tooth', 'Advanced decay', 'Crowding issues', 'Impacted tooth']
         },
         { 
           name: 'Wisdom Tooth Removal', 
           duration: '45-90 min', 
-          price: 'From $200',
-          description: 'Expert removal of impacted or problematic wisdom teeth.',
+          price: '20,000',
+          description: 'Get rid of the pain with a quick, safe extraction.',
           details: 'Wisdom teeth often cause crowding, pain, or infections. We safely remove them to prevent future complications, using sedation options for your comfort.',
           when: ['Pain in back of mouth', 'Swelling or infection', 'Crowding other teeth', 'Preventive removal']
         },
         { 
           name: 'Crowns & Bridges', 
-          duration: '2 visits', 
-          price: 'From $500',
-          description: 'Restore damaged teeth or replace missing teeth with custom prosthetics.',
+          duration: '2-3 visits', 
+          price: '80,000',
+          description: 'Add custom prosthetics to restore damaged or missing teeth.',
           details: 'Crowns cap damaged teeth for strength and appearance. Bridges replace missing teeth by anchoring to neighboring teeth. Both are custom-made to match your natural smile.',
           when: ['Cracked or broken tooth', 'After root canal', 'Missing one or more teeth', 'Severely worn tooth']
         },
         { 
           name: 'Dentures', 
-          duration: 'Multiple visits', 
-          price: 'From $800',
-          description: 'Replace multiple missing teeth with comfortable, natural-looking dentures.',
+          duration: '3-5 visits', 
+          price: '125,000',
+          description: 'Regain confidence in your smile with comfortable, natural-looking dentures.',
           details: 'Full or partial dentures restore your ability to eat and speak comfortably. We create custom-fitted dentures that look natural and feel secure.',
           when: ['Missing multiple teeth', 'Full tooth loss', 'Existing dentures need replacement', 'Can\'t have implants']
         }
@@ -139,7 +194,7 @@ export default function Services(){
         { 
           name: 'Veneers & Smile Design', 
           duration: '2-3 visits', 
-          price: 'From $600/tooth',
+          price: '300000/tooth',
           description: 'Transform your smile with custom porcelain veneers.',
           details: 'Thin porcelain shells bonded to front teeth correct color, shape, and alignment issues. We design your dream smile with digital planning and expert craftsmanship.',
           when: ['Discolored teeth', 'Chipped or worn teeth', 'Gaps between teeth', 'Misshapen teeth']
@@ -147,7 +202,7 @@ export default function Services(){
         { 
           name: 'Teeth Whitening', 
           duration: '60 min', 
-          price: 'From $350',
+          price: '50,000',
           description: 'Professional whitening for a brighter, more confident smile.',
           details: 'Our professional-grade whitening system safely lightens teeth several shades in one visit. Much more effective than over-the-counter products with longer-lasting results.',
           when: ['Stained or yellowed teeth', 'Before special events', 'After braces removal', 'Boost confidence']
@@ -155,49 +210,55 @@ export default function Services(){
       ]
     };
     const [expandedService, setExpandedService] = useState<string | null>(null);
-  
   return(
     <div className="bg-[#EAF3F7]">
       <div className={`${styles.background}`}>
       </div>
 
       {/* Header */}
-      <div className={`backdrop-blur-md shadow-lg z-20 py-2 fixed top-0 flex items-center justify-between px-4 w-full bg-[#036d6d]`}>
-        <Link href={"/"} className="flex items-center gap-2">
-          <Image src={"/aurelia-dental_logo.png"} alt="Logo" width={75} height={75} className="cursor-pointer"/>
-          <h1 className={`${levenim.className} text-white lg:text-4xl text-2xl font-bold items-center flex flex-col mt-2 tracking-widest`}>
-            Aurelia <span className="block -mt-1 text-white">Dental</span>
-          </h1>
-        </Link>
-        <nav className={`${inter.className} hidden lg:block`}>
-          <ul className="flex items-center gap-12 font-medium text-lg">
-            {navItems.map((item) => (
-              <li key={item.id}>
-                <a
-                  href={item.href}
-                  onClick={(e) => {
-                    e.preventDefault();
-                    setActiveItem(item.id);
-                  }}
-                  className={`
-                    cursor-pointer transition-all duration-200
-                    ${activeItem === item.id 
-                      ? 'text-[#E6C84F] font-bold' 
-                      : 'text-white hover:text-[#E6C84F] hover:border-b-2 hover:border-[#E6C84F]'
-                    }
-                  `}
-                >
-                  {item.label}
-                </a>
-              </li>
-            ))}
-          </ul>
-        </nav>
-        <div className="flex items-center gap-2 lg:hidden ml-auto mr-1">
-          <button onClick={() => setIsOpen(prev => !prev)} className="block lg:hidden py-2 px-4 rounded-xs border-2 border-[#eccb1b] bg-[#eccb1b]">
-            <span className={`${inter_heading.className} text-[#181818] font-extrabold tracking-widest`}>MENU</span>
-          </button>
-        </div>
+      <div className={`backdrop-blur-md shadow-lg z-20 fixed top-0 w-full flex flex-col`}>
+        <Link href={"https://www.google.com/maps?client=firefox-b-d&um=1&ie=UTF-8&fb=1&gl=jm&sa=X&geocode=Kess0v_mK9qOMblqgL_gLwtH&daddr=40-41,+Overton+Plaza,+49+Union+Street,+Montego+Bay"} className={`${inter_heading.className} w-full bg-[#82bfbf] text-[#181818] text-[0.8rem] lg:text-[1rem] flex items-center gap-1 py-2 px-2`}> 
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor" className="size-4 text-[#181818] group-hover:scale-105 transition-all">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
+              <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1 1 15 0Z" />
+            </svg>
+            <p className={`${tt_wellingtons_demi.className}`}>Shop 40, 41 Overton Plaza</p>
+            <p className={`${tt_wellingtons_demi.className} text-right ml-auto`}>click for map</p>
+          </Link>
+          <div className="w-full bg-[#036d6d] px-4 lg:px-14 flex items-center justify-between py-2">
+            <Link href={"/"} className="flex items-center gap-3 lg:gap-5">
+              <Image src={"/aurelia-dental_logo.png"} alt="Logo" width={75} height={75} className="cursor-pointer lg:w-[90px] lg:h-[90px]"/>
+              <h1 className={`${levenim.className} text-[#f6d212] font-medium lg:text-5xl text-[2rem] items-center flex flex-col tracking-widest`}>
+                aurelia <span className="block -mt-3 lg:-mt-2 ml-3 lg:ml-10 text-white text-[1.5rem] lg:text-[2rem] font-medium uppercase">Dental</span>
+              </h1>
+            </Link>
+            <nav className={`${tt_wellingtons_demi.className} hidden lg:block`}>
+              <ul className="flex items-center gap-12 font-medium text-xl">
+                {navItems.map((item) => (
+                  <li key={item.id}>
+                    <a
+                      href={item.href}
+                      className={`
+                        cursor-pointer transition-all duration-200
+                        ${activeItem === item.id 
+                          ? 'text-[#f6d212] font-bold border-b-2 border-[#f6d212]' 
+                          : 'text-white hover:text-[#f6d212] hover:border-b-2 hover:border-[#f6d212]'
+                        }
+                      `}
+                    >
+                      {item.label}
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </nav>
+            <div className="flex items-center gap-2 lg:hidden ml-auto mr-1">
+              <button onClick={() => setIsOpen(prev => !prev)} className="block lg:hidden py-2 px-4 rounded-xs border-2 border-[#ffd808] bg-[#ffd808]">
+                <span className={`${tt_wellingtons_demi.className} text-[#181818] font-extrabold tracking-widest`}>MENU</span>
+              </button>
+            </div>
+          </div>
+
       </div>
       {/* Mobile Nav */}
       <nav className={`fixed right-0 top-0 w-70 h-fit bg-gradient-to-br from-white to-gray-50 z-50 shadow-2xl transform transition-transform duration-500 ease-out ${isOpen ? 'translate-x-0' : 'translate-x-full'}`}>
@@ -248,20 +309,23 @@ export default function Services(){
       </div>
       
       {/* Main */}
-      <div className="mt-22 p-6 bg-[#058080]">
+      <div className="mt-29 p-6 lg:p-0 bg-[#058080]">
         <div className="max-w-7xl mx-auto">
-          <div className="lg:p-12">
-            <h1 className={`${inter_heading.className} text-3xl lg:text-4xl font-bold text-[#faf9f6] mb-3`}>
+          <div className="lg:pt-16 lg:pb-10 w-full">
+            <h1 className={`${tt_wellingtons_demi.className} text-3xl lg:text-4xl font-bold text-[#faf9f6] mb-3 lg:text-center`}>
               Premier Dental Services in Montego Bay
             </h1>
-            <p className={`${inter.className} text-[#faf9f6] text-lg mb-6`}>
-              Comprehensive dental care from routine cleanings to smile transformations. Expert dentists, modern equipment, and flexible scheduling.
+            <p className={`${tt_wellingtons.className} text-[#faf9f6] text-lg font-semibold mb-6 lg:hidden lg:text-center`}>
+              Complete dental care from routine cleanings to smile transformations. Expert dentists, modern equipment, and flexible scheduling.
+            </p>
+            <p className={`${tt_wellingtons.className} text-[#faf9f6] text-lg font-semibold mb-8 lg:text-center hidden lg:block`}>
+              Complete dental care from routine cleanings to smile transformations. <br/>Expert dentists, modern equipment, and flexible scheduling.
             </p>
             
-            <div className="flex flex-wrap gap-6 text-[#faf9f6]">
+            <div className="flex flex-wrap gap-6 text-[#faf9f6] lg:justify-center">
               <div className="flex items-center">
                 <MapPin className="w-5 h-5 mr-2 text-[#eccb1b]" />
-                <span className={`${inter.className} text-[#faf9f6]`}>Montego Bay, St. James</span>
+                <span className={`${inter.className} text-[#faf9f6]`}>Overton Plaza, Montego Bay, St. James</span>
               </div>
               <div className="flex items-center">
                 <Star className="w-5 h-5 mr-2 text-[#eccb1b] fill-[#eccb1b]" />
@@ -276,12 +340,12 @@ export default function Services(){
         </div>
       </div>
 
-      <div className="bg-[#EAF3F7] lg:mx-auto mx-auto p-6 relative backdrop-blur-md shadow-lg z-10">
+      <div className="bg-[#EAF3F7] mx-auto p-6 lg:p-8 relative backdrop-blur-md shadow-lg z-10">
         {/* Preventative Care Section */}
         <div className="mb-12">
           <div className="mb-6">
-            <h2 className={`${inter_heading.className} text-3xl font-bold text-[#036d6d] mb-2`}>Routine & Preventative Care</h2>
-            <p className={`${inter.className} text-gray-700`}>Regular checkups and cleanings that help prevent dental issues and keep your smile healthy year-round.</p>
+            <h2 className={`${tt_wellingtons_demi.className} text-2xl font-bold text-[#036d6d] mb-2`}><span className="uppercase text-3xl">Maintain</span> your smile.</h2>
+            <p className={`${tt_wellingtons.className} text-gray-700 font-semibold`}>Keep your smile healthy with regular checkups to clean, screen and maintain it.</p>
           </div>
 
           <div className="grid lg:grid-cols-3 grid-cols-1 gap-6">
@@ -293,7 +357,7 @@ export default function Services(){
                 <div key={serviceId} className="bg-white rounded-lg shadow-lg overflow-hidden border border-gray-200">
                   <div className="py-6 px-4">
                     <div className="flex flex-col mb-4">
-                      <h3 className={`${inter_heading.className} text-2xl font-bold text-[#036d6d]`}>{service.name}</h3>
+                      <h3 className={`${tt_wellingtons_demi.className} text-2xl font-bold text-[#036d6d]`}>{service.name}</h3>
                       <div className="text-left mt-3">
                         <div className="flex items-center">
                           <DollarSign className="w-5 h-5 mr-2 text-[#036d6d]" />
@@ -306,18 +370,18 @@ export default function Services(){
                       </div>
                     </div>
                       
-                    <p className={`${inter.className} text-[#4A5568] text-lg mb-6`}>{service.description}</p>
+                    <p className={`${tt_wellingtons.className} text-gray-700 font-semibold mb-6`}>{service.description}</p>
                       
                     {isExpanded && (
                       <div className="space-y-4 mb-6 pt-4 border-t">
                         <div>
-                          <h4 className={`${inter_heading.className} font-bold text-lg text-[#036d6d] mb-2`}>What to Expect</h4>
-                          <p className={`${inter.className} text-[#181818] text-lg`}>{service.details}</p>
+                          <h4 className={`${tt_wellingtons_demi.className} font-bold text-xl text-[#036d6d] mb-2`}>What to Expect</h4>
+                          <p className={`${tt_wellingtons.className} text-gray-700 font-semibold  text-md`}>{service.details}</p>
                         </div>
               
                         <div>
-                          <h4 className={`${inter_heading.className} font-bold text-lg text-[#036d6d] mb-2`}>When You Need This</h4>
-                          <ul className={`${inter.className} text-[#181818] text-lg space-y-1`}>
+                          <h4 className={`${tt_wellingtons_demi.className} font-bold text-xl text-[#036d6d] mb-2`}>When You Need This</h4>
+                          <ul className={`${tt_wellingtons.className} text-gray-700 font-semibold  text-md space-y-1`}>
                             {service.when.map((item, idx) => (
                               <li key={idx}>• {item}</li>
                             ))}
@@ -326,19 +390,21 @@ export default function Services(){
                       </div>
                     )}
                       
-                    <button className={`${inter_heading.className} w-full bg-[#eccb1b] text-[1.28rem] text-[#181818] py-3 rounded-md font-bold mb-3 hover:bg-[#E6C84F]`}>
-                      Book {service.name}
-                    </button>
+                      <button
+                        onClick={() => {
+                        router.push(`/appointment?service=${encodeURIComponent(service.name)}`);
+                      }}  
+                        className={`${tt_wellingtons_demi.className} w-full bg-[#f6d212] text-[1.28rem] text-[#181818] py-3 rounded-md font-bold mb-3 hover:bg-[#E6C84F] ${isExpanded ? 'animate-pulse-scale' : ''}`}
+                      >
+                        Book {service.name}
+                      </button>
                       
                     <button 
                       onClick={() => setExpandedService(isExpanded ? null : serviceId)} 
-                      className={`${inter_heading.className} text-[#036d6d] text-lg font-bold flex items-center border-2 border-[#036d6d] rounded-md px-4 py-2`}
+                      className={`${tt_wellingtons_demi.className} text-[#036d6d] text-lg font-bold flex items-center border-2 border-[#036d6d] rounded-md px-4 py-2`}
                     >
                       {isExpanded ? 'Show Less' : 'Learn More'}
-                      <ChevronRight className={`
-                            w-8 h-8 ml-1 transition-transform
-                            ${isExpanded ? 'rotate-270' : styles.chevronNudge}
-                          `} />
+                      <ChevronRight className={`w-8 h-8 ml-1 ${isExpanded ? 'animate-chevron-left' : 'animate-chevron-right'}`} />
                     </button>
                   </div>
                 </div>
@@ -346,12 +412,12 @@ export default function Services(){
             })}
           </div>
         </div>
-
+  
         {/* Restorative Care Section */}
         <div className="mb-12">
           <div className="mb-6">
-            <h2 className={`${inter_heading.className} text-3xl font-bold text-[#036d6d] mb-2`}>Restorative Care</h2>
-            <p className={`${inter.className} text-gray-700`}>Treatments designed to repair damaged teeth, restore function, and protect your long-term oral health.</p>
+            <h2 className={`${tt_wellingtons_demi.className} text-2xl font-bold text-[#036d6d] mb-2`}><span className="uppercase text-3xl">Repair</span> your smile.</h2>
+            <p className={`${tt_wellingtons.className} text-gray-700 font-semibold`}>Treatments designed to repair damaged teeth, restore function, and protect your long-term oral health.</p>
           </div>
           
           <div className="grid lg:grid-cols-3 grid-cols-1 gap-6">
@@ -363,7 +429,7 @@ export default function Services(){
                 <div key={serviceId} className="bg-white rounded-lg shadow-lg overflow-hidden border border-gray-200">
                   <div className="p-6">
                     <div className="flex flex-col mb-4">
-                      <h3 className={`${inter_heading.className} text-2xl font-bold text-[#036d6d]`}>{service.name}</h3>
+                      <h3 className={`${tt_wellingtons_demi.className} text-2xl font-bold text-[#036d6d]`}>{service.name}</h3>
                       <div className="text-left mt-3">
                         <div className="flex items-center">
                           <DollarSign className="w-5 h-5 mr-2 text-[#036d6d]" />
@@ -376,18 +442,18 @@ export default function Services(){
                       </div>
                     </div>
                       
-                    <p className={`${inter.className} text-[#4A5568] text-lg mb-6`}>{service.description}</p>
+                    <p className={`${tt_wellingtons.className} text-gray-700 font-semibold mb-6`}>{service.description}</p>
                       
                     {isExpanded && (
                       <div className="space-y-4 mb-6 pt-4 border-t">
                         <div>
-                          <h4 className={`${inter_heading.className} font-bold text-lg text-[#036d6d] mb-2`}>What to Expect</h4>
-                          <p className={`${inter.className} text-[#181818] text-lg`}>{service.details}</p>
+                          <h4 className={`${tt_wellingtons_demi.className} font-bold text-xl text-[#036d6d] mb-2`}>What to Expect</h4>
+                          <p className={`${tt_wellingtons.className} text-gray-700 font-semibold  text-md`}>{service.details}</p>
                         </div>
               
                         <div>
-                          <h4 className={`${inter_heading.className} font-bold text-lg text-[#036d6d] mb-2`}>When You Need This</h4>
-                          <ul className={`${inter.className} text-[#181818] text-lg space-y-1`}>
+                          <h4 className={`${tt_wellingtons_demi.className} font-bold text-xl text-[#036d6d] mb-2`}>When You Need This</h4>
+                          <ul className={`${tt_wellingtons.className} text-gray-700 font-semibold  text-md space-y-1`}>
                             {service.when.map((item, idx) => (
                               <li key={idx}>• {item}</li>
                             ))}
@@ -396,13 +462,18 @@ export default function Services(){
                       </div>
                     )}
                       
-                    <button className={`${inter_heading.className} w-full bg-[#eccb1b] text-[1.28rem] text-[#181818] py-3 rounded-md font-bold mb-3 hover:bg-[#E6C84F]`}>
+                    <button
+                        onClick={() => {
+                        router.push(`/appointment?service=${encodeURIComponent(service.name)}`);
+                      }}  
+                        className={`${tt_wellingtons_demi.className} w-full bg-[#f6d212] text-[1.28rem] text-[#181818] py-3 rounded-md font-bold mb-3 hover:bg-[#E6C84F] ${isExpanded ? 'animate-pulse-scale' : ''}`}
+                      >
                       Book {service.name}
                     </button>
                       
                     <button 
                       onClick={() => setExpandedService(isExpanded ? null : serviceId)} 
-                      className={`${inter_heading.className} text-[#036d6d] text-lg font-bold flex items-center border-2 border-[#036d6d] rounded-md px-4 py-2`}
+                      className={`${tt_wellingtons_demi.className} text-[#036d6d] text-lg font-bold flex items-center border-2 border-[#036d6d] rounded-md px-4 py-2`}
                     >
                       {isExpanded ? 'Show Less' : 'Learn More'}
                       <ChevronRight className={`
@@ -420,8 +491,8 @@ export default function Services(){
         {/* Cosmetic Section */}
         <div className="mb-6">
             <div className="mb-6">
-              <h2 className={`${inter_heading.className} text-3xl font-bold text-[#036d6d] mb-2`}>Cosmetic Procedures</h2>
-              <p className={`${inter.className} text-gray-700`}>Enhancements that improve the appearance of your smile by refining shape, color, and alignment.</p>
+              <h2 className={`${tt_wellingtons_demi.className} text-2xl font-bold text-[#036d6d] mb-2`}><span className="uppercase text-3xl">Transform</span> your smile.</h2>
+              <p className={`${tt_wellingtons.className} text-gray-700 font-semibold`}>Enhance the shape, color and/or alignment of your smile.</p>
             </div>
           
           <div className="grid lg:grid-cols-3 grid-cols-1 gap-6">
@@ -433,7 +504,7 @@ export default function Services(){
                 <div key={serviceId} className="bg-white rounded-lg shadow-lg overflow-hidden border border-gray-200">
                   <div className="p-6">
                     <div className="flex flex-col mb-4">
-                      <h3 className={`${inter_heading.className} text-2xl font-bold text-[#036d6d]`}>{service.name}</h3>
+                      <h3 className={`${tt_wellingtons_demi.className} text-2xl font-bold text-[#036d6d]`}>{service.name}</h3>
                       <div className="text-left mt-3">
                         <div className="flex items-center">
                           <DollarSign className="w-5 h-5 mr-2 text-[#036d6d]" />
@@ -446,18 +517,18 @@ export default function Services(){
                       </div>
                     </div>
                       
-                    <p className={`${inter.className} text-[#4A5568] text-lg mb-6`}>{service.description}</p>
+                    <p className={`${tt_wellingtons.className} text-gray-700 font-semibold mb-6`}>{service.description}</p>
                       
                     {isExpanded && (
                       <div className="space-y-4 mb-6 pt-4 border-t">
                         <div>
-                          <h4 className={`${inter_heading.className} font-bold text-lg text-[#036d6d] mb-2`}>What to Expect</h4>
-                          <p className={`${inter.className} text-[#181818] text-lg`}>{service.details}</p>
+                          <h4 className={`${tt_wellingtons_demi.className} font-bold text-xl text-[#036d6d] mb-2`}>What to Expect</h4>
+                          <p className={`${tt_wellingtons.className} text-gray-700 font-semibold  text-md`}>{service.details}</p>
                         </div>
               
                         <div>
-                          <h4 className={`${inter_heading.className} font-bold text-lg text-[#036d6d] mb-2`}>When You Need This</h4>
-                          <ul className={`${inter.className} text-[#181818] text-lg space-y-1`}>
+                          <h4 className={`${tt_wellingtons_demi.className} font-bold text-xl text-[#036d6d] mb-2`}>When You Need This</h4>
+                          <ul className={`${tt_wellingtons.className} text-gray-700 font-semibold  text-md space-y-1`}>
                             {service.when.map((item, idx) => (
                               <li key={idx}>• {item}</li>
                             ))}
@@ -466,19 +537,24 @@ export default function Services(){
                       </div>
                     )}
                       
-                    <button className={`${inter_heading.className} w-full bg-[#eccb1b] text-[1.28rem] text-[#181818] py-3 rounded-md font-bold mb-3 hover:bg-[#E6C84F]`}>
+                    <button
+                        onClick={() => {
+                        router.push(`/appointment?service=${encodeURIComponent(service.name)}`);
+                      }}  
+                        className={`${tt_wellingtons_demi.className} w-full bg-[#f6d212] text-[1.28rem] text-[#181818] py-3 rounded-md font-bold mb-3 hover:bg-[#E6C84F] ${isExpanded ? 'animate-pulse-scale' : ''}`}
+                      >
                       Book {service.name}
                     </button>
                       
                     <button 
                       onClick={() => setExpandedService(isExpanded ? null : serviceId)} 
-                      className={`${inter_heading.className} text-[#036d6d] text-lg font-bold flex items-center border-2 border-[#036d6d] rounded-md px-4 py-2`}
+                      className={`${tt_wellingtons_demi.className} text-[#036d6d] text-lg font-bold flex items-center border-2 border-[#036d6d] rounded-md px-4 py-2`}
                     >
                       {isExpanded ? 'Show Less' : 'Learn More'}
                       <ChevronRight className={`
-                            w-8 h-8 ml-1 transition-transform
-                            ${isExpanded ? 'rotate-270' : styles.chevronNudge}
-                          `} />
+                        w-8 h-8 ml-1
+                        ${isExpanded ? styles.chevronNudgeExpanded : styles.chevronNudge}
+                      `} />
                     </button>
                   </div>
                 </div>
@@ -489,139 +565,139 @@ export default function Services(){
       </div>
       
       {/* FOOTER */}
-                  <div className="relative bg-[#004c4c] p-8 lg:p-12 border-t-4 border-[#004c4c] mt-12">
-                    <div className="flex flex-col lg:flex-row lg:justify-between">
-                      <div className="">
-                        <h5 className={`${inter.className} text-gray-100 text-xl font-semibold border-b border-[#FFD700] w-fit pb-1 mb-6`}>Contact Us</h5>
-                        <div className="flex flex-col gap-5">
-                          <div className="flex gap-6">
-                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="size-5 text-[#D1D5DB]">
-                              <path strokeLinecap="round" strokeLinejoin="round" d="M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
-                              <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1 1 15 0Z" />
-                            </svg>
-                            <p className="text-[#D1D5DB] -mt-1 text-lg tracking-wide">Shop 40, 41<br></br>
-                              Overton Plaza<br></br>
-                              49 Union Street, Montego Bay, Jamaica
-                            </p>
-                          </div>
-                          <div className="flex gap-6 items-center group cursor-pointer">
-                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="size-5 text-[#D1D5DB] group-hover:text-[#A7C4DF]">
-                              <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 6.75c0 8.284 6.716 15 15 15h2.25a2.25 2.25 0 0 0 2.25-2.25v-1.372c0-.516-.351-.966-.852-1.091l-4.423-1.106c-.44-.11-.902.055-1.173.417l-.97 1.293c-.282.376-.769.542-1.21.38a12.035 12.035 0 0 1-7.143-7.143c-.162-.441.004-.928.38-1.21l1.293-.97c.363-.271.527-.734.417-1.173L6.963 3.102a1.125 1.125 0 0 0-1.091-.852H4.5A2.25 2.25 0 0 0 2.25 4.5v2.25Z" />
-                            </svg>
-                            <a href="#" className="text-[#D1D5DB] group-hover:text-[#A7C4DF]  text-lg tracking-wide">+1 (876) 691 9136</a>
-                          </div>
-                          <div className="flex gap-6 items-center group cursor-pointer">
-                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="size-5 text-[#D1D5DB] group-hover:text-[#A7C4DF]">
-                              <path strokeLinecap="round" strokeLinejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 0 1-2.25 2.25h-15a2.25 2.25 0 0 1-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0 0 19.5 4.5h-15a2.25 2.25 0 0 0-2.25 2.25m19.5 0v.243a2.25 2.25 0 0 1-1.07 1.916l-7.5 4.615a2.25 2.25 0 0 1-2.36 0L3.32 8.91a2.25 2.25 0 0 1-1.07-1.916V6.75" />
-                            </svg>
-                            <a href="#" className="text-[#D1D5DB] group-hover:text-[#A7C4DF] text-lg tracking-wide">aureliadental@gmail.com</a>
-                          </div>
-                        </div>
-                      </div>
-                      <div className="mt-12">
-                        <h5 className={`${inter.className} text-gray-100 text-xl font-semibold border-b border-[#FFD700] w-fit pb-1 mb-6`}>Opening Hours</h5>
-                        <div className="flex flex-col gap-6">
-                          <div className="flex border-b border-b-gray-100 pb-1">
-                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="size-5 text-white mr-2">
-                              <path strokeLinecap="round" strokeLinejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 0 1 2.25-2.25h13.5A2.25 2.25 0 0 1 21 7.5v11.25m-18 0A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75m-18 0v-7.5A2.25 2.25 0 0 1 5.25 9h13.5A2.25 2.25 0 0 1 21 11.25v7.5m-9-6h.008v.008H12v-.008ZM12 15h.008v.008H12V15Zm0 2.25h.008v.008H12v-.008ZM9.75 15h.008v.008H9.75V15Zm0 2.25h.008v.008H9.75v-.008ZM7.5 15h.008v.008H7.5V15Zm0 2.25h.008v.008H7.5v-.008Zm6.75-4.5h.008v.008h-.008v-.008Zm0 2.25h.008v.008h-.008V15Zm0 2.25h.008v.008h-.008v-.008Zm2.25-4.5h.008v.008H16.5v-.008Zm0 2.25h.008v.008H16.5V15Z" />
-                            </svg>
-                            <div className="text-[#D1D5DB] w-full flex justify-between gap-12 text-lg tracking-wide">
-                              <p>MON - FRI</p>
-                              <p>10:00am - 6:00pm</p>
+      <div className="relative bg-[#004c4c] p-8 lg:p-12 border-t-4 border-[#004c4c] lg:mt-12">
+                        <div className="flex flex-col lg:flex-row lg:justify-between">
+                          <div className="">
+                            <h5 className={`${tt_wellingtons.className} text-gray-100 text-xl font-semibold border-b border-[#f6d212] w-fit pb-1 mb-6`}>Contact Us</h5>
+                            <div className="flex flex-col gap-5">
+                              <div className="flex gap-6">
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="size-5 text-[#D1D5DB]">
+                                  <path strokeLinecap="round" strokeLinejoin="round" d="M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
+                                  <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1 1 15 0Z" />
+                                </svg>
+                                <p className={`${inter.className} text-[#D1D5DB] -mt-1 text-lg tracking-wide`}>Shop 40, 41<br></br>
+                                  Overton Plaza<br></br>
+                                  49 Union Street, Montego Bay, Jamaica
+                                </p>
+                              </div>
+                              <div className="flex gap-6 items-center group cursor-pointer">
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="size-5 text-[#D1D5DB] group-hover:text-[#A7C4DF]">
+                                  <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 6.75c0 8.284 6.716 15 15 15h2.25a2.25 2.25 0 0 0 2.25-2.25v-1.372c0-.516-.351-.966-.852-1.091l-4.423-1.106c-.44-.11-.902.055-1.173.417l-.97 1.293c-.282.376-.769.542-1.21.38a12.035 12.035 0 0 1-7.143-7.143c-.162-.441.004-.928.38-1.21l1.293-.97c.363-.271.527-.734.417-1.173L6.963 3.102a1.125 1.125 0 0 0-1.091-.852H4.5A2.25 2.25 0 0 0 2.25 4.5v2.25Z" />
+                                </svg>
+                                <a href="#" className={`${inter.className} text-[#D1D5DB] group-hover:text-[#A7C4DF] text-lg tracking-wide`}>+1 (876) 691 9136</a>
+                              </div>
+                              <div className="flex gap-6 items-center group cursor-pointer">
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="size-5 text-[#D1D5DB] group-hover:text-[#A7C4DF]">
+                                  <path strokeLinecap="round" strokeLinejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 0 1-2.25 2.25h-15a2.25 2.25 0 0 1-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0 0 19.5 4.5h-15a2.25 2.25 0 0 0-2.25 2.25m19.5 0v.243a2.25 2.25 0 0 1-1.07 1.916l-7.5 4.615a2.25 2.25 0 0 1-2.36 0L3.32 8.91a2.25 2.25 0 0 1-1.07-1.916V6.75" />
+                                </svg>
+                                <a href="#" className={`${inter.className} text-[#D1D5DB] group-hover:text-[#A7C4DF] text-lg tracking-wide`}>aureliadental@gmail.com</a>
+                              </div>
                             </div>
                           </div>
-                          <div className="flex border-b border-b-gray-100 pb-1">
-                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="size-5 text-white mr-2">
-                              <path strokeLinecap="round" strokeLinejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 0 1 2.25-2.25h13.5A2.25 2.25 0 0 1 21 7.5v11.25m-18 0A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75m-18 0v-7.5A2.25 2.25 0 0 1 5.25 9h13.5A2.25 2.25 0 0 1 21 11.25v7.5m-9-6h.008v.008H12v-.008ZM12 15h.008v.008H12V15Zm0 2.25h.008v.008H12v-.008ZM9.75 15h.008v.008H9.75V15Zm0 2.25h.008v.008H9.75v-.008ZM7.5 15h.008v.008H7.5V15Zm0 2.25h.008v.008H7.5v-.008Zm6.75-4.5h.008v.008h-.008v-.008Zm0 2.25h.008v.008h-.008V15Zm0 2.25h.008v.008h-.008v-.008Zm2.25-4.5h.008v.008H16.5v-.008Zm0 2.25h.008v.008H16.5V15Z" />
-                            </svg>
-                            <div className="text-[#D1D5DB] w-full flex justify-between gap-12 text-lg tracking-wide">
-                              <p>SATURDAY</p>
-                              <p>9:00am - 6:00pm</p>
+                          <div className="lg:mt-0 mt-12">
+                            <h5 className={`${tt_wellingtons.className} text-gray-100 text-xl font-semibold border-b border-[#f6d212] w-fit pb-1 mb-6`}>Opening Hours</h5>
+                            <div className="flex flex-col gap-6">
+                              <div className="flex border-b border-b-gray-100 pb-1">
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="size-5 text-white mr-2">
+                                  <path strokeLinecap="round" strokeLinejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 0 1 2.25-2.25h13.5A2.25 2.25 0 0 1 21 7.5v11.25m-18 0A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75m-18 0v-7.5A2.25 2.25 0 0 1 5.25 9h13.5A2.25 2.25 0 0 1 21 11.25v7.5m-9-6h.008v.008H12v-.008ZM12 15h.008v.008H12V15Zm0 2.25h.008v.008H12v-.008ZM9.75 15h.008v.008H9.75V15Zm0 2.25h.008v.008H9.75v-.008ZM7.5 15h.008v.008H7.5V15Zm0 2.25h.008v.008H7.5v-.008Zm6.75-4.5h.008v.008h-.008v-.008Zm0 2.25h.008v.008h-.008V15Zm0 2.25h.008v.008h-.008v-.008Zm2.25-4.5h.008v.008H16.5v-.008Zm0 2.25h.008v.008H16.5V15Z" />
+                                </svg>
+                                <div className={`${inter.className} text-[#D1D5DB] w-full flex justify-between gap-12 text-lg tracking-wide`}>
+                                  <p>MON - FRI</p>
+                                  <p>10:00am - 6:00pm</p>
+                                </div>
+                              </div>
+                              <div className="flex border-b border-b-gray-100 pb-1">
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="size-5 text-white mr-2">
+                                  <path strokeLinecap="round" strokeLinejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 0 1 2.25-2.25h13.5A2.25 2.25 0 0 1 21 7.5v11.25m-18 0A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75m-18 0v-7.5A2.25 2.25 0 0 1 5.25 9h13.5A2.25 2.25 0 0 1 21 11.25v7.5m-9-6h.008v.008H12v-.008ZM12 15h.008v.008H12V15Zm0 2.25h.008v.008H12v-.008ZM9.75 15h.008v.008H9.75V15Zm0 2.25h.008v.008H9.75v-.008ZM7.5 15h.008v.008H7.5V15Zm0 2.25h.008v.008H7.5v-.008Zm6.75-4.5h.008v.008h-.008v-.008Zm0 2.25h.008v.008h-.008V15Zm0 2.25h.008v.008h-.008v-.008Zm2.25-4.5h.008v.008H16.5v-.008Zm0 2.25h.008v.008H16.5V15Z" />
+                                </svg>
+                                <div className={`${inter.className} text-[#D1D5DB] w-full flex justify-between gap-12 text-lg tracking-wide`}>
+                                  <p>SATURDAY</p>
+                                  <p>9:00am - 6:00pm</p>
+                                </div>
+                              </div>
+                              <div className="flex border-b border-b-gray-100 pb-1">
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="size-5 text-white mr-2">
+                                  <path strokeLinecap="round" strokeLinejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 0 1 2.25-2.25h13.5A2.25 2.25 0 0 1 21 7.5v11.25m-18 0A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75m-18 0v-7.5A2.25 2.25 0 0 1 5.25 9h13.5A2.25 2.25 0 0 1 21 11.25v7.5m-9-6h.008v.008H12v-.008ZM12 15h.008v.008H12V15Zm0 2.25h.008v.008H12v-.008ZM9.75 15h.008v.008H9.75V15Zm0 2.25h.008v.008H9.75v-.008ZM7.5 15h.008v.008H7.5V15Zm0 2.25h.008v.008H7.5v-.008Zm6.75-4.5h.008v.008h-.008v-.008Zm0 2.25h.008v.008h-.008V15Zm0 2.25h.008v.008h-.008v-.008Zm2.25-4.5h.008v.008H16.5v-.008Zm0 2.25h.008v.008H16.5V15Z" />
+                                </svg>
+                                <div className={`${inter.className} text-[#D1D5DB] w-full flex justify-between text-lg tracking-wide`}>
+                                  <p>SUNDAY</p>
+                                  <p>Closed</p>
+                                </div>
+                              </div>
                             </div>
                           </div>
-                          <div className="flex border-b border-b-gray-100 pb-1">
-                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="size-5 text-white mr-2">
-                              <path strokeLinecap="round" strokeLinejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 0 1 2.25-2.25h13.5A2.25 2.25 0 0 1 21 7.5v11.25m-18 0A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75m-18 0v-7.5A2.25 2.25 0 0 1 5.25 9h13.5A2.25 2.25 0 0 1 21 11.25v7.5m-9-6h.008v.008H12v-.008ZM12 15h.008v.008H12V15Zm0 2.25h.008v.008H12v-.008ZM9.75 15h.008v.008H9.75V15Zm0 2.25h.008v.008H9.75v-.008ZM7.5 15h.008v.008H7.5V15Zm0 2.25h.008v.008H7.5v-.008Zm6.75-4.5h.008v.008h-.008v-.008Zm0 2.25h.008v.008h-.008V15Zm0 2.25h.008v.008h-.008v-.008Zm2.25-4.5h.008v.008H16.5v-.008Zm0 2.25h.008v.008H16.5V15Z" />
-                            </svg>
-                            <div className="text-[#D1D5DB] w-full flex justify-between text-lg tracking-wide">
-                              <p>SUNDAY</p>
-                              <p>Closed</p>
+                          <div className="mt-12 lg:mt-0">
+                            <h5 className={`${tt_wellingtons.className} text-gray-100 text-xl font-semibold border-b border-[#f6d212] w-fit pb-1 mb-4`}>Quick Links</h5>
+                            <div className="flex flex-col gap-3">
+                              <div className="flex gap-1 items-center group cursor-pointer">
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="size-4 text-[#D1D5DB] transition-transform duration-200 ease-in-out group-hover:translate-x-1">
+                                  <path strokeLinecap="round" strokeLinejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" />
+                                </svg>
+                                <p className={`${inter.className} text-[#D1D5DB] group-hover:text-[#A7C4DF] text-lg tracking-wide`}>Home</p>
+                              </div>
+                              <div className="flex gap-1 items-center group cursor-pointer">
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="size-4 text-[#D1D5DB] transition-transform duration-200 ease-in-out group-hover:translate-x-1">
+                                  <path strokeLinecap="round" strokeLinejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" />
+                                </svg>
+                                <p className={`${inter.className} text-[#D1D5DB] group-hover:text-[#A7C4DF] text-lg tracking-wide`}>About Us</p>
+                              </div>
+                              <div className="flex gap-1 items-center group cursor-pointer">
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="size-4 text-[#D1D5DB] transition-transform duration-200 ease-in-out group-hover:translate-x-1">
+                                  <path strokeLinecap="round" strokeLinejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" />
+                                </svg>
+                                <p className={`${inter.className} text-[#D1D5DB] group-hover:text-[#A7C4DF] text-lg tracking-wide`}>Services</p>
+                              </div>
+                              <div className="flex gap-1 items-center group cursor-pointer">
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="size-4 text-[#D1D5DB] transition-transform duration-200 ease-in-out group-hover:translate-x-1">
+                                  <path strokeLinecap="round" strokeLinejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" />
+                                </svg>
+                                <p className={`${inter.className} text-[#D1D5DB] group-hover:text-[#A7C4DF] text-lg tracking-wide`}>Contact Us</p>
+                              </div>
+                            </div>
+                          </div>
+                          <div className="mt-12 lg:mt-0">
+                            <h5 className={`${tt_wellingtons.className} text-gray-100 text-xl font-semibold border-b border-[#FFD700] w-fit pb-1 mb-4`}>Our Services</h5>
+                            <div className="flex flex-col gap-3 text-[#D1D5DB]">
+                              <div className="flex gap-1 items-center group cursor-pointer">
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="size-4 text-[#D1D5DB] transition-transform duration-200 ease-in-out group-hover:translate-x-1">
+                                  <path strokeLinecap="round" strokeLinejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" />
+                                </svg>
+                                <p className={`${inter.className} text-[#D1D5DB] group-hover:text-[#A7C4DF] text-lg tracking-wide`}>General Dentistry</p>
+                              </div>
+                              <div className="flex gap-1 items-center group cursor-pointer">
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="size-4 text-[#D1D5DB] transition-transform duration-200 ease-in-out group-hover:translate-x-1">
+                                  <path strokeLinecap="round" strokeLinejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" />
+                                </svg>
+                                <p className={`${inter.className} text-[#D1D5DB] group-hover:text-[#A7C4DF] text-lg tracking-wide`}>Surgical Services</p>
+                              </div>
+                              <div className="flex gap-1 items-center group cursor-pointer">
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="size-4 text-[#D1D5DB] transition-transform duration-200 ease-in-out group-hover:translate-x-1">
+                                  <path strokeLinecap="round" strokeLinejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" />
+                                </svg>
+                                <p className={`${inter.className} text-[#D1D5DB] group-hover:text-[#A7C4DF] text-lg tracking-wide`}>Orthodontics</p>
+                              </div>
+                              <div className="flex gap-1 items-center group cursor-pointer">
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="size-4 text-[#D1D5DB] transition-transform duration-200 ease-in-out group-hover:translate-x-1">
+                                  <path strokeLinecap="round" strokeLinejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" />
+                                </svg>
+                                <p className={`${inter.className} text-[#D1D5DB] group-hover:text-[#A7C4DF] text-lg tracking-wide`}>Cosmetic Dentistry</p>
+                              </div>
                             </div>
                           </div>
                         </div>
-                      </div>
-                      <div className="mt-12">
-                        <h5 className={`${inter.className} text-gray-100 text-xl font-semibold border-b border-[#FFD700] w-fit pb-1 mb-4`}>Quick Links</h5>
-                        <div className="flex flex-col gap-3">
-                          <div className="flex gap-1 items-center group cursor-pointer">
-                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="size-4 text-[#D1D5DB] transition-transform duration-200 ease-in-out group-hover:translate-x-1">
-                              <path strokeLinecap="round" strokeLinejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" />
+                        <div className="flex flex-col items-center border-t border-[#D1D5DB] mt-12 pt-6">
+                          <Image src={"/aurelia-dental_logo.png"} alt={"Alternative Logo"} width={60} height={60}></Image>
+                          <p className={`${inter.className} text-[#D1D5DB]`}>&copy; 2026 Aurelia Dental. All rights reserved.</p>
+                          <button className="p-2 rounded-full bg-[#eef3f9] my-4">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="#35565f" className="size-6 text-[#35565f]">
+                              <path strokeLinecap="round" strokeLinejoin="round" d="m4.5 18.75 7.5-7.5 7.5 7.5" />
+                              <path strokeLinecap="round" strokeLinejoin="round" d="m4.5 12.75 7.5-7.5 7.5 7.5" />
                             </svg>
-                            <p className="text-[#D1D5DB] group-hover:text-[#A7C4DF] text-lg tracking-wide">Home</p>
-                          </div>
-                          <div className="flex gap-1 items-center group cursor-pointer">
-                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="size-4 text-[#D1D5DB] transition-transform duration-200 ease-in-out group-hover:translate-x-1">
-                              <path strokeLinecap="round" strokeLinejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" />
-                            </svg>
-                            <p className="text-[#D1D5DB] group-hover:text-[#A7C4DF] text-lg tracking-wide">About Us</p>
-                          </div>
-                          <div className="flex gap-1 items-center group cursor-pointer">
-                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="size-4 text-[#D1D5DB] transition-transform duration-200 ease-in-out group-hover:translate-x-1">
-                              <path strokeLinecap="round" strokeLinejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" />
-                            </svg>
-                            <p className="text-[#D1D5DB] group-hover:text-[#A7C4DF] text-lg tracking-wide">Services</p>
-                          </div>
-                          <div className="flex gap-1 items-center group cursor-pointer">
-                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="size-4 text-[#D1D5DB] transition-transform duration-200 ease-in-out group-hover:translate-x-1">
-                              <path strokeLinecap="round" strokeLinejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" />
-                            </svg>
-                            <p className="text-[#D1D5DB] group-hover:text-[#A7C4DF] text-lg tracking-wide">Contact Us</p>
-                          </div>
+                          </button>
+                          <p className={`${inter.className} text-sm text-[#D1D5DB] -mb-4`}>Powered by <span className="underline">Omni-Ray Software Solutions</span></p>
                         </div>
-                      </div>
-                      <div className="mt-12">
-                        <h5 className={`${inter.className} text-gray-100 text-xl font-semibold border-b border-[#FFD700] w-fit pb-1 mb-4`}>Our Services</h5>
-                        <div className="flex flex-col gap-3 text-[#D1D5DB]">
-                          <div className="flex gap-1 items-center group cursor-pointer">
-                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="size-4 text-[#D1D5DB] transition-transform duration-200 ease-in-out group-hover:translate-x-1">
-                              <path strokeLinecap="round" strokeLinejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" />
-                            </svg>
-                            <p className="text-[#D1D5DB] group-hover:text-[#A7C4DF] text-lg tracking-wide">General Dentistry</p>
-                          </div>
-                          <div className="flex gap-1 items-center group cursor-pointer">
-                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="size-4 text-[#D1D5DB] transition-transform duration-200 ease-in-out group-hover:translate-x-1">
-                              <path strokeLinecap="round" strokeLinejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" />
-                            </svg>
-                            <p className="text-[#D1D5DB] group-hover:text-[#A7C4DF] text-lg tracking-wide">Surgical Services</p>
-                          </div>
-                          <div className="flex gap-1 items-center group cursor-pointer">
-                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="size-4 text-[#D1D5DB] transition-transform duration-200 ease-in-out group-hover:translate-x-1">
-                              <path strokeLinecap="round" strokeLinejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" />
-                            </svg>
-                            <p className="text-[#D1D5DB] group-hover:text-[#A7C4DF] text-lg tracking-wide">Orthodontics</p>
-                          </div>
-                          <div className="flex gap-1 items-center group cursor-pointer">
-                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="size-4 text-[#D1D5DB] transition-transform duration-200 ease-in-out group-hover:translate-x-1">
-                              <path strokeLinecap="round" strokeLinejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" />
-                            </svg>
-                            <p className="text-[#D1D5DB] group-hover:text-[#A7C4DF] text-lg tracking-wide">Cosmetic Dentistry</p>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                    <div className="flex flex-col items-center border-t border-[#D1D5DB] mt-12 pt-6">
-                      <Image src={"/aurelia-dental_logo.png"} alt={"Alternative Logo"} width={60} height={60}></Image>
-                      <p className="text-[#D1D5DB]">&copy; 2026 Aurelia Dental. All rights reserved.</p>
-                      <button className="p-2 rounded-full bg-[#eef3f9] my-4">
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="#35565f" className="size-6 text-[#35565f]">
-                          <path strokeLinecap="round" strokeLinejoin="round" d="m4.5 18.75 7.5-7.5 7.5 7.5" />
-                          <path strokeLinecap="round" strokeLinejoin="round" d="m4.5 12.75 7.5-7.5 7.5 7.5" />
-                        </svg>
-                      </button>
-                      <p className="text-sm text-[#D1D5DB] -mb-4">Powered by <span className="underline">Omni-Ray Software Solutions</span></p>
-                    </div>
-                  </div>
-                  {/* FOOTER */}
+      </div>
+      {/* FOOTER */}
     </div>
   )
 }

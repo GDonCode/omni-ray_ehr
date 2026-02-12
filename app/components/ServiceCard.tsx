@@ -1,5 +1,6 @@
 import localFont from "next/font/local";
 
+
 const levenim = localFont ({
   src: "../fonts/Levenim_MT/levenim-mt.ttf"
 })
@@ -14,6 +15,12 @@ const inter_heading = localFont ({
 })
 const inter = localFont ({
   src: "../fonts/Inter/Inter-Regular.otf"
+})
+const tt_wellingtons_demi = localFont ({
+  src: "../fonts/TT_Wellingtons/TT Wellingtons Trial DemiBold.otf"
+})
+const tt_wellingtons = localFont ({
+  src: "../fonts/TT_Wellingtons/TT Wellingtons Trial Regular.otf"
 })
 
 interface ServiceCardProps {
@@ -70,28 +77,28 @@ export default function ServiceCard({
       )}
 
       {/* Service Name */}
-      <h3 className={`${inter_heading.className} text-2xl tracking-tight font-bold mb-4 pr-6 leading-tight text-[#036d6d]`}>
+      <h3 className={`${tt_wellingtons_demi.className} text-2xl tracking-tight font-bold mb-2 pr-6 leading-tight text-[#036d6d]`}>
         {service.name}
       </h3>
 
       {/* Brief Description - Shortened */}
-      <p className={`${inter.className} text-lg tracking-wideleading-relaxed line-clamp-2 text-[#181818]`}>
+      <p className={`${tt_wellingtons.className} text-lg font-semibold mb-4 leading-relaxed text-[#181818]`}>
         {service.description}
       </p>
 
       {/* Duration and Price - Compact */}
-      <div className="mt-6 space-y-1.5">
+      <div className="mt-auto space-y-1.5">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-1.5">
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={3} stroke="currentColor" className={`w-3.5 h-3.5 text-[#036D6D]`}>
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={3} stroke="currentColor" className={`w-3.5 h-3.5 text-[#024c4c]`}>
               <path strokeLinecap="round" strokeLinejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
             </svg>
-            <span className={`${inter.className} text-md font-bold text-[#036D6D]`}>
+            <span className={`${inter.className} text-md font-bold text-[#024c4c]`}>
               {service.duration}
             </span>
           </div>
           
-          <div className={`text-lg font-bold text-[#036D6D]`}>
+          <div className={`text-lg font-bold text-[#024c4c]`}>
             {service.price}
           </div>
         </div>

@@ -70,12 +70,27 @@
 }
 
 .chevronNudge {
-  animation: chevronNudge 1.2s ease-in-out infinite;
+  animation: chevronNudgeRight 1.2s ease-in-out infinite;
+}
+.chevronNudgeExpanded {
+  animation: chevronNudgeLeft 1.2s ease-in-out infinite;
+}
+@keyframes chevronNudgeRight {
+  0%, 100% { transform: rotate(90deg) translateX(0); }
+  50% { transform: rotate(90deg) translateX(3px); }
+}
+@keyframes chevronNudgeLeft {
+  0%, 100% { transform: rotate(270deg) translateX(0); }
+  50% { transform: rotate(270deg) translateX(3px); }
 }
 
-@keyframes chevronNudge {
-  0%, 100% { transform: translateX(0); }
-  50% { transform: translateX(3px); }
+@keyframes pulseScale {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.02); }
+}
+
+.bookButtonPulse {
+  animation: pulseScale 2s ease-in-out infinite;
 }
 
 .background {

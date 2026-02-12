@@ -19,6 +19,12 @@ const inter_heading = localFont ({
 const inter = localFont ({
   src: "../fonts/Inter/Inter-Regular.otf"
 })
+const tt_wellingtons_demi = localFont ({
+  src: "../fonts/TT_Wellingtons/TT Wellingtons Trial DemiBold.otf"
+})
+const tt_wellingtons = localFont ({
+  src: "../fonts/TT_Wellingtons/TT Wellingtons Trial Regular.otf"
+})
 
 interface AppointmentCalendarProps {
   onSelectSlot: (slot: { dayKey: string | null; slot: string | null }) => void;
@@ -155,14 +161,14 @@ export default function AppointmentCalendar({ onSelectSlot, selectedDate, select
         <>
             <div className='-mt-2 p-4 flex flex-col gap-6 items-center'>
                 <div className='flex items-center gap-10'>
-                    <button onClick={handlePrevious} className='bg-white border border-white/20 rounded-full p-2 cursor-pointer hover:scale-105 transition-all select-none'>
+                    <button onClick={handlePrevious} className='bg-[#024c4c] border border-white/20 rounded-full p-2 cursor-pointer hover:scale-105 transition-all select-none'>
                         <Image src={"/chevron-left.svg"} alt="" width={30} height={30}></Image>
                     </button>
                     <div className='flex flex-col gap-1 items-center'>
-                        <span className={`${inter_heading.className} text-2xl font-bold text-[#faf9f6]`}>{currentMonth}</span>
-                        <span className={`${inter.className} text-white/70 lg:hidden`}>Swipe to browse days</span>
+                        <span className={`${inter_heading.className} text-2xl font-bold text-[#024c4c]`}>{currentMonth}</span>
+                        <span className={`${inter.className} text-[#024c4c] lg:hidden`}>Swipe to browse days</span>
                     </div>
-                    <button onClick={handleNext} className='bg-white border border-white/20 rounded-full p-2 cursor-pointer hover:scale-105 transition-all touch-manipulation'>
+                    <button onClick={handleNext} className='bg-[#024c4c] border border-white/20 rounded-full p-2 cursor-pointer hover:scale-105 transition-all touch-manipulation'>
                         <Image src={"/chevron-right.svg"} alt="" width={30} height={30}></Image>
                     </button>
                 </div>
@@ -179,12 +185,12 @@ export default function AppointmentCalendar({ onSelectSlot, selectedDate, select
                             <div 
                                 key={index} 
                                 data-day-key={dayKey} 
-                                className='flex flex-col min-w-[200px] lg:min-w-0 lg:flex-row lg:w-full rounded-md border-2 border-white/20 bg-white/5 backdrop-blur-sm overflow-hidden hover:border-white/30 transition-all flex-shrink-0'
+                                className='flex flex-col min-w-[200px] lg:min-w-0 lg:flex-row lg:w-full rounded-md  bg-[#82bfbf] backdrop-blur-sm overflow-hidden hover:border-white/30 transition-all flex-shrink-0'
                             >
                                 <div className={`relative flex flex-col p-4 text-center justify-center items-center lg:min-w-[100px] transition-all duration-300 ${
                                     isDaySelected 
-                                        ? 'border-4 border-[#FFD700] bg-white' 
-                                        : 'bg-white'
+                                        ? 'border-4 border-[#FFD700] bg-[#058080]' 
+                                        : 'bg-[#058080]'
                                 }`}>
                                     {/* Selected Indicator */}
                                     {isDaySelected && (
@@ -194,16 +200,16 @@ export default function AppointmentCalendar({ onSelectSlot, selectedDate, select
                                             </svg>
                                         </div>
                                     )}
-                                    <span className={`${inter_heading.className} text-[#036d6d] font-bold`}>{day.weekday}</span>
-                                    <span className={`${inter.className} font-bold text-3xl text-[#036d6d]`}>{day.dayNumber}</span>
-                                    <span className={`${inter_heading.className} text-[#036d6d] text-sm font-bold`}>{day.monthAbbr}</span>
+                                    <span className={`${inter_heading.className}  text-[#faf6f9]  font-bold`}>{day.weekday}</span>
+                                    <span className={`${inter.className} font-bold text-3xl text-[#faf6f9] `}>{day.dayNumber}</span>
+                                    <span className={`${inter_heading.className}  text-[#faf6f9]  text-sm font-bold`}>{day.monthAbbr}</span>
                                 </div>
                                 <div className='text-center p-4 flex flex-col lg:flex-wrap lg:flex-row lg:justify-center gap-4'>
                                     {slots.map((slot, idx) => (
                                         <button 
                                             key={idx} 
                                             onClick={() => handleSlotClick(dayKey, slot)} 
-                                            className={`border-2 border-white/20 py-4 px-6 rounded-md font-bold cursor-pointer select-none transition-all duration-300 hover:scale-105 text-[#036d6d] text-lg ${selectedSlot.dayKey === dayKey && selectedSlot.slot === slot ? 'border-none shadow-lg ring-4 ring-[#FFD700] bg-white' : 'bg-white'}`}
+                                            className={`border-2 border-white/20 py-4 px-6 rounded-md font-bold cursor-pointer select-none transition-all duration-300 hover:scale-105 text-[#036d6d] text-[1.28rem] ${selectedSlot.dayKey === dayKey && selectedSlot.slot === slot ? 'border-none shadow-lg ring-4 ring-[#FFD700] bg-white' : 'bg-white'}`}
                                         >
                                             {slot}
                                         </button>

@@ -9,12 +9,11 @@ interface StepIndicatorProps {
 const STEP_TITLES = [
   'Choose Service',
   'Preferred Date & Time',
-  'Personal Information',
-  'Summary',
-  'Confirmation',
+  'Personal Details',
 ];
 
 import localFont from "next/font/local";
+
 
 const levenim = localFont ({
   src: "../fonts/Levenim_MT/levenim-mt.ttf"
@@ -31,24 +30,31 @@ const inter_heading = localFont ({
 const inter = localFont ({
   src: "../fonts/Inter/Inter-Regular.otf"
 })
+const tt_wellingtons_demi = localFont ({
+  src: "../fonts/TT_Wellingtons/TT Wellingtons Trial DemiBold.otf"
+})
+const tt_wellingtons = localFont ({
+  src: "../fonts/TT_Wellingtons/TT Wellingtons Trial Regular.otf"
+})
+
 
 export default function StepIndicator({ currentStep, onStepClick, maxReachedStep = currentStep }: StepIndicatorProps) {
   return (
-    <>
-    <div className="w-full flex justify-center mb-1">
+  <div className='py-4 flex flex-col gap-2 items-center justify-center w-full'>
+    <div className="w-full flex justify-center">
       <h2
         className={`
-          ${inter_heading.className}
+          ${tt_wellingtons_demi.className}
           text-2xl md:text-3xl
-          font-semibold
-          text-[#ffdf20]
+          font-bold
+          text-[#faf9f6]
           transition-all duration-300
         `}
       >
         {STEP_TITLES[currentStep - 1]}
       </h2>
     </div>
-    <div className="grid grid-cols-[auto_1fr_auto_1fr_auto_1fr_auto_1fr_auto] items-start px-2 pb-2 w-full md:ml-8">
+    <div className="grid grid-cols-[auto_1fr_auto_1fr_auto] items-center px-2 w-full max-w-3xl mx-auto">
       {STEP_TITLES.map((title, index) => {
         const step = index + 1;
         const isCompleted = currentStep > step;
@@ -69,8 +75,8 @@ export default function StepIndicator({ currentStep, onStepClick, maxReachedStep
                   
                   ${isCompleted && 'bg-[#ffdf20]/90 text-gray-900'}
                   ${isCurrent && 'bg-[#ffdf20] text-[#1C1C1C] scale-110 shadow-[0_0_0_6px_rgba(245,183,0,0.15)]'}
-                  ${!isCompleted && !isCurrent && 'bg-[#0D4D5C] text-white border border-[#F5B700]/60'}
-                  ${isClickable && 'cursor-pointer hover:scale-105 active:scale-95'}
+                  ${!isCompleted && !isCurrent && 'bg-[#0D4D5C] text-white '}
+                  ${isClickable && 'cursor-pointer hover:scale-105 active:scale-95 border border-[#F5B700]/60'}
                   ${!isClickable && 'cursor-not-allowed opacity-60'}
                 `}
               >
@@ -110,6 +116,6 @@ export default function StepIndicator({ currentStep, onStepClick, maxReachedStep
         );
       })}
     </div>
-  </>
+  </div>
   );
 }

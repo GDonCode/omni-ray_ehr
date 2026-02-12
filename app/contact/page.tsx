@@ -1,6 +1,6 @@
 'use client'
 
-import styles from "./about.module.css";
+import styles from "./contact.module.css";
 import Image from "next/image";
 import Link from "next/link";
 import "../globals.css";
@@ -32,10 +32,9 @@ const tt_wellingtons = localFont ({
   src: "../fonts/TT_Wellingtons/TT Wellingtons Trial Regular.otf"
 })
 
-
 export default function About() {
   // Desktop Nav
-  const [activeItem, setActiveItem] = useState<string>('about');
+  const [activeItem, setActiveItem] = useState<string>('contact');
   const navItems = [
     { id: 'home', label: 'Home', href: '/' },
     { id: 'services', label: 'Services', href: '/services' },
@@ -55,8 +54,8 @@ export default function About() {
     }
   }, []);
 
-  // Mobile Nav
-  const [activeMobileLink, setActiveMobileLink] = useState('about');
+  // Mobile Menu
+  const [activeMobileLink, setActiveMobileLink] = useState('contact');
   const handleMobileLinkClick = (linkName: string) => {
     setActiveMobileLink(linkName);
     closeMenu();
@@ -68,29 +67,31 @@ export default function About() {
   const closeMenu = () => {
     setIsOpen(false);
   };
+
+  const [contactMethod, setContactMethod] = useState('email');
   return (
     <>
       <div className={`${styles.background}`}>
       </div>
       {/* Header */}
       <div className={`backdrop-blur-md shadow-lg z-20 fixed top-0 w-full flex flex-col`}>
-        <Link href={"https://www.google.com/maps?client=firefox-b-d&um=1&ie=UTF-8&fb=1&gl=jm&sa=X&geocode=Kess0v_mK9qOMblqgL_gLwtH&daddr=40-41,+Overton+Plaza,+49+Union+Street,+Montego+Bay"} className={`${inter_heading.className} w-full bg-[#82bfbf] text-[#181818] text-[0.8rem] flex items-center gap-1 py-1 px-2`}> 
-          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor" className="size-4 text-[#181818] group-hover:scale-105 transition-all">
-            <path strokeLinecap="round" strokeLinejoin="round" d="M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
-            <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1 1 15 0Z" />
-          </svg>
-          <p className={`${tt_wellingtons_demi.className}`}>Shop 40, 41 Overton Plaza</p>
-          <p className={`${tt_wellingtons_demi.className} text-right ml-auto`}>click for map</p>
-        </Link>
+        <Link href={"https://www.google.com/maps?client=firefox-b-d&um=1&ie=UTF-8&fb=1&gl=jm&sa=X&geocode=Kess0v_mK9qOMblqgL_gLwtH&daddr=40-41,+Overton+Plaza,+49+Union+Street,+Montego+Bay"} className={`${inter_heading.className} w-full bg-[#82bfbf] text-[#181818] text-[0.8rem] lg:text-[1rem] flex items-center gap-1 py-2 px-2`}> 
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor" className="size-4 text-[#181818] group-hover:scale-105 transition-all">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
+              <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1 1 15 0Z" />
+            </svg>
+            <p className={`${tt_wellingtons_demi.className}`}>Shop 40, 41 Overton Plaza</p>
+            <p className={`${tt_wellingtons_demi.className} text-right ml-auto`}>click for map</p>
+          </Link>
           <div className="w-full bg-[#036d6d] px-4 lg:px-14 flex items-center justify-between py-2">
-            <Link href={"/"} className="flex items-center gap-2">
+            <Link href={"/"} className="flex items-center gap-3 lg:gap-5">
               <Image src={"/aurelia-dental_logo.png"} alt="Logo" width={75} height={75} className="cursor-pointer lg:w-[90px] lg:h-[90px]"/>
-              <h1 className={`${levenim.className} text-white lg:text-3xl text-2xl font-bold items-center flex flex-col mt-2 tracking-widest`}>
-                Aurelia <span className="block -mt-1 text-white">Dental</span>
+              <h1 className={`${levenim.className} text-[#f6d212] font-medium lg:text-5xl text-[2rem] items-center flex flex-col tracking-widest`}>
+                aurelia <span className="block -mt-3 lg:-mt-2 ml-3 lg:ml-10 text-white text-[1.5rem] lg:text-[2rem] font-medium uppercase">Dental</span>
               </h1>
             </Link>
             <nav className={`${tt_wellingtons_demi.className} hidden lg:block`}>
-              <ul className="flex items-center gap-12 font-medium text-lg">
+              <ul className="flex items-center gap-12 font-medium text-xl">
                 {navItems.map((item) => (
                   <li key={item.id}>
                     <a
@@ -98,8 +99,8 @@ export default function About() {
                       className={`
                         cursor-pointer transition-all duration-200
                         ${activeItem === item.id 
-                          ? 'text-[#D9BE2E] font-bold border-b-2 border-[#D9BE2E]' 
-                          : 'text-white hover:text-[#D9BE2E] hover:border-b-2 hover:border-[#D9BE2E]'
+                          ? 'text-[#f6d212] font-bold border-b-2 border-[#f6d212]' 
+                          : 'text-white hover:text-[#f6d212] hover:border-b-2 hover:border-[#f6d212]'
                         }
                       `}
                     >
@@ -110,14 +111,13 @@ export default function About() {
               </ul>
             </nav>
             <div className="flex items-center gap-2 lg:hidden ml-auto mr-1">
-              <button onClick={() => setIsOpen(prev => !prev)} className="block lg:hidden py-2 px-4 rounded-xs border-2 border-[#D9BE2E] bg-[#D9BE2E]">
+              <button onClick={() => setIsOpen(prev => !prev)} className="block lg:hidden py-2 px-4 rounded-xs border-2 border-[#ffd808] bg-[#ffd808]">
                 <span className={`${tt_wellingtons_demi.className} text-[#181818] font-extrabold tracking-widest`}>MENU</span>
               </button>
             </div>
           </div>
 
       </div>
-
       {/* Mobile Nav */}
       <nav className={`fixed right-0 top-0 w-70 h-fit bg-gradient-to-br from-white to-gray-50 z-50 shadow-2xl transform transition-transform duration-500 ease-out ${isOpen ? 'translate-x-0' : 'translate-x-full'}`}>
         
@@ -166,8 +166,96 @@ export default function About() {
       >
       </div>
 
-      <div className="bg-[#058080] py-4 w-full mt-29 relative">
-        <h1 className={`${tt_wellingtons_demi.className} text-white text-3xl text-center`}>About Us</h1>
+      <div className="bg-[#058080] py-4 w-full mt-36 relative">
+        <h1 className={`${tt_wellingtons_demi.className} text-white text-3xl text-center`}>Contact Us</h1>
+      </div>
+      <div className="relative">
+        <form className="flex flex-col space-y-6 p-6">
+          <div className="${} flex flex-col">
+            <label htmlFor="name" className={`${tt_wellingtons_demi.className} block text-xl font-medium text-[#036d6d] mb-2`}>Name:</label>
+            <input type="text" name="name" className={`${tt_wellingtons_demi.className} w-full px-4 py-3 bg-white border border-2 border-[#036d6d] rounded-md text-[#036d6d] placeholder:text-[#036d6d]/50 font-medium text-xl placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-[#FFD700] focus:border-transparent transition-all`} placeholder="Your Name" required />
+          </div>
+
+          <div className="flex flex-col">
+            <label className={`${tt_wellingtons_demi.className} block text-xl font-medium text-[#036d6d] mb-3`}>
+              Preferred Contact Method:
+            </label>
+            <div className="flex gap-6">
+              <label className="flex items-center gap-2 cursor-pointer">
+                <input
+                  type="radio"
+                  name="contactMethod"
+                  value="email"
+                  checked={contactMethod === 'email'}
+                  onChange={(e) => setContactMethod(e.target.value)}
+                  className="w-5 h-5 text-[#036d6d] focus:ring-[#FFD700]"
+                />
+                <span className={`${tt_wellingtons_demi.className} text-xl text-[#036d6d]`}>
+                  Email
+                </span>
+              </label>
+              
+              <label className="flex items-center gap-2 cursor-pointer">
+                <input
+                  type="radio"
+                  name="contactMethod"
+                  value="phone"
+                  checked={contactMethod === 'phone'}
+                  onChange={(e) => setContactMethod(e.target.value)}
+                  className="w-5 h-5 text-[#036d6d] focus:ring-[#FFD700]"
+                />
+                <span className={`${tt_wellingtons_demi.className} text-xl text-[#036d6d]`}>
+                  Phone
+                </span>
+              </label>
+            </div>
+          </div>
+
+          {/* Conditional Input Fields */}
+          {contactMethod === 'email' && (
+            <div className="flex flex-col -mt-2">
+              <label 
+                htmlFor="email" 
+                className={`${tt_wellingtons_demi.className} block text-xl font-medium text-[#036d6d] mb-2`}
+              >
+                Email:
+              </label>
+              <input 
+                id="email"
+                type="email" 
+                name="email" 
+                className={`${tt_wellingtons_demi.className} w-full px-4 py-3 bg-white border-2 border-[#036d6d] rounded-md text-[#036d6d] placeholder:text-[#036d6d]/50 font-medium text-xl focus:outline-none focus:ring-2 focus:ring-[#FFD700] focus:border-transparent transition-all`} 
+                placeholder="Your Email" 
+                required 
+              />
+            </div>
+          )}
+
+          {contactMethod === 'phone' && (
+            <div className="flex flex-col -mt-2">
+              <label 
+                htmlFor="phone" 
+                className={`${tt_wellingtons_demi.className} block text-xl font-medium text-[#036d6d] mb-2`}
+              >
+                Phone:
+              </label>
+              <input 
+                id="phone"
+                type="tel" 
+                name="phone" 
+                className={`${tt_wellingtons_demi.className} w-full px-4 py-3 bg-white border-2 border-[#036d6d] rounded-md text-[#036d6d] placeholder:text-[#036d6d]/50 font-medium text-xl focus:outline-none focus:ring-2 focus:ring-[#FFD700] focus:border-transparent transition-all`} 
+                placeholder="Your Phone Number" 
+                required 
+              />
+            </div>
+          )}
+        
+          <div className="flex flex-col">
+            <label htmlFor="message" className={`${tt_wellingtons_demi.className} block text-xl font-medium text-[#036d6d] mb-2`}>Message:</label>
+            <textarea name="message" className={`${tt_wellingtons_demi.className} w-full px-4 py-3 bg-white border border-2 border-[#036d6d] rounded-md text-[#036d6d] placeholder:text-[#036d6d]/50 font-medium text-xl placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-[#FFD700] focus:border-transparent transition-all`} placeholder="Your Message" required></textarea>
+          </div>
+          <button type="submit" className={`${tt_wellingtons_demi.className} w-full py-3 bg-[#f6d212] text-xl text-[#181818] font-bold rounded-md hover:bg-[#ffdf20] transition-colors`}>Send Message</button>
+        </form>
       </div>
     </>
   )

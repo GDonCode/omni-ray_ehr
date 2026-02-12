@@ -1,6 +1,6 @@
 'use client'
 
-import styles from "./about.module.css";
+import styles from "./help.module.css";
 import Image from "next/image";
 import Link from "next/link";
 import "../globals.css";
@@ -33,9 +33,10 @@ const tt_wellingtons = localFont ({
 })
 
 
+
 export default function About() {
   // Desktop Nav
-  const [activeItem, setActiveItem] = useState<string>('about');
+  const [activeItem, setActiveItem] = useState<string>('help');
   const navItems = [
     { id: 'home', label: 'Home', href: '/' },
     { id: 'services', label: 'Services', href: '/services' },
@@ -56,7 +57,7 @@ export default function About() {
   }, []);
 
   // Mobile Nav
-  const [activeMobileLink, setActiveMobileLink] = useState('about');
+  const [activeMobileLink, setActiveMobileLink] = useState('help');
   const handleMobileLinkClick = (linkName: string) => {
     setActiveMobileLink(linkName);
     closeMenu();
@@ -167,7 +168,7 @@ export default function About() {
       </div>
 
       <div className="bg-[#058080] py-4 w-full mt-29 relative">
-        <h1 className={`${tt_wellingtons_demi.className} text-white text-3xl text-center`}>About Us</h1>
+        <h1 className={`${tt_wellingtons_demi.className} text-white text-3xl text-center`}>Help (F.A.Q.)</h1>
       </div>
     </>
   )
