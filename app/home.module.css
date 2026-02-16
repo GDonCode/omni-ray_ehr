@@ -1,10 +1,4 @@
 
-@keyframes move {
-    100% {
-        transform: translate3d(0, 0, 1px) rotate(360deg);
-    }
-}
-
 @keyframes pulse-scale {
   0%, 100% {
     transform: scale(1);

@@ -22,9 +22,9 @@ const CallToAction: React.FC<CallToActionProps> = ({
         <p className={`${inter_heading.className} inline-block text-[#8A6B00] bg-[#ffdf20] px-2.5 py-0.5 mb-1 rounded-full text-xs font-semibold tracking-wide`}>
           Book in 4 steps
         </p>
-        <p className={`${tt_wellingtons_demi.className} text-4xl text-[#036d6d] font-bold mb-6`}>
+        <h2 className={`${tt_wellingtons_demi.className} text-4xl text-[#036d6d] font-bold mb-6`}>
           Ready to Transform Your Smile?
-        </p>
+        </h2>
         <p className={`${tt_wellingtons.className} leading-7.5 text-[1.2rem] text-[#181818] mb-8 text-left tracking-wide font-medium`}>
           Schedule your consultation{' '}
           <span className={`${tt_wellingtons_demi.className} font-extrabold`}>today</span>

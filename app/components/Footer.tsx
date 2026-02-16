@@ -99,9 +99,9 @@ const Footer: React.FC<FooterProps> = ({ tt_wellingtons, inter_heading }) => {
       <div className="flex flex-col lg:flex-row lg:justify-between">
         {/* Contact Us Section */}
         <div>
-          <h5 className={`${tt_wellingtons.className} text-gray-100 text-xl font-semibold border-b border-[#f6d212] w-fit pb-1 mb-6`}>
+          <h4 className={`${tt_wellingtons.className} text-gray-100 text-xl font-semibold border-b border-[#f6d212] w-fit pb-1 mb-6`}>
             Contact Us
-          </h5>
+          </h4>
           <div className="flex flex-col gap-5">
             {contactInfo.map((item, index) => (
               <div key={index} className="flex gap-6 group cursor-pointer">
@@ -114,9 +114,9 @@ const Footer: React.FC<FooterProps> = ({ tt_wellingtons, inter_heading }) => {
 
         {/* Opening Hours Section */}
         <div className="mt-12 lg:mt-0">
-          <h5 className={`${tt_wellingtons.className} text-gray-100 text-xl font-semibold border-b border-[#f6d212] w-fit pb-1 mb-6`}>
+          <h4 className={`${tt_wellingtons.className} text-gray-100 text-xl font-semibold border-b border-[#f6d212] w-fit pb-1 mb-6`}>
             Opening Hours
-          </h5>
+          </h4>
           <div className="flex flex-col gap-6">
             {openingHours.map((schedule, index) => (
               <div key={index} className="flex border-b border-b-gray-100 pb-1">
@@ -132,9 +132,9 @@ const Footer: React.FC<FooterProps> = ({ tt_wellingtons, inter_heading }) => {
 
         {/* Quick Links Section */}
         <div className="mt-12 lg:mt-0">
-          <h5 className={`${tt_wellingtons.className} text-gray-100 text-xl font-semibold border-b border-[#f6d212] w-fit pb-1 mb-4`}>
+          <h4 className={`${tt_wellingtons.className} text-gray-100 text-xl font-semibold border-b border-[#f6d212] w-fit pb-1 mb-4`}>
             Quick Links
-          </h5>
+          </h4>
           <div className="flex flex-col gap-3">
             {quickLinks.map((link, index) => (
               <Link key={index} href={link.href} className="flex gap-1 items-center group cursor-pointer">
@@ -149,9 +149,9 @@ const Footer: React.FC<FooterProps> = ({ tt_wellingtons, inter_heading }) => {
 
         {/* Services Section */}
         <div className="mt-12 lg:mt-0">
-          <h5 className={`${tt_wellingtons.className} text-gray-100 text-xl font-semibold border-b border-[#f6d212] w-fit pb-1 mb-4`}>
+          <h4 className={`${tt_wellingtons.className} text-gray-100 text-xl font-semibold border-b border-[#f6d212] w-fit pb-1 mb-4`}>
             Our Services
-          </h5>
+          </h4>
           <div className="flex flex-col gap-3 text-[#D1D5DB]">
             {services.map((service, index) => (
               <Link key={index} href={service.href} className="flex gap-1 items-center group cursor-pointer">
