@@ -11,17 +11,10 @@ import Link from "next/link";
 import styles from "./new_appointment.module.css";
 import { Mail, Phone, Calendar, Clock, CircleAlert } from "lucide-react";
 import localFont from "next/font/local";
-import { clear } from "console";
 
 
 const levenim = localFont ({
   src: "../fonts/Levenim_MT/levenim-mt.ttf"
-})
-const cinzel = localFont ({
-  src: "../fonts/Cinzel/CinzelDecorative-Regular.otf"
-})
-const open_sans = localFont ({
-  src: "../fonts/OpenSans/OpenSans-SemiBold.ttf"
 })
 const inter_heading = localFont ({
   src: "../fonts/Inter/Inter-Medium.otf"
