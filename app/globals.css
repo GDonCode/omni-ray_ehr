@@ -1,9 +1,5 @@
 @import "tailwindcss";
 
-body {
-  font-family: Arial, Helvetica, sans-serif;
-}
-
 .secondary_container {
     --color: #032d68;
     background-color:  #043570 ;
@@ -27,7 +23,6 @@ body {
     linear-gradient(90deg, transparent 24%, var(--color) 25%, var(--color) 26%, transparent 27%,transparent 74%, var(--color) 75%, var(--color) 76%, transparent 77%,transparent);
     background-size: 16px 16px;
 }
-
 
 .slick-prev:before,
 .slick-next:before {

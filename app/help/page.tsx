@@ -10,6 +10,10 @@ import { useEffect, useState } from "react";
 import dynamic from "next/dynamic";
 import { CSSProperties } from 'react';
 
+import Header from '../components/Header';
+import MobileMenu from '../components/MobileMenu';
+import Footer from '../components/Footer';
+
 const levenim = localFont ({
   src: "../fonts/Levenim_MT/levenim-mt.ttf"
 })
@@ -32,9 +36,17 @@ const tt_wellingtons = localFont ({
   src: "../fonts/TT_Wellingtons/TT Wellingtons Trial Regular.otf"
 })
 
+type Item = {
+  question: string;
+  answer: string;
+};
 
+type Section = {
+  title: string;
+  items: Item[];
+};
 
-export default function About() {
+export default function Help() {
   // Desktop Nav
   const [activeItem, setActiveItem] = useState<string>('help');
   const navItems = [
@@ -69,107 +81,320 @@ export default function About() {
   const closeMenu = () => {
     setIsOpen(false);
   };
+
+
+  // FAQ Tabs and Accordion
+  const [activeTab, setActiveTab] = useState<string>('general');
+  const [openQuestionIndex, setOpenQuestionIndex] = useState<number | null>(null);
+  const [searchQuery, setSearchQuery] = useState<string>('');
+
+  const tabs = [
+    { id: 'general', label: 'General' },
+    { id: 'payment', label: 'Payment' },
+    { id: 'services', label: 'Services' }
+  ];
+
+  const faqData: Record<string, Item[]> = {
+    general: [
+      {
+        question: "How do I book an appointment?",
+        answer: "You can book an appointment through our online booking form on the website, by calling our clinic directly at the phone number listed, or by visiting us in person. Our staff will help you find a convenient time slot.",
+      },
+      {
+        question: "What are your clinic hours?",
+        answer: "We are open Monday to Friday from 10:00 AM to 6:00 PM, and Saturdays from 9:00 AM to 6:00 PM. We are closed on Sundays and public holidays.",
+      },
+      {
+        question: "Where is Aurelia Dental located?",
+        answer: "We are located at Shop 40, 41 Overton Plaza, 49 Union Street, Montego Bay. You can click the map link at the top of our website for directions.",
+      },
+      {
+        question: "Do I need a referral to visit?",
+        answer: "No, you do not need a referral. You can book an appointment directly with us for any dental concern or routine checkup.",
+      },
+    ],
+    payment: [
+      {
+        question: "What payment methods do you accept?",
+        answer: "We accept cash, credit cards (Visa, Mastercard), debit cards, and bank transfers. Payment is expected at the time of service unless prior arrangements have been made.",
+      },
+      {
+        question: "Do you accept dental insurance?",
+        answer: "Yes, we accept most major dental insurance providers. Please bring your insurance card to your appointment, and we will help verify your coverage and file claims on your behalf.",
+      },
+      {
+        question: "Do you offer payment plans?",
+        answer: "Yes, we offer flexible payment plans for larger treatments. Please speak with our administrative staff to discuss options that work for your budget.",
+      },
+      {
+        question: "Can I get a cost estimate before treatment?",
+        answer: "Absolutely. We provide detailed cost estimates for all procedures before treatment begins, so you know exactly what to expect.",
+      },
+    ],
+    services: [
+      {
+        question: "What dental services do you offer?",
+        answer: "We offer comprehensive dental care including routine cleanings, fillings, root canals, crowns, bridges, teeth whitening, extractions, and cosmetic dentistry. Visit our Services page for a complete list.",
+      },
+      {
+        question: "Do you handle dental emergencies?",
+        answer: "Yes, we handle dental emergencies such as severe tooth pain, knocked-out teeth, broken teeth, and uncontrolled bleeding. Please call us immediately if you have a dental emergency.",
+      },
+      {
+        question: "Is teeth whitening safe?",
+        answer: "Yes, professional teeth whitening performed by our dental team is safe and effective. We use clinically approved methods that minimize sensitivity while delivering excellent results.",
+      },
+      {
+        question: "How often should I have a dental checkup?",
+        answer: "We recommend a dental checkup and cleaning every six months to maintain optimal oral health and catch potential issues early.",
+      },
+      {
+        question: "Do you provide care for children?",
+        answer: "Yes, we provide comprehensive dental care for patients of all ages, including children. Our team is experienced in making young patients feel comfortable during their visits.",
+      },
+    ],
+  };
+
+  const filteredQuestions = searchQuery
+    ? faqData[activeTab].filter((item) =>
+        item.question.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        item.answer.toLowerCase().includes(searchQuery.toLowerCase())
+      )
+    : faqData[activeTab];
+
+
   return (
-    <>
-      <div className={`${styles.background}`}>
+  <>
+    <div className={`${styles.background}`}>
+    </div>
+    <Header
+      activeItem={activeItem}
+      isOpen={isOpen}
+      setIsOpen={setIsOpen}
+      navItems={navItems}
+      inter_heading={inter_heading}
+      tt_wellingtons_demi={tt_wellingtons_demi} // Replace with your actual font
+      levenim={levenim} // Replace with your actual font
+    />
+    <MobileMenu
+      isOpen={isOpen}
+      navItems={navItems}
+      activeMobileLink={activeMobileLink}
+      onClose={() => setIsOpen(false)}
+      onLinkClick={handleMobileLinkClick}
+    />
+      
+    {/* Page Header */}
+    <div className="bg-[#058080] py-4 w-full lg:mt-36 mt-29 relative">
+      <h1 className={`${tt_wellingtons_demi.className} text-white text-3xl lg:text-4xl text-center`}>Help & Support</h1>
+      <p className={`${tt_wellingtons.className} text-white/90 text-center mt-2 text-sm lg:text-base`}>
+        Find answers to your questions
+      </p>
+    </div>
+
+    {/* FAQ Section */}
+    <div className="w-full lg:w-[95%] mx-auto mt-8 mb-12 px-4 relative lg:flex lg:gap-12 lg:justify-around">
+      <div className="min-w-[65%]">
+        {/* Tab Navigation */}
+        <div className="flex flex-wrap gap-2 lg:gap-3 mb-6 border-b border-gray-200">
+          {tabs.map((tab) => (
+            <button
+              key={tab.id}
+              onClick={() => {
+                setActiveTab(tab.id);
+                setOpenQuestionIndex(null);
+                setSearchQuery('');
+              }}
+              className={`${tt_wellingtons_demi.className} px-6 py-3 rounded-t-lg text-base lg:text-lg transition-all duration-200 ${
+                activeTab === tab.id
+                  ? 'bg-[#036d6d] text-white shadow-md'
+                  : 'bg-white text-gray-600 border border-gray-300 hover:bg-gray-50'
+              }`}
+            >
+              {tab.label}
+            </button>
+          ))}
+        </div>
+
+        {/* Search Bar */}
+        <div className="mb-6 relative">
+          <div className="relative">
+            <input
+              type="text"
+              placeholder="Search for help..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className={`${tt_wellingtons.className} w-full px-4 py-3 pl-12 pr-12 border-2 border-[#036d6d] rounded-lg focus:outline-none focus:border-[#036d6d] transition-all`}
+            />
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              strokeWidth="2"
+              stroke="currentColor"
+              className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z"
+              />
+            </svg>
+            {searchQuery && (
+              <button
+                onClick={() => setSearchQuery('')}
+                className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  strokeWidth="2"
+                  stroke="currentColor"
+                  className="w-5 h-5"
+                >
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M6 18 18 6M6 6l12 12" />
+                </svg>
+              </button>
+            )}
+          </div>
+        </div>
+
+        {/* Questions List */}
+        <div className="space-y-3">
+          {filteredQuestions.length === 0 ? (
+            <div className="text-center py-12">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                strokeWidth="1.5"
+                stroke="currentColor"
+                className="w-16 h-16 mx-auto text-gray-300 mb-4"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607ZM10.5 7.5v6m3-3h-6"
+                />
+              </svg>
+              <p className={`${tt_wellingtons.className} text-gray-500 text-lg`}>
+                No results found for "{searchQuery}"
+              </p>
+              <p className={`${tt_wellingtons.className} text-gray-400 text-sm mt-2`}>
+                Try searching with different keywords
+              </p>
+            </div>
+          ) : (
+            filteredQuestions.map((item, index) => (
+              <div
+                key={index}
+                className="bg-white border border-gray-200 rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow"
+              >
+                {/* Question */}
+                <button
+                  onClick={() =>
+                    setOpenQuestionIndex(openQuestionIndex === index ? null : index)
+                  }
+                  className="w-full flex justify-between items-center px-6 py-4 text-left hover:bg-gray-50 transition-colors"
+                >
+                  <h3 className={`${tt_wellingtons_demi.className} text-lg text-gray-800 pr-4`}>
+                    {item.question}
+                  </h3>
+
+                  <svg
+                    className={`w-6 h-6 flex-shrink-0 transition-transform duration-300 ${
+                      openQuestionIndex === index ? 'rotate-180' : ''
+                    }`}
+                    fill="none"
+                    stroke="#036d6d"
+                    strokeWidth="2.5"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="M19 9l-7 7-7-7"
+                    />
+                  </svg>
+                </button>
+
+                {/* Answer */}
+                {openQuestionIndex === index && (
+                  <div className="px-6 pb-5 pt-2 bg-gray-50/50 border-t border-gray-100 lg:max-w-4xl">
+                    <p className={`${tt_wellingtons.className} text-gray-700 leading-relaxed`}>
+                      {item.answer}
+                    </p>
+                  </div>
+                )}
+              </div>
+            ))
+          )}
+        </div>
       </div>
-      {/* Header */}
-      <div className={`backdrop-blur-md shadow-lg z-20 fixed top-0 w-full flex flex-col`}>
-        <Link href={"https://www.google.com/maps?client=firefox-b-d&um=1&ie=UTF-8&fb=1&gl=jm&sa=X&geocode=Kess0v_mK9qOMblqgL_gLwtH&daddr=40-41,+Overton+Plaza,+49+Union+Street,+Montego+Bay"} className={`${inter_heading.className} w-full bg-[#82bfbf] text-[#181818] text-[0.8rem] flex items-center gap-1 py-1 px-2`}> 
-          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor" className="size-4 text-[#181818] group-hover:scale-105 transition-all">
+
+      <div>
+        {/* Contact Support Card */}
+        <div className="bg-gradient-to-r from-[#036d6d] to-[#058080] rounded-lg p-6 mb-8 text-center shadow-lg">
+          <h3 className={`${tt_wellingtons_demi.className} text-white text-xl mb-2`}>
+            Still need help?
+          </h3>
+          <p className={`${tt_wellingtons.className} text-white/90 mb-4`}>
+            Our team is here to assist you with any questions or concerns
+          </p>
+          <Link
+            href="/contact"
+            className={`${tt_wellingtons_demi.className} inline-block bg-white text-[#036d6d] px-8 py-3 rounded-lg hover:bg-gray-100 transition-all shadow-md hover:shadow-lg`}
+          >
+            Contact Us
+          </Link>
+        </div>
+        <div className="flex gap-6 group cursor-pointer mb-8">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="size-5 text-[#181818] group-hover:scale-104 transition-all duration-300">
             <path strokeLinecap="round" strokeLinejoin="round" d="M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
             <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1 1 15 0Z" />
           </svg>
-          <p className={`${tt_wellingtons_demi.className}`}>Shop 40, 41 Overton Plaza</p>
-          <p className={`${tt_wellingtons_demi.className} text-right ml-auto`}>click for map</p>
-        </Link>
-          <div className="w-full bg-[#036d6d] px-4 lg:px-14 flex items-center justify-between py-2">
-            <Link href={"/"} className="flex items-center gap-2">
-              <Image src={"/aurelia-dental_logo.png"} alt="Logo" width={75} height={75} className="cursor-pointer lg:w-[90px] lg:h-[90px]"/>
-              <h1 className={`${levenim.className} text-white lg:text-3xl text-2xl font-bold items-center flex flex-col mt-2 tracking-widest`}>
-                Aurelia <span className="block -mt-1 text-white">Dental</span>
-              </h1>
-            </Link>
-            <nav className={`${tt_wellingtons_demi.className} hidden lg:block`}>
-              <ul className="flex items-center gap-12 font-medium text-lg">
-                {navItems.map((item) => (
-                  <li key={item.id}>
-                    <a
-                      href={item.href}
-                      className={`
-                        cursor-pointer transition-all duration-200
-                        ${activeItem === item.id 
-                          ? 'text-[#D9BE2E] font-bold border-b-2 border-[#D9BE2E]' 
-                          : 'text-white hover:text-[#D9BE2E] hover:border-b-2 hover:border-[#D9BE2E]'
-                        }
-                      `}
-                    >
-                      {item.label}
-                    </a>
-                  </li>
-                ))}
-              </ul>
-            </nav>
-            <div className="flex items-center gap-2 lg:hidden ml-auto mr-1">
-              <button onClick={() => setIsOpen(prev => !prev)} className="block lg:hidden py-2 px-4 rounded-xs border-2 border-[#D9BE2E] bg-[#D9BE2E]">
-                <span className={`${tt_wellingtons_demi.className} text-[#181818] font-extrabold tracking-widest`}>MENU</span>
-              </button>
+          <a href="https://www.google.com/maps/dir//40-41,+Aurelia+Dental,+Overton+Plaza,+49+Union+Street,+Montego+Bay/@18.4739971,-77.9208353,17z/data=!4m16!1m7!3m6!1s0x8eda2be6ffd22ceb:0x470b2fe0bf806ab9!2sAurelia+Dental!8m2!3d18.4739971!4d-77.9182604!16s%2Fg%2F11vyvdsfr9!4m7!1m0!1m5!1m1!1s0x8eda2be6ffd22ceb:0x470b2fe0bf806ab9!2m2!1d-77.9182604!2d18.4739971?entry=ttu&g_ep=EgoyMDI2MDIwNC4wIKXMDSoKLDEwMDc5MjA2OUgBUAM%3D" className={`${inter.className} text-[#181818] -mt-1 text-lg tracking-wide group-hover:scale-104 transition-all duration-300`}>Shop 40, 41<br></br>
+            Overton Plaza<br></br>
+            49 Union Street, Montego Bay, Jamaica
+          </a>
+        </div>
+        <div className="flex flex-col gap-6">
+          <div className="flex border-b border-b-[#181818] pb-1">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="size-5 text-[#181818] mr-2">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 0 1 2.25-2.25h13.5A2.25 2.25 0 0 1 21 7.5v11.25m-18 0A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75m-18 0v-7.5A2.25 2.25 0 0 1 5.25 9h13.5A2.25 2.25 0 0 1 21 11.25v7.5m-9-6h.008v.008H12v-.008ZM12 15h.008v.008H12V15Zm0 2.25h.008v.008H12v-.008ZM9.75 15h.008v.008H9.75V15Zm0 2.25h.008v.008H9.75v-.008ZM7.5 15h.008v.008H7.5V15Zm0 2.25h.008v.008H7.5v-.008Zm6.75-4.5h.008v.008h-.008v-.008Zm0 2.25h.008v.008h-.008V15Zm0 2.25h.008v.008h-.008v-.008Zm2.25-4.5h.008v.008H16.5v-.008Zm0 2.25h.008v.008H16.5V15Z" />
+            </svg>
+            <div className={`${inter.className} text-[#181818] w-full flex justify-between gap-12 text-lg tracking-wide`}>
+              <p>MON - FRI</p>
+              <p>10:00am - 6:00pm</p>
             </div>
           </div>
-
-      </div>
-
-      {/* Mobile Nav */}
-      <nav className={`fixed right-0 top-0 w-70 h-fit bg-gradient-to-br from-white to-gray-50 z-50 shadow-2xl transform transition-transform duration-500 ease-out ${isOpen ? 'translate-x-0' : 'translate-x-full'}`}>
-        
-        {/* Close Button */}
-        <div className="flex items-center block lg:hidden px-8 py-4">
-          <button onClick={toggleMenu} className="ml-auto block lg:hidden py-2 px-4 border-3 border-[#069494]">
-            <span className="text-[#069494] font-extrabold text-xl tracking-widest">X</span>
-          </button>
-        </div>
-          
-        {/* Menu Items */}
-        <div className="px-8 py-4">
-          <ul className="space-y-4">
-            {navItems.map((link) => (
-              <li key={link.id}>
-                <a href={link.href} 
-                  className={`block py-3 px-4 rounded-lg transition-all ${activeMobileLink === link.id ? 'text-[#faf9f6] font-bold text-[1.4rem] bg-[#069494] border-l-8 border-[#036d6d]' : 'text-gray-700 font-medium text-[1.3rem] bg-gray-200 hover:text-[#3c5b64] border-l-4 border-gray-300'}`}
-                  onClick={() => handleMobileLinkClick(link.id)}
-                >
-                  {link.label}
-                </a>
-              </li>
-            ))}
-          </ul>
-
-          {/* Social Links (Optional) */}
-          <div className="mt-8 flex justify-center gap-4">
-            <a href="#" className="p-2 text-gray-400 hover:text-[#1b75bc] transition-colors">
-              <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
-                <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
-              </svg>
-            </a>
-            <a href="#" className="p-2 text-gray-400 hover:text-[#1b75bc] transition-colors">
-              <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
-                <path d="M12 0C8.74 0 8.333.015 7.053.072 5.775.132 4.905.333 4.14.63c-.789.306-1.459.717-2.126 1.384S.935 3.35.63 4.14C.333 4.905.131 5.775.072 7.053.012 8.333 0 8.74 0 12s.015 3.667.072 4.947c.06 1.277.261 2.148.558 2.913.306.788.717 1.459 1.384 2.126.667.666 1.336 1.079 2.126 1.384.766.296 1.636.499 2.913.558C8.333 23.988 8.74 24 12 24s3.667-.015 4.947-.072c1.277-.06 2.148-.262 2.913-.558.788-.306 1.459-.718 2.126-1.384.666-.667 1.079-1.335 1.384-2.126.296-.765.499-1.636.558-2.913.06-1.28.072-1.687.072-4.947s-.015-3.667-.072-4.947c-.06-1.277-.262-2.149-.558-2.913-.306-.789-.718-1.459-1.384-2.126C21.319 1.347 20.651.935 19.86.63c-.765-.297-1.636-.499-2.913-.558C15.667.012 15.26 0 12 0zm0 2.16c3.203 0 3.585.016 4.85.071 1.17.055 1.805.249 2.227.415.562.217.96.477 1.382.896.419.42.679.819.896 1.381.164.422.36 1.057.413 2.227.057 1.266.07 1.646.07 4.85s-.015 3.585-.074 4.85c-.061 1.17-.256 1.805-.421 2.227-.224.562-.479.96-.899 1.382-.419.419-.824.679-1.38.896-.42.164-1.065.36-2.235.413-1.274.057-1.649.07-4.859.07-3.211 0-3.586-.015-4.859-.074-1.171-.061-1.816-.256-2.236-.421-.569-.224-.96-.479-1.379-.899-.421-.419-.69-.824-.9-1.38-.165-.42-.359-1.065-.42-2.235-.045-1.26-.061-1.649-.061-4.844 0-3.196.016-3.586.061-4.861.061-1.17.255-1.814.42-2.234.21-.57.479-.96.9-1.381.419-.419.81-.689 1.379-.898.42-.166 1.051-.361 2.221-.421 1.275-.045 1.65-.06 4.859-.06l.045.03zm0 3.678c-3.405 0-6.162 2.76-6.162 6.162 0 3.405 2.76 6.162 6.162 6.162 3.405 0 6.162-2.76 6.162-6.162 0-3.405-2.76-6.162-6.162-6.162zM12 16c-2.21 0-4-1.79-4-4s1.79-4 4-4 4 1.79 4 4-1.79 4-4 4zm7.846-10.405c0 .795-.646 1.44-1.44 1.44-.795 0-1.44-.646-1.44-1.44 0-.794.646-1.439 1.44-1.439.793-.001 1.44.645 1.44 1.439z"/>
-              </svg>
-            </a>
+          <div className="flex border-b border-b-[#181818] pb-1">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="size-5 text-[#181818] mr-2">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 0 1 2.25-2.25h13.5A2.25 2.25 0 0 1 21 7.5v11.25m-18 0A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75m-18 0v-7.5A2.25 2.25 0 0 1 5.25 9h13.5A2.25 2.25 0 0 1 21 11.25v7.5m-9-6h.008v.008H12v-.008ZM12 15h.008v.008H12V15Zm0 2.25h.008v.008H12v-.008ZM9.75 15h.008v.008H9.75V15Zm0 2.25h.008v.008H9.75v-.008ZM7.5 15h.008v.008H7.5V15Zm0 2.25h.008v.008H7.5v-.008Zm6.75-4.5h.008v.008h-.008v-.008Zm0 2.25h.008v.008h-.008V15Zm0 2.25h.008v.008h-.008v-.008Zm2.25-4.5h.008v.008H16.5v-.008Zm0 2.25h.008v.008H16.5V15Z" />
+            </svg>
+            <div className={`${inter.className} text-[#181818] w-full flex justify-between gap-12 text-lg tracking-wide`}>
+             <p>SATURDAY</p>
+              <p>9:00am - 6:00pm</p>
+            </div>
+          </div>
+          <div className="flex border-b border-b-[#181818] pb-1">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="size-5 text-[#181818] mr-2">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 0 1 2.25-2.25h13.5A2.25 2.25 0 0 1 21 7.5v11.25m-18 0A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75m-18 0v-7.5A2.25 2.25 0 0 1 5.25 9h13.5A2.25 2.25 0 0 1 21 11.25v7.5m-9-6h.008v.008H12v-.008ZM12 15h.008v.008H12V15Zm0 2.25h.008v.008H12v-.008ZM9.75 15h.008v.008H9.75V15Zm0 2.25h.008v.008H9.75v-.008ZM7.5 15h.008v.008H7.5V15Zm0 2.25h.008v.008H7.5v-.008Zm6.75-4.5h.008v.008h-.008v-.008Zm0 2.25h.008v.008h-.008V15Zm0 2.25h.008v.008h-.008v-.008Zm2.25-4.5h.008v.008H16.5v-.008Zm0 2.25h.008v.008H16.5V15Z" />
+            </svg>
+            <div className={`${inter.className} text-[#181818] w-full flex justify-between text-lg tracking-wide`}>
+              <p>SUNDAY</p>
+              <p>Closed</p>
+            </div>
           </div>
         </div>
-      </nav>
-      {/* Backdrop */}
-      <div className={`fixed inset-0 bg-black/40 backdrop-blur-sm z-40 transition-opacity duration-300 ${
-          isOpen ? 'opacity-100' : 'opacity-0 pointer-events-none'
-        }`}
-        onClick={closeMenu}
-      >
       </div>
+    </div>
 
-      <div className="bg-[#058080] py-4 w-full mt-29 relative">
-        <h1 className={`${tt_wellingtons_demi.className} text-white text-3xl text-center`}>Help (F.A.Q.)</h1>
-      </div>
-    </>
+    <Footer
+      tt_wellingtons={tt_wellingtons}
+      inter_heading={inter_heading}
+    />
+  </>
   )
 }

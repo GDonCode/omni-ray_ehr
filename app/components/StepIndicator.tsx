@@ -10,6 +10,7 @@ const STEP_TITLES = [
   'Choose Service',
   'Preferred Date & Time',
   'Personal Details',
+  'Review & Confirm',
 ];
 
 import localFont from "next/font/local";
@@ -54,7 +55,7 @@ export default function StepIndicator({ currentStep, onStepClick, maxReachedStep
         {STEP_TITLES[currentStep - 1]}
       </h2>
     </div>
-    <div className="grid grid-cols-[auto_1fr_auto_1fr_auto] items-center px-2 w-full max-w-3xl mx-auto">
+    <div className="grid grid-cols-[auto_1fr_auto_1fr_auto_1fr_auto] items-center px-2 w-full max-w-3xl mx-auto">
       {STEP_TITLES.map((title, index) => {
         const step = index + 1;
         const isCompleted = currentStep > step;
