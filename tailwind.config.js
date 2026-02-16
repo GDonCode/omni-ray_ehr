@@ -8,9 +8,6 @@ module.exports = {
   ],
   theme: {
     extend: {
-      fontFamily: {
-        noticia: ['"Noticia Text"', 'serif'],
-      },
       keyframes: {
         chevronNudgeRight: {
           '0%, 100%': { transform: 'rotate(90deg) translateX(0)' },
