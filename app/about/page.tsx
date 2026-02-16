@@ -4,7 +4,6 @@ import styles from "./about.module.css";
 import Image from "next/image";
 import Link from "next/link";
 import "../globals.css";
-import "@radix-ui/themes/styles.css";
 import localFont from "next/font/local";
 import { useEffect, useState } from "react";
 import dynamic from "next/dynamic";

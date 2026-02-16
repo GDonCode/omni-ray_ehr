@@ -1,5 +1,3 @@
-import "@radix-ui/themes/styles.css";
-import { Theme, ThemePanel } from "@radix-ui/themes";
 import "./globals.css"; // Ensure global styles are imported
 
 export default function RootLayout({
@@ -15,7 +13,7 @@ export default function RootLayout({
         <link href="https://fonts.googleapis.com/css2?family=Noticia+Text:ital,wght@0,400;0,700;1,400;1,700&display=swap" rel="stylesheet" />
       </head>
       <body>
-        <Theme>{children}</Theme>
+        {children}
       </body>
     </html>
   );
