@@ -168,13 +168,10 @@ export default function Help() {
     <div className={`${styles.background}`}>
     </div>
     <Header
-      activeItem={activeItem}
-      isOpen={isOpen}
-      setIsOpen={setIsOpen}
       navItems={navItems}
       inter_heading={inter_heading}
-      tt_wellingtons_demi={tt_wellingtons_demi} // Replace with your actual font
-      levenim={levenim} // Replace with your actual font
+      tt_wellingtons_demi={tt_wellingtons_demi}
+      levenim={levenim}
     />
     <MobileMenu
       isOpen={isOpen}
