@@ -24,17 +24,18 @@ export default function HeroSlider({ images }: HeroSliderProps) {
   }, [images.length])
 
   return (
+  <div className="relative w-full aspect-square">
     <Image
       src={images[currentIndex]}
-      alt="Dental work documentation"
-      width={700}
-      height={700}
+      alt="Before and After Dental Image"
+      fill
       priority={currentIndex === 0}
       loading={currentIndex === 0 ? 'eager' : 'lazy'}
       sizes="(max-width: 768px) 90vw, 35vw"
-      className={`w-full h-full object-cover transition-opacity duration-300 ${
+      className={`object-cover transition-opacity duration-300 ${
         fade ? 'opacity-100' : 'opacity-0'
       }`}
     />
+  </div>
   )
 }

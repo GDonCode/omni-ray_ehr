@@ -1,18 +1,23 @@
 // app/api/send-appointment/route.ts
 import { Resend } from 'resend';
 import { NextResponse } from 'next/server';
+import { createClient } from '@supabase/supabase-js';
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
+// Supabase client
+const supabase = createClient(
+  process.env.SUPABASE_URL!,
+  process.env.SUPABASE_ANON_KEY!
+);
+
 // Configuration for easy client switching
 const EMAIL_CONFIG = {
-  // Your details for testing
   testing: {
-    from: 'Dental Practice <onboarding@resend.dev>', // Use this for testing with Resend's test domain
+    from: 'Dental Practice <onboarding@resend.dev>',
     to: 'gavinrayne1@gmail.com', // Replace with your email for testing
     practiceName: 'Dental Practice (Test Mode)'
   },
-  // Client details (switch when ready)
   production: {
     from: 'Dental Practice <appointments@clientdomain.com>', // Client's domain
     to: 'clientreception@example.com', // Client's reception email
@@ -44,8 +49,8 @@ export async function POST(request: Request) {
   try {
     const bookingData: BookingData = await request.json();
 
-    // Format the date for better readability
-    const formattedDate = bookingData.selectedDate 
+    // Format the date for better readability in email
+    const formattedDate = bookingData.selectedDate
       ? new Date(bookingData.selectedDate).toLocaleDateString('en-US', {
           weekday: 'long',
           year: 'numeric',
@@ -54,7 +59,7 @@ export async function POST(request: Request) {
         })
       : 'Not specified';
 
-    const emailHtml = `
+     const emailHtml = `
       <!DOCTYPE html>
       <html>
         <head>
@@ -226,6 +231,7 @@ Terms Accepted: ${bookingData.personalInfo.terms ? 'Yes' : 'No'}
 Received: ${new Date().toLocaleString()}
     `.trim();
 
+    // 1. Send email to practice
     const { data, error } = await resend.emails.send({
       from: config.from,
       to: config.to,
@@ -239,14 +245,40 @@ Received: ${new Date().toLocaleString()}
       return NextResponse.json({ error: error.message }, { status: 400 });
     }
 
-    return NextResponse.json({ 
-      success: true, 
+    // 2. Save to Supabase (appointment_requests table)
+    const { error: dbError } = await supabase
+      .from('appointment_requests')
+      .insert({
+        service_name: bookingData.selectedService,
+        requested_date: bookingData.selectedDate, // ISO string
+        requested_time: bookingData.selectedTime,
+        patient_first_name: bookingData.personalInfo.firstName,
+        patient_last_name: bookingData.personalInfo.lastName,
+        patient_email: bookingData.personalInfo.email,
+        patient_phone: bookingData.personalInfo.phone,
+        contact_method: bookingData.personalInfo.contactMethod,
+        dob: bookingData.personalInfo.dob,
+        notes: bookingData.personalInfo.notes,
+        terms_accepted: bookingData.personalInfo.terms,
+        status: 'pending',
+        // created_at will default to now(), updated_at via trigger
+      });
+
+    if (dbError) {
+      // Log the error but still return success because the email was sent
+      console.error('Supabase insert error:', dbError);
+      // Optionally, you could notify yourself (e.g., send an email) about the DB failure
+    }
+
+    return NextResponse.json({
+      success: true,
       messageId: data?.id,
-      message: 'Appointment request sent successfully'
+      message: 'Appointment request sent successfully',
+      dbStatus: dbError ? 'failed' : 'saved'
     });
 
   } catch (error) {
-    console.error('Error sending email:', error);
+    console.error('Error in appointment request:', error);
     return NextResponse.json(
       { error: 'Failed to send appointment request' },
       { status: 500 }

@@ -1,18 +1,7 @@
 import localFont from "next/font/local";
+import { DollarSign, Clock } from 'lucide-react';
 
 
-const levenim = localFont ({
-  src: "../fonts/Levenim_MT/levenim-mt.ttf"
-})
-const cinzel = localFont ({
-  src: "../fonts/Cinzel/CinzelDecorative-Regular.otf"
-})
-const open_sans = localFont ({
-  src: "../fonts/OpenSans/OpenSans-SemiBold.ttf"
-})
-const inter_heading = localFont ({
-  src: "../fonts/Inter/Inter-Medium.otf"
-})
 const inter = localFont ({
   src: "../fonts/Inter/Inter-Regular.otf"
 })
@@ -90,15 +79,14 @@ export default function ServiceCard({
       <div className="mt-auto space-y-1.5">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-1.5">
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={3} stroke="currentColor" className={`w-3.5 h-3.5 text-[#024c4c]`}>
-              <path strokeLinecap="round" strokeLinejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
-            </svg>
+            <Clock className="w-5 h-5 mr-1 text-[#036d6d]" />
             <span className={`${inter.className} text-md font-bold text-[#024c4c]`}>
               {service.duration}
             </span>
           </div>
           
-          <div className={`text-lg font-bold text-[#024c4c]`}>
+          <div className={`${inter.className} flex items-center text-md font-bold text-[#024c4c]`}>
+            <DollarSign className="w-5 h-5 mr-1 text-[#036d6d]" />
             {service.price}
           </div>
         </div>

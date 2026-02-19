@@ -6,7 +6,7 @@ import Image from 'next/image';
 import Slider from 'react-slick';
 import 'slick-carousel/slick/slick.css';
 import 'slick-carousel/slick/slick-theme.css';
-import './slick-override.css';
+import '../slick-override.css';
 
 
 interface Review {
@@ -69,7 +69,7 @@ const PatientReviews: React.FC<PatientReviewsProps> = ({
     <section className="w-full lg:w-[95%] mx-auto mt-16 p-4 bg-[#058080]">
       {/* Header */}
       <div className="flex flex-col items-center pb-8 pt-6">
-        <p className={`${inter_heading.className} inline-block text-[#8A6B00] bg-[#ffdf20] px-2.5 py-0.5 mb-1 rounded-full text-xs font-semibold tracking-wide`}>
+        <p className={`${inter_heading.className} inline-block text-[#181818] bg-[#ffdf20] px-2.5 py-0.5 mb-1 rounded-full text-xs font-semibold tracking-wide`}>
           User Reviews
         </p>
         <h2 className={`${tt_wellingtons_demi.className} tracking-wide text-3xl text-[#FAF9F6]`}>

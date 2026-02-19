@@ -11,7 +11,7 @@ export default function ScrollToTopButton() {
   return (
     <button 
       onClick={scrollToTop}
-      className="p-2 rounded-full bg-[#eef3f9] my-4 hover:bg-[#d9e4f0] transition-colors"
+      className="p-2 rounded-full bg-[#eef3f9] my-4 hover:bg-[#d9e4f0] transition-colors cursor-pointer"
       aria-label="Scroll to top"
     >
       <ChevronUp className="size-6 text-[#35565f]" strokeWidth={1.5} />

@@ -27,14 +27,14 @@ export default function HeroActions({
     <div className="flex flex-col lg:flex-row gap-4 mt-8 lg:justify-center">
       <button
         onClick={handleAppointmentClick}
-        className={`${tt_wellingtons_demi.className} ${styles.animate_pulse_scale} bg-[#f6d212] text-[#181818] py-4 px-8 tracking-wide flex items-center justify-center rounded-md text-2xl font-bold text-center hover:scale-103 transition-all`}
+        className={`${tt_wellingtons_demi.className} ${styles.animate_pulse_scale} bg-[#f6d212] text-[#181818] py-4 px-8 tracking-wide flex items-center justify-center rounded-md text-2xl font-bold text-center cursor-pointer hover:scale-103 transition-all`}
       >
         REQUEST APPOINTMENT
       </button>
 
       <Link
         href="/services"
-        className={`${tt_wellingtons.className} border-2 border-[#faf9f6] text-[#faf9f6] text-xl lg:text-[1.35rem] font-semibold px-8 py-5 rounded-md text-center hover:scale-103 transition-all`}
+        className={`${tt_wellingtons_demi.className} border-2 border-[#faf9f6] text-[#faf9f6] text-xl lg:text-[1.35rem] font-semibold px-8 py-5 rounded-md text-center cursor-pointer hover:scale-103 transition-all`}
       >
         Explore Services
       </Link>

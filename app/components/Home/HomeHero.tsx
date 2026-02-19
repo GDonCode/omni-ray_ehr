@@ -24,7 +24,7 @@ const HomeHero: React.FC<HomeHeroProps> = ({
   return (
     <section className="relative mt-31 lg:mt-32 lg:mb-12 mb-8 bg-[#058080]">
       <div className="relative max-w-7xl mx-auto">
-        <div className="relative flex flex-col lg:flex-row items-center justify-between px-6 pt-12 pb-10 lg:pb-8 lg:pt-16 lg:px-0">
+        <div className="relative flex flex-col lg:flex-row items-center lg:gap-40 px-6 pt-6 pb-10 lg:pb-8 lg:pt-16 lg:px-0">
           {/* Content Section */}
           <div className="lg:w-[60%] z-10 lg:-mt-4">
             {/* Heading */}
@@ -57,13 +57,13 @@ const HomeHero: React.FC<HomeHeroProps> = ({
           </div>
 
           {/* Image Section */}
-          <div className="lg:w-[35%] mt-14 lg:mt-0">
+          <div className="w-[92%] sm:w-[80%] lg:w-[35%] mx-auto mt-14 lg:mt-0">
             <div className="relative">
               <div className="aspect-[4/4] relative bg-gray-100">
                 <HeroSlider images={images} />
               </div>
               {/* Image Label */}
-              <div className="relative -top-4 mx-auto max-w-fit bg-[#f6d212] px-6 py-2">
+              <div className="absolute -bottom-4 left-1/2 -translate-x-1/2 bg-[#f6d212] px-6 py-2">
                 <p className={`${inter_heading.className} text-sm uppercase tracking-wider text-[#181818] text-center font-bold`}>
                   Before & After
                 </p>

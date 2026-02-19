@@ -53,10 +53,10 @@ const WhyChooseUs: React.FC<WhyChooseUsProps> = ({
   };
 
   return (
-    <section className="pb-14 z-10 lg:w-full pt-0 mx-auto p-6">
+    <section className="pb-14 z-10 lg:w-full lg:pt-0 mx-auto p-6 bg-[#EAF3F7]">
       <div className="lg:w-[95%] w-full">
         {/* Badge */}
-        <p className={`${inter_heading.className} mx-auto w-fit text-[#8A6B00] bg-[#ffdf20] px-2.5 py-0.5 mb-1 rounded-full text-xs font-semibold tracking-wide`}>
+        <p className={`${inter_heading.className} mx-auto w-fit text-[#181818] bg-[#ffdf20] px-2.5 py-0.5 mb-1 rounded-full text-xs font-semibold tracking-wide`}>
           Why Choose Us
         </p>
 

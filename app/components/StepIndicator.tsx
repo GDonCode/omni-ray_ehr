@@ -68,6 +68,7 @@ export default function StepIndicator({ currentStep, onStepClick, maxReachedStep
             <div className="flex flex-col items-center gap-2 min-w-[72px]">
               <div
                 onClick={() => isClickable && onStepClick?.(step)}
+                aria-current={currentStep === step ? "step" : undefined}
                 className={`
                   relative
                   w-8 h-8 rounded-full flex items-center justify-center

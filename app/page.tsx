@@ -5,11 +5,11 @@ import localFont from "next/font/local";
 
 import Header from './components/Header';
 import MobileMenuClient from './components/MobileMenuClient';
-import HomeHero from './components/HomeHero';
+import HomeHero from './components/Home/HomeHero';
 import Footer from './components/Footer';
-import WhyChooseUs from './components/WhyChooseUs';
-import CallToAction from './components/CallToAction';
-import PatientReviews from './components/PatientReviews';
+import WhyChooseUs from './components/Home/WhyChooseUs';
+import CallToAction from './components/Home/CallToAction';
+import PatientReviews from './components/Home/PatientReviews';
 
 const levenim = localFont ({
   src: "./fonts/Levenim_MT/levenim-mt.ttf"
@@ -30,7 +30,7 @@ const tt_wellingtons = localFont ({
 export default function Home() {
 
   const navItems = [
-    { id: 'home', label: 'Home', href: '#' },
+    { id: 'home', label: 'Home', href: '/' },
     { id: 'services', label: 'Services', href: '/services' },
     { id: 'about', label: 'About', href: '/about' },
     { id: 'help', label: 'Help', href: '/help' },
@@ -38,10 +38,9 @@ export default function Home() {
   ];
 
   const images = [
-    "/header_.png",
-    "/header-photo-2.png",
-    "/header-photo-3_copy.jpg",
-    "/header-photo-4.jpg"
+    "/header.png",
+    "/header-2.png",
+    "/header-3.png",
   ];
 
   
@@ -84,50 +83,52 @@ export default function Home() {
     </div>
 
     {/* Floating Whatsapp Icon */}
-    <a href="https://wa.link/2cyzq4" className="fixed bottom-5 right-4 z-40 rounded-full p-2 bg-[#3FC050]">
+    <a href="https://wa.link/2cyzq4" className="fixed bottom-5 right-4 z-40 rounded-full p-2 bg-[#3FC050]" aria-label="Chat with us on WhatsApp">
       <Image src={"/icons8-whatsapp.svg"} alt="Whatsapp Logo" width={34} height={34} className=""></Image>
     </a>
-
-    <Header
-      navItems={navItems}
-      inter_heading={inter_heading}
-      tt_wellingtons_demi={tt_wellingtons_demi}
-      levenim={levenim}
-    />
-    <MobileMenuClient navItems={navItems} />
-    
-    <HomeHero
-      tt_wellingtons_demi={tt_wellingtons_demi}
-      tt_wellingtons={tt_wellingtons}
-      cinzel={cinzel}
-      inter_heading={inter_heading}
-      styles={styles}
-      images={images}
-    />
-    
-    <section>
-      <div className="relative lg:w-full lg:mx-auto lg:my-13 shadow-b-xl">
-        <WhyChooseUs
-          inter_heading={inter_heading}
-          tt_wellingtons_demi={tt_wellingtons_demi}
-          tt_wellingtons={tt_wellingtons}
-        />
-        <CallToAction
-          inter_heading={inter_heading}
-          tt_wellingtons_demi={tt_wellingtons_demi}
-          tt_wellingtons={tt_wellingtons}
-          styles={styles} // Optional
-        />
-        <PatientReviews
-          inter_heading={inter_heading}
-          tt_wellingtons_demi={tt_wellingtons_demi}
-          tt_wellingtons={tt_wellingtons}
-          cinzel={cinzel}
-          levenim={levenim}
-          reviews={reviewData}
-        />
-      </div>
-    </section>
+    <header role="banner">
+      <Header
+        navItems={navItems}
+        inter_heading={inter_heading}
+        tt_wellingtons_demi={tt_wellingtons_demi}
+        levenim={levenim}
+      />
+      <MobileMenuClient navItems={navItems} />
+    </header>
+    <main role="main" id="main-content">
+      <HomeHero
+        tt_wellingtons_demi={tt_wellingtons_demi}
+        tt_wellingtons={tt_wellingtons}
+        cinzel={cinzel}
+        inter_heading={inter_heading}
+        styles={styles}
+        images={images}
+      />
+      
+      <section className="bg-[#EAF3F7] lg:-mb-12 lg:pb-8 -mt-8 lg:-mt-0">
+        <div className="relative lg:w-full lg:mx-auto lg:my-13 shadow-b-xl">
+          <WhyChooseUs
+            inter_heading={inter_heading}
+            tt_wellingtons_demi={tt_wellingtons_demi}
+            tt_wellingtons={tt_wellingtons}
+          />
+          <CallToAction
+            inter_heading={inter_heading}
+            tt_wellingtons_demi={tt_wellingtons_demi}
+            tt_wellingtons={tt_wellingtons}
+            styles={styles} // Optional
+          />
+          <PatientReviews
+            inter_heading={inter_heading}
+            tt_wellingtons_demi={tt_wellingtons_demi}
+            tt_wellingtons={tt_wellingtons}
+            cinzel={cinzel}
+            levenim={levenim}
+            reviews={reviewData}
+          />
+        </div>
+      </section>
+    </main>
 
     <Footer
       tt_wellingtons={tt_wellingtons}

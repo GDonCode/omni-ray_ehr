@@ -27,31 +27,12 @@ const Header: React.FC<HeaderProps> = ({
   levenim 
 }) => {
   const [isOpen, setIsOpen] = useState(false);
-  const [activeItem, setActiveItem] = useState('home');
-  const [activeMobileLink, setActiveMobileLink] = useState('home');
   const pathname = usePathname();
 
-  // Update active item based on pathname
-  useEffect(() => {
-    const path = pathname || '/';
-    if (path === '/') {
-      setActiveItem('home');
-      setActiveMobileLink('home');
-    } else if (path.startsWith('/about')) {
-      setActiveItem('about');
-      setActiveMobileLink('about');
-    } else if (path.startsWith('/services')) {
-      setActiveItem('services');
-      setActiveMobileLink('services');
-    } else if (path.startsWith('/contact')) {
-      setActiveItem('contact');
-      setActiveMobileLink('contact');
-    } else {
-      const segment = path.split('/')[1];
-      setActiveItem(segment || 'home');
-      setActiveMobileLink(segment || 'home');
-    }
-  }, [pathname]);
+  const activeItem =
+    pathname === '/'
+      ? 'home'
+      : pathname?.split('/')[1] || 'home';
 
   // Close mobile menu when route changes
   useEffect(() => {
@@ -73,10 +54,6 @@ const Header: React.FC<HeaderProps> = ({
   const toggleMenu = () => setIsOpen(!isOpen);
   const closeMenu = () => setIsOpen(false);
 
-  const handleMobileLinkClick = (linkId: string) => {
-    setActiveMobileLink(linkId);
-    closeMenu();
-  };
 
   return (
     <>
@@ -104,16 +81,16 @@ const Header: React.FC<HeaderProps> = ({
               height={75} 
               className="cursor-pointer lg:w-[90px] lg:h-[90px]"
             />
-            <h1 className={`${levenim.className} text-[#f6d212] font-medium lg:text-5xl text-[2rem] items-center flex flex-col tracking-widest`}>
+            <p className={`${levenim.className} text-[#f6d212] font-medium lg:text-5xl text-[2rem] items-center flex flex-col tracking-widest`}>
               aurelia 
               <span className="block -mt-3 lg:-mt-2 ml-3 lg:ml-10 text-white text-[1.5rem] lg:text-[2rem] font-medium uppercase">
                 Dental
               </span>
-            </h1>
+            </p>
           </Link>
 
           {/* Desktop Navigation */}
-          <nav className={`${tt_wellingtons_demi.className} hidden lg:block`}>
+          <nav className={`${tt_wellingtons_demi.className} hidden lg:block`} role="navigation">
             <ul className="flex items-center gap-12 font-medium text-xl">
               {navItems.map((item) => (
                 <li key={item.id}>
@@ -121,7 +98,7 @@ const Header: React.FC<HeaderProps> = ({
                     href={item.href}
                     className={`
                       cursor-pointer transition-all duration-200
-                      ${activeItem === item.id 
+                      ${activeItem === item.id
                         ? 'text-[#f6d212] font-bold border-b-2 border-[#f6d212]' 
                         : 'text-white hover:text-[#f6d212] hover:border-b-2 hover:border-[#f6d212]'
                       }
@@ -149,7 +126,7 @@ const Header: React.FC<HeaderProps> = ({
       </div>
 
       {/* Mobile Navigation - Slide-out Panel */}
-      <nav className={`fixed right-0 top-0 w-70 h-fit bg-gradient-to-br from-white to-gray-50 z-50 shadow-2xl transform transition-transform duration-500 ease-out ${isOpen ? 'translate-x-0' : 'translate-x-full'}`}>
+      <nav role="navigation" className={`fixed right-0 top-0 w-70 h-fit bg-gradient-to-br from-white to-gray-50 z-50 shadow-2xl transform transition-transform duration-500 ease-out ${isOpen ? 'translate-x-0' : 'translate-x-full'}`}>
         
         {/* Close Button */}
         <div className="flex items-center block lg:hidden px-8 py-4">
@@ -166,11 +143,11 @@ const Header: React.FC<HeaderProps> = ({
                 <Link 
                   href={link.href} 
                   className={`block py-3 px-4 rounded-lg transition-all ${
-                    activeMobileLink === link.id 
+                    activeItem === link.id
                       ? 'text-[#faf9f6] font-bold text-[1.4rem] bg-[#069494] border-l-8 border-[#036d6d]' 
                       : 'text-gray-700 font-medium text-[1.3rem] bg-gray-200 hover:text-[#3c5b64] border-l-4 border-gray-300'
                   }`}
-                  onClick={() => handleMobileLinkClick(link.id)}
+                  onClick={closeMenu}
                 >
                   {link.label}
                 </Link>

@@ -1,26 +1,4 @@
-.secondary_container {
-    --color: #032d68;
-    background-color:  #043570 ;
-    background-image: linear-gradient(0deg, transparent 24%, var(--color) 25%, var(--color) 26%, transparent 27%,transparent 74%, var(--color) 75%, var(--color) 76%, transparent 77%,transparent),
-    linear-gradient(90deg, transparent 24%, var(--color) 25%, var(--color) 26%, transparent 27%,transparent 74%, var(--color) 75%, var(--color) 76%, transparent 77%,transparent);
-    background-size: 16px 16px;
-}
-@media (min-width: 768px) {
-    .secondary_container {
-        background-size: 30px 30px;
-    }
-    .primary_container {
-      background-size: 80px 80px;
-    }
-}
 
-.primary_container {
-     --color: #E1E1E1;
-    background-color: #F3F3F3;
-    background-image: linear-gradient(0deg, transparent 24%, var(--color) 25%, var(--color) 26%, transparent 27%,transparent 74%, var(--color) 75%, var(--color) 76%, transparent 77%,transparent),
-    linear-gradient(90deg, transparent 24%, var(--color) 25%, var(--color) 26%, transparent 27%,transparent 74%, var(--color) 75%, var(--color) 76%, transparent 77%,transparent);
-    background-size: 16px 16px;
-}
 
 .tile {
   background-color: white;
@@ -67,56 +45,4 @@
   background: #EAF3F7;
   display: flex;
   flex-grow: 1;
-}
-
-
-.background div {
-  position: absolute;
-  border-radius: 100%;
-  height: 0;
-  filter: blur(200px);
-  opacity: 0.45;
-}
-
-/* soft teal glow */
-.background div:nth-child(1) {
-  background: linear-gradient(
-    135deg,
-    #66D5E0 0%,
-    #33B0C0 100%
-  );
-  width: 30%;
-  padding-top: 30%;
-  left: 20%;
-  top: 25%;
-  transform: translate(-50%, -50%);
-}
-
-/* deeper anchor glow */
-.background div:nth-child(2) {
-  background: linear-gradient(
-    135deg,
-    #33A0B0 0%,
-    #1A6D7D 100%
-  );
-  width: 42%;
-  padding-top: 42%;
-  left: 55%;
-  top: 55%;
-  transform: translate(-50%, -50%);
-  opacity: 0.35;
-}
-
-/* lighter accent bloom */
-.background div:nth-child(3) {
-  background: linear-gradient(
-    135deg,
-    #80E5F0 0%,
-    #4DC0D5 100%
-  );
-  width: 28%;
-  padding-top: 28%;
-  left: 80%;
-  top: 75%;
-  transform: translate(-50%, -50%);
 }
