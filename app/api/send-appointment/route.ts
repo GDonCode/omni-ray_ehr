@@ -7,8 +7,8 @@ const resend = new Resend(process.env.RESEND_API_KEY);
 
 // Supabase client
 const supabase = createClient(
-  process.env.SUPABASE_URL!,
-  process.env.SUPABASE_ANON_KEY!
+  process.env.NEXT_PUBLIC_SUPABASE_URL!,
+  process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_DEFAULT_KEY!
 );
 
 // Configuration for easy client switching
@@ -29,37 +29,50 @@ const EMAIL_CONFIG = {
 const ENVIRONMENT: 'testing' | 'production' = 'testing';
 const config = EMAIL_CONFIG[ENVIRONMENT];
 
+// Full PersonalInfo interface matching the frontend
+interface PersonalInfo {
+  appointmentFor: 'self' | 'child';
+  firstName: string;
+  lastName: string;
+  guardianFirstName: string;
+  guardianLastName: string;
+  email: string;
+  phone: string;
+  contactMethod: string | null;
+  isReturningPatient: string | null; // 'yes' | 'no' | null
+  dob: string;
+  notes: string;
+  message: string;
+  terms: boolean;
+}
+
+interface SelectedSlot {
+  date: string; // Date as ISO string from frontend
+  times: string[];
+}
+
 interface BookingData {
   selectedService: string | null;
-  selectedDate: string | null;
-  selectedTime: string | null;
-  personalInfo: {
-    firstName: string;
-    lastName: string;
-    email: string;
-    phone: string;
-    dob: string;
-    contactMethod: string | null;
-    notes: string;
-    terms: boolean;
-  };
+  selectedSlots: SelectedSlot[];
+  personalInfo: PersonalInfo;
 }
 
 export async function POST(request: Request) {
   try {
     const bookingData: BookingData = await request.json();
 
-    // Format the date for better readability in email
-    const formattedDate = bookingData.selectedDate
-      ? new Date(bookingData.selectedDate).toLocaleDateString('en-US', {
-          weekday: 'long',
-          year: 'numeric',
-          month: 'long',
-          day: 'numeric'
-        })
-      : 'Not specified';
+    // Helper to safely convert a date string to a Date object
+    const parseDate = (dateStr: string): Date => new Date(dateStr);
 
-     const emailHtml = `
+    // Format the slots for email
+    const slotsHtml = bookingData.selectedSlots.map(slot => {
+      const dateObj = parseDate(slot.date);
+      const dateStr = dateObj.toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+      const timesHtml = slot.times.map(t => `<span class="time-badge">${t}</span>`).join(' ');
+      return `<div class="slot-item"><strong>${dateStr}</strong>: ${timesHtml}</div>`;
+    }).join('');
+
+    const emailHtml = `
       <!DOCTYPE html>
       <html>
         <head>
@@ -67,7 +80,7 @@ export async function POST(request: Request) {
             body {
               font-family: Helvetica, sans-serif;
               line-height: 1.6;
-              color: #EAF3F7;
+              color: #F7FBFC;
               max-width: 600px;
               margin: 0 auto;
               padding: 20px;
@@ -110,6 +123,21 @@ export async function POST(request: Request) {
               flex: 1;
               color: #333;
             }
+            .slot-item {
+              margin-bottom: 10px;
+              padding: 8px;
+              background-color: #f0f8fa;
+              border-radius: 4px;
+            }
+            .time-badge {
+              display: inline-block;
+              background-color: #058080;
+              color: white;
+              padding: 2px 8px;
+              border-radius: 4px;
+              margin-right: 5px;
+              font-size: 0.9em;
+            }
             .notes-box {
               background-color: #82bfbf;
               color: #181818;
@@ -141,12 +169,8 @@ export async function POST(request: Request) {
                 <span class="value">${bookingData.selectedService || 'Not specified'}</span>
               </div>
               <div class="info-row">
-                <span class="label">Preferred Date:</span>
-                <span class="value">${formattedDate}</span>
-              </div>
-              <div class="info-row">
-                <span class="label">Preferred Time:</span>
-                <span class="value">${bookingData.selectedTime || 'Not specified'}</span>
+                <span class="label">Preferred Slots:</span>
+                <div class="value">${slotsHtml || 'None selected'}</div>
               </div>
             </div>
 
@@ -193,24 +217,24 @@ export async function POST(request: Request) {
 
           <div class="footer">
             <p>This is an automated appointment request notification.</p>
-            <p>Received on ${new Date().toLocaleString('en-US', { 
-              dateStyle: 'full', 
-              timeStyle: 'short' 
-            })}</p>
+            <p>Received on ${new Date().toLocaleString('en-US', { dateStyle: 'full', timeStyle: 'short' })}</p>
           </div>
         </body>
       </html>
     `;
 
-    // Plain text version for email clients that don't support HTML
-    const emailText = `
+    const plainText = `
 NEW APPOINTMENT REQUEST - ${config.practiceName}
 
 APPOINTMENT DETAILS
 -------------------
 Service: ${bookingData.selectedService || 'Not specified'}
-Date: ${formattedDate}
-Time: ${bookingData.selectedTime || 'Not specified'}
+Preferred Slots:
+${bookingData.selectedSlots.map(s => {
+  const dateObj = parseDate(s.date);
+  const dateStr = dateObj.toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+  return `${dateStr}: ${s.times.join(', ')}`;
+}).join('\n') || 'None selected'}
 
 PATIENT INFORMATION
 -------------------
@@ -237,7 +261,7 @@ Received: ${new Date().toLocaleString()}
       to: config.to,
       subject: `New Appointment Request - ${bookingData.personalInfo.firstName} ${bookingData.personalInfo.lastName}`,
       html: emailHtml,
-      text: emailText,
+      text: plainText,
     });
 
     if (error) {
@@ -246,28 +270,37 @@ Received: ${new Date().toLocaleString()}
     }
 
     // 2. Save to Supabase (appointment_requests table)
+    // Convert each slot.date to YYYY-MM-DD string for storage
+    const slotsForDb = bookingData.selectedSlots.map(slot => ({
+      date: parseDate(slot.date).toISOString().split('T')[0], // YYYY-MM-DD
+      times: slot.times
+    }));
+
     const { error: dbError } = await supabase
       .from('appointment_requests')
       .insert({
         service_name: bookingData.selectedService,
-        requested_date: bookingData.selectedDate, // ISO string
-        requested_time: bookingData.selectedTime,
-        patient_first_name: bookingData.personalInfo.firstName,
-        patient_last_name: bookingData.personalInfo.lastName,
-        patient_email: bookingData.personalInfo.email,
-        patient_phone: bookingData.personalInfo.phone,
+        selected_slots: slotsForDb,
+        requested_date: null,        // not used anymore
+        requested_time: null,         // not used anymore
+        appointment_for: bookingData.personalInfo.appointmentFor,
+        first_name: bookingData.personalInfo.firstName,
+        last_name: bookingData.personalInfo.lastName,
+        guardian_first_name: bookingData.personalInfo.appointmentFor === 'child' ? bookingData.personalInfo.guardianFirstName : null,
+        guardian_last_name: bookingData.personalInfo.appointmentFor === 'child' ? bookingData.personalInfo.guardianLastName : null,
+        email: bookingData.personalInfo.email,
+        phone: bookingData.personalInfo.phone,
         contact_method: bookingData.personalInfo.contactMethod,
+        is_returning_patient: bookingData.personalInfo.isReturningPatient === 'yes' ? true : bookingData.personalInfo.isReturningPatient === 'no' ? false : null,
         dob: bookingData.personalInfo.dob,
         notes: bookingData.personalInfo.notes,
-        terms_accepted: bookingData.personalInfo.terms,
-        status: 'pending',
-        // created_at will default to now(), updated_at via trigger
+        message: bookingData.personalInfo.message, 
+        status: 'new',
+        // terms is not a column in the table, so we omit it
       });
 
     if (dbError) {
-      // Log the error but still return success because the email was sent
       console.error('Supabase insert error:', dbError);
-      // Optionally, you could notify yourself (e.g., send an email) about the DB failure
     }
 
     return NextResponse.json({

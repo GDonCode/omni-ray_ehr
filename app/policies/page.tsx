@@ -3,7 +3,7 @@ import styles from "./policies.module.css"; // Import the CSS module
 import "../globals.css";
 import localFont from "next/font/local";
 
-import Header from '../components/Header';
+import HeaderWrapper from '../components/HeaderWrapper';
 import MobileMenuClient from '../components/MobileMenuClient';
 import Footer from '../components/Footer';
 
@@ -32,7 +32,7 @@ export default function Policies() {
   ];
 
   return (
-  <div className="bg-[#EAF3F7]">
+  <div className="bg-[#F7FBFC]">
     <div className={`${styles.background}`}>
     </div>
 
@@ -41,15 +41,14 @@ export default function Policies() {
       <Image src={"/icons8-whatsapp.svg"} alt="Whatsapp Logo" width={34} height={34} className=""></Image>
     </a>
     <header role="banner">
-      <Header
+      <HeaderWrapper
         navItems={navItems}
         inter_heading={inter_heading}
         tt_wellingtons_demi={tt_wellingtons_demi}
         levenim={levenim}
       />
-      <MobileMenuClient navItems={navItems} />
-    </header>
-    <main role="main" id="main-content" className="w-[90%] mx-auto py-16 space-y-20 bg-[#EAF3F7]">
+          </header>
+    <main role="main" id="main-content" className="w-[90%] mx-auto py-16 space-y-20 bg-[#F7FBFC]">
         {/* TERMS & CONDITIONS */}
         <section id="terms" className="space-y-6 relative mt-36">
             <h1 className={`${inter_heading.className} text-4xl text-[#181818]`}>

@@ -1,6 +1,15 @@
 'use client';
 
 import { useState, FormEvent } from 'react';
+import localFont from 'next/font/local';
+import { TriangleAlert } from 'lucide-react'; 
+
+const inter_heading = localFont ({
+  src: "../../fonts/Inter/Inter-Medium.otf"
+})
+const inter = localFont ({
+  src: "../../fonts/Inter/Inter-Regular.otf"
+})
 
 interface ContactFormProps {
   titleFont: string;   
@@ -16,7 +25,6 @@ export default function ContactForm({ titleFont }: ContactFormProps) {
   const [formData, setFormData] = useState({
     name: '',
     email: '',
-    phone: '',
     message: '',
   });
 
@@ -25,26 +33,24 @@ export default function ContactForm({ titleFont }: ContactFormProps) {
     setFormData(prev => ({ ...prev, [name]: value }));
   };
   const validateForm = () => {
-    if (formData.name.trim().length < 2) {
-      return 'Please enter a valid name.';
-    } else if (formData.name.trim().length > 50) {
-      return 'Name cannot exceed 50 characters.';
-    }
-
-    if (contactMethod === 'email') {
-      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-      if (!emailRegex.test(formData.email.trim())) {
-        return 'Please enter a valid email address.';
-      } else if (formData.email.trim().length > 100) {
-        return 'Email cannot exceed 100 characters.';
+    const nameRegex = /^[A-Za-z\s'-]{2,}$/;
+      // Required field validations
+      if (!formData.name || formData.name.trim() === '') {
+        return 'Name is required';
+      } else if (formData.name.trim().length < 2) {
+        return 'Name must be at least 2 characters long';
+      } else if (formData.name.trim().length > 50) {
+        return 'Name cannot exceed 50 characters';
+      } else if (!nameRegex.test(formData.name)) {
+        return 'Name can only contain letters';
       }
-    }
 
-    if (contactMethod === 'phone') {
-      const phoneRegex = /^[0-9+\-\s()]{7,}$/;
-      if (!phoneRegex.test(formData.phone.trim())) {
-        return 'Please enter a valid phone number.';
-      }
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(formData.email.trim())) {
+      return 'Please enter a valid email address.';
+    } else if (formData.email.trim().length > 100) {
+      return 'Email cannot exceed 100 characters.';
     }
 
     if (formData.message.trim().length < 10) {
@@ -65,9 +71,7 @@ export default function ContactForm({ titleFont }: ContactFormProps) {
     const dataToSend = {
       name: formData.name.trim(),
       contactMethod,
-      ...(contactMethod === 'email'
-        ? { email: formData.email.trim() }
-        : { phone: formData.phone.trim() }),
+      email: formData.email.trim(),
       message: formData.message.trim(),
     };
     const validationError = validateForm();
@@ -88,7 +92,7 @@ export default function ContactForm({ titleFont }: ContactFormProps) {
           message: 'Your message has been sent successfully.',
         });
 
-        setFormData({ name: '', email: '', phone: '', message: '' });
+        setFormData({ name: '', email: '', message: '' });
         setContactMethod('email');
       } else {
         setStatus({
@@ -121,79 +125,29 @@ export default function ContactForm({ titleFont }: ContactFormProps) {
             name="name"
             value={formData.name}
             onChange={handleInputChange}
-            className={`${titleFont} w-full px-4 py-3 bg-white border-2 border-[#036d6d] rounded-md text-[#036d6d] placeholder:text-[#036d6d]/50 font-medium text-xl focus:outline-none focus:ring-2 focus:ring-[#FFD700] focus:border-transparent transition-all`}
+            className={`${titleFont} w-full px-4 py-3 rounded-sm border border-[#D0E6E6] bg-white text-[#181818] font-medium text-xl placeholder:text-[#9DBDBD] transition-all duration-200 outline-none focus:border-2 focus:border-b-[#058080] focus:border-x-[#D0E6E6] focus:border-t-[#D0E6E6] focus:rounded-b-[2px] hover:ring-1 hover:ring-gray-300`}
+            style={{ boxShadow: '0px 6px 12px -16px #000' }}
             placeholder="Your Name"
             required
           />
         </div>
 
-        {/* Contact method radio buttons */}
-        <div className="flex flex-col">
-          <label className={`${titleFont} block text-xl font-medium text-[#036d6d] mb-3`}>
-            Preferred Contact Method:
+        <div className="flex flex-col -mt-2">
+          <label htmlFor="email" className={`${titleFont} block text-xl font-medium text-[#036d6d] mb-2`}>
+            Email:
           </label>
-          <div className="flex gap-6">
-            <label className="flex items-center gap-2 cursor-pointer">
-              <input
-                type="radio"
-                name="contactMethod"
-                value="email"
-                checked={contactMethod === 'email'}
-                onChange={(e) => setContactMethod(e.target.value as 'email')}
-                className="w-5 h-5 text-[#036d6d] focus:ring-[#FFD700]"
-              />
-              <span className={`${titleFont} text-xl text-[#036d6d]`}>Email</span>
-            </label>
-            <label className="flex items-center gap-2 cursor-pointer">
-              <input
-                type="radio"
-                name="contactMethod"
-                value="phone"
-                checked={contactMethod === 'phone'}
-                onChange={(e) => setContactMethod(e.target.value as 'phone')}
-                className="w-5 h-5 text-[#036d6d] focus:ring-[#FFD700]"
-              />
-              <span className={`${titleFont} text-xl text-[#036d6d]`}>Phone</span>
-            </label>
-          </div>
+          <input
+            id="email"
+            type="email"
+            name="email"
+            value={formData.email}
+            onChange={handleInputChange}
+            className={`${titleFont} w-full px-4 py-3 rounded-sm border border-[#D0E6E6] bg-white text-[#181818] font-medium text-xl placeholder:text-[#9DBDBD] transition-all duration-200 outline-none focus:border-2 focus:border-b-[#058080] focus:border-x-[#D0E6E6] focus:border-t-[#D0E6E6] focus:rounded-b-[2px] hover:ring-1 hover:ring-gray-300`}
+            style={{ boxShadow: '0px 6px 12px -16px #000' }}
+            placeholder="Your Email"
+            required={contactMethod === 'email'}
+          />
         </div>
-
-        {/* Conditional email/phone field */}
-        {contactMethod === 'email' && (
-          <div className="flex flex-col -mt-2">
-            <label htmlFor="email" className={`${titleFont} block text-xl font-medium text-[#036d6d] mb-2`}>
-              Email:
-            </label>
-            <input
-              id="email"
-              type="email"
-              name="email"
-              value={formData.email}
-              onChange={handleInputChange}
-              className={`${titleFont} w-full px-4 py-3 bg-white border-2 border-[#036d6d] rounded-md text-[#036d6d] placeholder:text-[#036d6d]/50 font-medium text-xl focus:outline-none focus:ring-2 focus:ring-[#FFD700] focus:border-transparent transition-all`}
-              placeholder="Your Email"
-              required={contactMethod === 'email'}
-            />
-          </div>
-        )}
-
-        {contactMethod === 'phone' && (
-          <div className="flex flex-col -mt-2">
-            <label htmlFor="phone" className={`${titleFont} block text-xl font-medium text-[#036d6d] mb-2`}>
-              Phone:
-            </label>
-            <input
-              id="phone"
-              type="tel"
-              name="phone"
-              value={formData.phone}
-              onChange={handleInputChange}
-              className={`${titleFont} w-full px-4 py-3 bg-white border-2 border-[#036d6d] rounded-md text-[#036d6d] placeholder:text-[#036d6d]/50 font-medium text-xl focus:outline-none focus:ring-2 focus:ring-[#FFD700] focus:border-transparent transition-all`}
-              placeholder="Your Phone Number"
-              required={contactMethod === 'phone'}
-            />
-          </div>
-        )}
 
         {/* Message field */}
         <div className="flex flex-col">
@@ -205,7 +159,8 @@ export default function ContactForm({ titleFont }: ContactFormProps) {
             name="message"
             value={formData.message}
             onChange={handleInputChange}
-            className={`${titleFont} w-full px-4 py-3 bg-white border-2 border-[#036d6d] rounded-md text-[#036d6d] placeholder:text-[#036d6d]/50 font-medium text-xl focus:outline-none focus:ring-2 focus:ring-[#FFD700] focus:border-transparent transition-all`}
+            className={`${titleFont} w-full px-4 py-3 rounded-sm border border-[#D0E6E6] bg-white text-[#181818] font-medium text-xl placeholder:text-[#9DBDBD] transition-all duration-200 outline-none focus:border-2 focus:border-b-[#058080] focus:border-x-[#D0E6E6] focus:border-t-[#D0E6E6] focus:rounded-b-[2px] hover:ring-1 hover:ring-gray-300`}
+            style={{ boxShadow: '0px 6px 12px -16px #000' }}
             placeholder="Your Message"
             required
           />
@@ -215,10 +170,10 @@ export default function ContactForm({ titleFont }: ContactFormProps) {
           <div
             role={status.type === 'error' ? 'alert' : 'status'}
             aria-live={status.type === 'error' ? 'assertive' : 'polite'}
-            className={`px-4 py-3 rounded-md text-lg font-medium ${
+            className={`${inter_heading.className} px-4 py-3 flex items-center rounded-md text-lg font-medium ${
               status.type === 'success'
-                ? 'bg-green-700 text-white border border-green-700'
-                : 'bg-red-700 text-white border border-red-700'
+                ? 'bg-green-500/20 text-[#181818] border border-green-500/50 tracking-wide'
+                : 'bg-red-500/20 text-[#181818] border border-red-500/50 tracking-wide'
             }`}
           >
             {status.message}
@@ -229,7 +184,11 @@ export default function ContactForm({ titleFont }: ContactFormProps) {
           type="submit"
           disabled={isSubmitting}
           aria-busy={isSubmitting}
-          className={`${titleFont} w-full py-4 bg-[#f6d212] text-xl text-[#181818] font-bold rounded-md hover:scale-104 cursor-pointer transition-all duration-300`}
+          className={`${titleFont} w-full py-4 text-xl text-[#181818] font-bold rounded-lg cursor-pointer transition-all duration-200 hover:scale-[1.02] hover:brightness-105 disabled:opacity-50 disabled:cursor-not-allowed`}
+          style={{
+            background: 'linear-gradient(180deg, #ffe14d 0%, #ffd808 50%, #e6b800 100%)',
+            boxShadow: '0px 0.5px 0.5px rgba(180,130,0,0.3), 0px 1px 0.5px rgba(180,130,0,0.15)',
+          }}
         >
           {isSubmitting ? 'Sending...' : 'Send Message'}
         </button>

@@ -4,6 +4,7 @@ import "./globals.css";
 import localFont from "next/font/local";
 
 import Header from './components/Header';
+import HeaderWrapper from './components/HeaderWrapper'; 
 import MobileMenuClient from './components/MobileMenuClient';
 import HomeHero from './components/Home/HomeHero';
 import Footer from './components/Footer';
@@ -77,63 +78,61 @@ export default function Home() {
     }
   ]
 
-  return (
-  <>
-    <div className={`${styles.background}`}>
-    </div>
+    return (
+    <div className={styles.pageBackground}>
+      {/* Floating WhatsApp Icon */}
+      <a href="https://wa.link/2cyzq4" className="fixed bottom-5 right-4 z-40 rounded-full p-2 bg-[#3FC050]" aria-label="Chat with us on WhatsApp">
+        <Image src={"/icons8-whatsapp.svg"} alt="Whatsapp Logo" width={34} height={34} />
+      </a>
 
-    {/* Floating Whatsapp Icon */}
-    <a href="https://wa.link/2cyzq4" className="fixed bottom-5 right-4 z-40 rounded-full p-2 bg-[#3FC050]" aria-label="Chat with us on WhatsApp">
-      <Image src={"/icons8-whatsapp.svg"} alt="Whatsapp Logo" width={34} height={34} className=""></Image>
-    </a>
-    <header role="banner">
-      <Header
-        navItems={navItems}
-        inter_heading={inter_heading}
-        tt_wellingtons_demi={tt_wellingtons_demi}
-        levenim={levenim}
-      />
-      <MobileMenuClient navItems={navItems} />
-    </header>
-    <main role="main" id="main-content">
-      <HomeHero
-        tt_wellingtons_demi={tt_wellingtons_demi}
+      <header role="banner">
+        <HeaderWrapper
+          navItems={navItems}
+          inter_heading={inter_heading}
+          tt_wellingtons_demi={tt_wellingtons_demi}
+          levenim={levenim}
+        />
+      </header>
+
+      <main role="main" id="main-content" className="bg-transparent backdrop-blur-md shadow-lg z-10">
+        <HomeHero
+          tt_wellingtons_demi={tt_wellingtons_demi}
+          tt_wellingtons={tt_wellingtons}
+          cinzel={cinzel}
+          inter_heading={inter_heading}
+          styles={styles}
+          images={images}
+        />
+
+        <section className="bg-transparent lg:-mb-12 lg:pb-8 -mt-8 lg:-mt-0">
+          <div className="relative lg:w-full lg:mx-auto lg:my-13 shadow-b-xl">
+            <WhyChooseUs
+              inter_heading={inter_heading}
+              tt_wellingtons_demi={tt_wellingtons_demi}
+              tt_wellingtons={tt_wellingtons}
+            />
+            <CallToAction
+              inter_heading={inter_heading}
+              tt_wellingtons_demi={tt_wellingtons_demi}
+              tt_wellingtons={tt_wellingtons}
+              styles={styles}
+            />
+            <PatientReviews
+              inter_heading={inter_heading}
+              tt_wellingtons_demi={tt_wellingtons_demi}
+              tt_wellingtons={tt_wellingtons}
+              cinzel={cinzel}
+              levenim={levenim}
+              reviews={reviewData}
+            />
+          </div>
+        </section>
+      </main>
+
+      <Footer
         tt_wellingtons={tt_wellingtons}
-        cinzel={cinzel}
         inter_heading={inter_heading}
-        styles={styles}
-        images={images}
       />
-      
-      <section className="bg-[#EAF3F7] lg:-mb-12 lg:pb-8 -mt-8 lg:-mt-0">
-        <div className="relative lg:w-full lg:mx-auto lg:my-13 shadow-b-xl">
-          <WhyChooseUs
-            inter_heading={inter_heading}
-            tt_wellingtons_demi={tt_wellingtons_demi}
-            tt_wellingtons={tt_wellingtons}
-          />
-          <CallToAction
-            inter_heading={inter_heading}
-            tt_wellingtons_demi={tt_wellingtons_demi}
-            tt_wellingtons={tt_wellingtons}
-            styles={styles} // Optional
-          />
-          <PatientReviews
-            inter_heading={inter_heading}
-            tt_wellingtons_demi={tt_wellingtons_demi}
-            tt_wellingtons={tt_wellingtons}
-            cinzel={cinzel}
-            levenim={levenim}
-            reviews={reviewData}
-          />
-        </div>
-      </section>
-    </main>
-
-    <Footer
-      tt_wellingtons={tt_wellingtons}
-      inter_heading={inter_heading}
-    />
-  </>
+    </div>
   );
 }

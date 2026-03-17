@@ -22,7 +22,7 @@ const HomeHero: React.FC<HomeHeroProps> = ({
 }) => {
 
   return (
-    <section className="relative mt-31 lg:mt-32 lg:mb-12 mb-8 bg-[#058080]">
+    <section className="relative mt-31 lg:mt-32 lg:pb-12 pb-8 bg-[#058080]">
       <div className="relative max-w-7xl mx-auto">
         <div className="relative flex flex-col lg:flex-row items-center lg:gap-40 px-6 pt-6 pb-10 lg:pb-8 lg:pt-16 lg:px-0">
           {/* Content Section */}

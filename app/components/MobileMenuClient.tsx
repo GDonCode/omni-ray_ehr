@@ -1,19 +1,24 @@
 'use client';
-import { useState } from 'react';
+import { usePathname } from 'next/navigation';
 import MobileMenu from './MobileMenu';
 import type { NavItem } from './MobileMenu';
 
 interface MobileMenuClientProps {
   navItems: NavItem[];
+  isOpen: boolean;
+  onClose: () => void;
 }
 
-export default function MobileMenuClient({ navItems }: MobileMenuClientProps) {
-  const [isOpen, setIsOpen] = useState(false);
-  const [activeMobileLink, setActiveMobileLink] = useState(navItems[0]?.id || '');
+export default function MobileMenuClient({ navItems, isOpen, onClose }: MobileMenuClientProps) {
+  const pathname = usePathname();
 
-  const handleMobileLinkClick = (id: string) => {
-    setActiveMobileLink(id);
-    setIsOpen(false); // close menu on link click
+  // Determine active link based on current pathname (same logic as Header)
+  const activeMobileLink = pathname === '/'
+    ? 'home'
+    : pathname?.split('/')[1] || 'home';
+
+  const handleMobileLinkClick = () => {
+    onClose(); // Close menu when a link is clicked
   };
 
   return (
@@ -21,7 +26,7 @@ export default function MobileMenuClient({ navItems }: MobileMenuClientProps) {
       isOpen={isOpen}
       navItems={navItems}
       activeMobileLink={activeMobileLink}
-      onClose={() => setIsOpen(false)}
+      onClose={onClose}
       onLinkClick={handleMobileLinkClick}
     />
   );

@@ -18,3 +18,21 @@
 .skip-link:focus {
   top: 0;
 }
+body {
+  background-color: #F7FBFC;
+  background-image: repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 20px,
+      rgba(0, 119, 204, 0.02) 20px,
+      rgba(0, 119, 204, 0.02) 21px
+    ),
+    repeating-linear-gradient(
+      90deg,
+      transparent,
+      transparent 20px,
+      rgba(0, 119, 204, 0.02) 20px,
+      rgba(0, 119, 204, 0.02) 21px
+    );
+  min-height: 100vh; /* ensure it covers full viewport */
+}

@@ -1,5 +1,6 @@
 'use client';
 
+import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 
 interface Props {
@@ -13,6 +14,7 @@ interface Props {
 }
 
 export default function Step5Success({ onHome, onServices, fontClasses }: Props) {
+  const router = useRouter();
   return (
     <div className="flex flex-col gap-6 pb-6 px-2 -mt-2 lg:pt-44 pt-38">
       <div>
@@ -50,14 +52,24 @@ export default function Step5Success({ onHome, onServices, fontClasses }: Props)
       </div>
       <div className="flex flex-col items-center justify-center mt-2">
         <button
-          onClick={onHome}
+          onClick={() => router.push('/')}
           className={`${fontClasses.tt_wellingtons_demi} mt-4 px-8 py-4 w-[85%] bg-[#036d6d] text-white text-xl rounded-md cursor-pointer hover:scale-104 transition-all font-medium`}
+          style={{
+            background: 'linear-gradient(180deg, #1a9e9e 0%, #058080 50%, #036d6d 100%)',
+            boxShadow: '0px 0.5px 0.5px rgba(3,80,80,0.3), 0px 1px 0.5px rgba(3,80,80,0.15)',
+            color: '#ffffff',
+          }}
         >
           Back to Home
         </button>
         <button
-          onClick={onServices}
-          className={`${fontClasses.tt_wellingtons_demi} mt-4 px-8 py-4 w-[85%] bg-[#f6d212] text-[#181818] text-xl rounded-md cursor-pointer hover:scale-104 transition-all font-medium`}
+          onClick={() => router.push('/services')}
+          className={`${fontClasses.tt_wellingtons_demi} mt-4 px-8 py-4 w-[85%] text-[#181818] text-xl rounded-md cursor-pointer hover:scale-104 transition-all font-medium`}
+          style={{
+              background: 'linear-gradient(180deg, #ffe14d 0%, #ffd808 50%, #e6b800 100%)',
+              boxShadow: '0px 0.5px 0.5px rgba(180,130,0,0.3), 0px 1px 0.5px rgba(180,130,0,0.15)',
+              color: '#181818',
+            }}
         >
           View Our Services
         </button>

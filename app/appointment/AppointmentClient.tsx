@@ -6,8 +6,7 @@ import localFont from 'next/font/local';
 import styles from './new_appointment.module.css';
 
 // Shared components
-import Header from '../components/Header';
-import MobileMenuClient from '../components/MobileMenuClient';
+import HeaderWrapper from '../components/HeaderWrapper';
 import Footer from '../components/Footer';
 import StepIndicator from '../components/StepIndicator';
 
@@ -18,7 +17,7 @@ import Step3 from '../components/Appointment/Step3';
 import Step4 from '../components/Appointment/Step4';
 import Step5 from '../components/Appointment/Step5';
 
-// Fonts (same as before)
+// Fonts
 const levenim = localFont({ src: '../fonts/Levenim_MT/levenim-mt.ttf' });
 const inter_heading = localFont({ src: '../fonts/Inter/Inter-Medium.otf' });
 const inter = localFont({ src: '../fonts/Inter/Inter-Regular.otf' });
@@ -34,8 +33,9 @@ const fontClasses = {
 };
 
 // Types
-type ContactMethod = 'email' | 'whatsapp' | null;
+type ContactMethod = 'email' | null;
 type AppointmentFor = 'self' | 'child';
+
 interface PersonalInfo {
   appointmentFor: AppointmentFor;
   firstName: string;
@@ -48,12 +48,18 @@ interface PersonalInfo {
   isReturningPatient: string | null;
   dob: string;
   notes: string;
+  message: string;
   terms: boolean;
 }
+
+export interface SelectedSlot {
+  date: Date;
+  times: string[];
+}
+
 interface BookingData {
   selectedService: string | null;
-  selectedDate: Date | null;
-  selectedTime: string | null;
+  selectedSlots: SelectedSlot[];
   personalInfo: PersonalInfo;
 }
 
@@ -87,96 +93,134 @@ async function sendAppointmentEmail(bookingData: BookingData) {
 }
 
 const servicesByCategory = {
-  preventive: [
-    { 
-      name: 'New Patient Consultation', 
-      duration: '30 min', 
-      price: '13,000',
-      description: 'Complete oral health assessment to evaluate your teeth and gums.',
-      details: 'Our experienced dentists examine your teeth, gums, and overall oral health. We identify any issues early and create a personalized treatment plan.',
-      when: ['First visit', 'Annual check-up', 'Dental concerns or pain', 'Second opinion needed']
-    },
-    { 
-      name: 'Dental Cleaning', 
-      icon: '/service_icons/tooth-cleaning_036d6d.png',
-      duration: '60 min', 
-      price: '15,000',
-      description: 'Professional cleaning to remove plaque and tartar buildup.',
-      details: 'Our hygienists thoroughly clean your teeth, removing hardened plaque that regular brushing cannot reach. We polish your teeth and provide personalized oral care advice.',
-      when: ['Every 6 months', 'Prevent cavities and gum disease', 'Freshen breath and brighten smile']
-    },
-    { 
-      name: 'Emergency Visit', 
-      duration: '30 min', 
-      price: '13,000',
-      description: 'Immediate evaluation for urgent dental pain or injury.',
-      details: 'If you are experiencing pain, swelling, or trauma, we assess the issue quickly and recommend the appropriate treatment to relieve discomfort.',
-      when: ['Severe toothache', 'Swelling or infection', 'Broken tooth', 'Dental trauma']
-    }
-  ],
-
-  restorative: [
-    { 
-      name: 'Tooth Filling', 
-      duration: '20 min per filling', 
-      price: '13,000',
-      description: 'Repair cavities with durable composite fillings.',
-      details: 'We remove decay and fill the cavity with tooth-colored composite material that blends seamlessly with your natural teeth.',
-      when: ['Cavity or tooth decay', 'Sensitivity to hot/cold', 'Pain when chewing']
-    },
-    { 
-      name: 'Root Canal Treatment', 
-      duration: 'May require multiple visits', 
-      price: '45,000',
-      description: 'Treatment to remove infection and save your tooth.',
-      details: 'When tooth pulp becomes infected, root canal treatment removes the infection, cleans the canal, and seals it using modern, comfortable techniques.',
-      when: ['Severe toothache', 'Prolonged sensitivity', 'Swollen or tender gums', 'Darkening of tooth']
-    },
-    { 
-      name: 'Tooth Extraction', 
-      duration: '30–45 min', 
-      price: '15,000',
-      description: 'Safe removal of damaged or problematic teeth.',
-      details: 'Extraction may be necessary to prevent infection spread or relieve pain. We use local anesthetic and gentle techniques for minimal discomfort.',
-      when: ['Severely damaged tooth', 'Advanced decay', 'Impacted tooth']
-    },
-    { 
-      name: 'Crowns & Bridges Consultation', 
-      duration: '30 min', 
-      price: '13,000',
-      description: 'Assessment for restoring damaged or missing teeth.',
-      details: 'Crowns strengthen damaged teeth, and bridges replace missing teeth. We evaluate your case and recommend the best restorative solution.',
-      when: ['Cracked or broken tooth', 'After root canal', 'Missing one or more teeth']
-    },
-    { 
-      name: 'Dentures Consultation', 
-      duration: '30 min', 
-      price: '13,000',
-      description: 'Evaluation for full or partial dentures.',
-      details: 'We assess your oral health and discuss custom denture options to restore comfort, chewing ability, and confidence.',
-      when: ['Missing multiple teeth', 'Full tooth loss', 'Existing dentures need replacement']
-    }
-  ],
-
-  cosmetic: [
-    { 
-      name: 'Teeth Whitening', 
-      duration: '60 min', 
-      price: '50,000',
-      description: 'Professional whitening for a brighter smile.',
-      details: 'Our professional-grade whitening system safely lightens teeth several shades in one visit with longer-lasting results than over-the-counter products.',
-      when: ['Stained or yellowed teeth', 'Before special events', 'Boost confidence']
-    },
-    { 
-      name: 'Veneers Consultation', 
-      duration: '30 min', 
-      price: '13,000',
-      description: 'Assessment for porcelain veneers and smile transformation.',
-      details: 'Thin porcelain shells bonded to front teeth correct color, shape, and alignment issues. We design your ideal smile with expert planning.',
-      when: ['Discolored teeth', 'Chipped or worn teeth', 'Gaps between teeth', 'Misshapen teeth']
-    }
-  ]
-};
+    preventive: [
+      { 
+        name: 'New Patient Examination', 
+        duration: '30 min', 
+        price: '2,500',
+        description: 'Complete oral health assessment to evaluate your teeth and gums.',
+        details: 'Our experienced dentists examine your teeth, gums, and overall oral health. We identify any issues early and create a personalized treatment plan.',
+        when: ['First visit', 'Annual check-up', 'Dental concerns or pain', 'Second opinion needed']
+      },
+      { 
+        name: 'Routine Dental Cleaning', 
+        icon: '/service_icons/tooth-cleaning_036d6d.png',
+        duration: '60 min', 
+        price: '15,000',
+        description: 'Professional cleaning to remove plaque and tartar buildup.',
+        details: 'Our hygienists thoroughly clean your teeth, removing hardened plaque that regular brushing cannot reach. We polish your teeth and provide personalized oral care advice.',
+        when: ['Every 6 months', 'Prevent cavities and gum disease', 'Freshen breath and brighten smile']
+      },
+      {
+        name: 'Deep Cleaning (Scaling & Root Planing)',
+        duration: '60–90 min',
+        price: '25,000',
+        description: 'Treatment for gum disease below the gumline.',
+        details: 'Thorough cleaning beneath the gumline to remove bacteria and tartar buildup around tooth roots.',
+        when: ['Gum disease diagnosis', 'Deep gum pockets', 'Persistent bleeding gums']
+      },
+      {
+        name: 'Fluoride Treatment',
+        duration: '5 min',
+        price: '3,000',
+        description: 'Strengthen enamel and prevent cavities.',
+        details: 'Professional fluoride application to reinforce tooth enamel and reduce risk of decay.',
+        when: ['High cavity risk', 'Sensitive teeth', 'Children and teens']
+      }
+    ],
+    restorative: [
+      { 
+        name: 'Tooth Filling', 
+        duration: '20 min per filling', 
+        price: '10,000',
+        description: 'Repair cavities with durable composite fillings.',
+        details: 'We remove decay and fill the cavity with tooth-colored composite material that blends seamlessly with your natural teeth.',
+        when: ['Cavity or tooth decay', 'Sensitivity to hot/cold', 'Pain when chewing']
+      },
+      { 
+        name: 'Root Canal Treatment', 
+        duration: 'May require multiple visits', 
+        price: '45,000',
+        description: 'Treatment to remove infection and save your tooth.',
+        details: 'When tooth pulp becomes infected, root canal treatment removes the infection, cleans the canal, and seals it using modern, comfortable techniques.',
+        when: ['Severe toothache', 'Prolonged sensitivity', 'Swollen or tender gums', 'Darkening of tooth']
+      },
+      {
+        name: 'Simple Tooth Extraction',
+        duration: '20–40 min',
+        price: '15,000',
+        description: 'Removal of damaged or non-restorable teeth.',
+        details: 'Gentle extraction of a tooth that cannot be repaired due to decay or damage.',
+        when: ['Severe decay', 'Broken tooth', 'Overcrowding']
+      },
+      {
+        name: 'Surgical Extraction',
+        duration: '45–60 min',
+        price: '35,000',
+        description: 'Complex removal of impacted or broken teeth.',
+        details: 'Minor surgical procedure to remove teeth that are impacted or not fully erupted.',
+        when: ['Impacted tooth', 'Broken at gum line', 'Failed simple extraction']
+      },
+      {
+        name: 'Wisdom Tooth Removal',
+        duration: '45–90 min',
+        price: '40,000',
+        description: 'Removal of impacted or problematic wisdom teeth.',
+        details: 'Extraction of third molars to prevent infection, crowding, or pain.',
+        when: ['Jaw pain', 'Swelling', 'Crowding', 'Impaction seen on X-ray']
+      },
+      {
+        name: 'Dental Crown',
+        duration: '2 visits',
+        price: '60,000',
+        description: 'Restore strength and function to damaged teeth.',
+        details: 'Custom-made cap placed over a weakened tooth to restore shape, strength, and appearance.',
+        when: ['Large filling failure', 'After root canal', 'Cracked tooth']
+      },
+      {
+        name: 'Dental Bridge',
+        duration: '2 visits',
+        price: '120,000',
+        description: 'Replace one or more missing teeth.',
+        details: 'Fixed prosthetic anchored to adjacent teeth to restore chewing function and aesthetics.',
+        when: ['Missing teeth', 'Difficulty chewing', 'Shifting teeth']
+      },
+      { 
+        name: 'Dentures Consultation', 
+        duration: '30 min', 
+        price: '13,000',
+        description: 'Evaluation for full or partial dentures.',
+        details: 'We assess your oral health and discuss custom denture options to restore comfort, chewing ability, and confidence.',
+        when: ['Missing multiple teeth', 'Full tooth loss', 'Existing dentures need replacement']
+      }
+    ],
+    cosmetic: [
+      {
+        name: 'Teeth Whitening',
+        duration: '60 min',
+        price: '35,000',
+        description: 'Professional whitening for a brighter smile.',
+        details: 'High-concentration whitening gel activated in-office for immediate visible results.',
+        when: ['Stained teeth', 'Yellowing', 'Special events']
+      },
+      {
+        name: 'Porcelain Veneers',
+        duration: '2–3 visits',
+        price: '85,000 per tooth',
+        description: 'Enhance shape, color, and alignment.',
+        details: 'Thin porcelain shells bonded to the front of teeth for a flawless smile transformation.',
+        when: ['Chipped teeth', 'Gaps', 'Severe discoloration']
+      },
+      {
+        name: 'Smile Design Consultation',
+        duration: '45–60 min',
+        price: '15,000',
+        description: 'Personalized aesthetic smile planning.',
+        details: 'Digital planning session analyzing facial proportions, tooth shape, and color to design your ideal smile.',
+        when: ['Full smile makeover', 'Before veneers', 'Cosmetic improvement goals']
+      }
+    ]
+  };
 
 export default function NewAppointment() {
   const router = useRouter();
@@ -193,19 +237,18 @@ export default function NewAppointment() {
     email: '',
     phone: '',
     dob: '',
-    contactMethod: null,
+    contactMethod: 'email',
     isReturningPatient: null,
     notes: '',
+    message: '',
     terms: false
   };
-  
+
   const [bookingData, setBookingData] = useState<BookingData>({
     selectedService: null,
-    selectedDate: null,
-    selectedTime: null,
+    selectedSlots: [],
     personalInfo: defaultPersonalInfo,
   });
-
 
   const [currentStep, setCurrentStep] = useState(1);
   const [maxReachedStep, setMaxReachedStep] = useState(1);
@@ -222,7 +265,7 @@ export default function NewAppointment() {
     { id: 'contact', label: 'Contact', href: '/contact' },
   ];
 
-  // Session storage handling (same as original, but could be simplified)
+  // Session storage handling
   useEffect(() => {
     setMounted(true);
     const urlService = searchParams.get('service');
@@ -241,9 +284,8 @@ export default function NewAppointment() {
       clearBookingData();
       setBookingData({
         selectedService: urlService || null,
-        selectedDate: null,
-        selectedTime: null,
-        personalInfo: defaultPersonalInfo, 
+        selectedSlots: [],
+        personalInfo: defaultPersonalInfo,
       });
       setCurrentStep(1);
       setMaxReachedStep(1);
@@ -252,12 +294,32 @@ export default function NewAppointment() {
 
     if (savedBookingData) {
       const parsed = JSON.parse(savedBookingData);
-      if (parsed.selectedDate) parsed.selectedDate = new Date(parsed.selectedDate);
+      // Convert saved date strings back to Date objects for each slot
+      if (parsed.selectedSlots && Array.isArray(parsed.selectedSlots)) {
+        parsed.selectedSlots = parsed.selectedSlots.map((slot: any) => ({
+          ...slot,
+          date: new Date(slot.date),
+        }));
+      } else {
+        // If old data format (selectedDate/selectedTime), migrate to new structure
+        if (parsed.selectedDate) {
+          const date = new Date(parsed.selectedDate);
+          const time = parsed.selectedTime || '';
+          parsed.selectedSlots = time ? [{ date, times: [time] }] : [];
+        }
+        // Clean up old fields to avoid confusion
+        delete parsed.selectedDate;
+        delete parsed.selectedTime;
+      }
       if (urlService) parsed.selectedService = urlService;
+      if (parsed.personalInfo) {
+        parsed.personalInfo.contactMethod = 'email';
+      }
       setBookingData(parsed);
     } else if (urlService) {
       setBookingData(prev => ({ ...prev, selectedService: urlService }));
     }
+
     const savedMaxStep = sessionStorage.getItem('maxReachedStep');
     if (savedStep) setCurrentStep(parseInt(savedStep));
     if (savedMaxStep) setMaxReachedStep(parseInt(savedMaxStep));
@@ -281,34 +343,42 @@ export default function NewAppointment() {
     sessionStorage.removeItem('maxReachedStep');
   };
 
+  const maxReachedStepRef = useRef(maxReachedStep);
   useEffect(() => {
-  const handleHashChange = () => {
-    const hash = window.location.hash;
-    const stepMatch = hash.match(/#step-(\d+)/);
-    if (stepMatch) {
-      const step = parseInt(stepMatch[1]);
-      if (step >= 1 && step <= 5) {
-        setCurrentStep(step);
-        setMaxReachedStep(prev => Math.max(prev, step));
+    maxReachedStepRef.current = maxReachedStep;
+  }, [maxReachedStep]);
+
+  useEffect(() => {
+    const handleHashChange = () => {
+      const hash = window.location.hash;
+      const stepMatch = hash.match(/#step-(\d+)/);
+      if (stepMatch) {
+        const step = parseInt(stepMatch[1]);
+        if (step >= 1 && step <= 5 && step <= maxReachedStepRef.current) {
+          setCurrentStep(step);
+        }
       }
+    };
+    handleHashChange();
+    window.addEventListener('hashchange', handleHashChange);
+    return () => window.removeEventListener('hashchange', handleHashChange);
+  }, []);
+
+  // Safety: if currentStep ever exceeds maxReachedStep, reset it
+  useEffect(() => {
+    if (currentStep > maxReachedStep) {
+      setCurrentStep(maxReachedStep);
+      window.history.replaceState(null, '', `#step-${maxReachedStep}`);
     }
-  };
-
-  // Check hash on mount
-  handleHashChange();
-
-  // Listen for hash changes
-  window.addEventListener('hashchange', handleHashChange);
-  return () => window.removeEventListener('hashchange', handleHashChange);
-}, []); // Empty dependency array = runs once on mount
+  }, [currentStep, maxReachedStep]);
 
   const updateStep = (newStep: number) => {
     setCurrentStep(newStep);
     setMaxReachedStep(Math.max(maxReachedStep, newStep));
     window.history.pushState(null, '', `#step-${newStep}`);
   };
+
   useEffect(() => {
-    // Small delay to ensure DOM is updated
     setTimeout(() => {
       stepHeadingRef.current?.focus();
     }, 100);
@@ -326,17 +396,9 @@ export default function NewAppointment() {
     }));
   };
 
-  // Date/time selection
-  const handleSlotSelection = useCallback((slot: { dayKey: string | null; slot: string | null }) => {
-    if (slot.dayKey && slot.slot) {
-      const [monthAbbr, day] = slot.dayKey.split('-');
-      const monthMap: Record<string, number> = { Jan: 0, Feb: 1, Mar: 2, Apr: 3, May: 4, Jun: 5, Jul: 6, Aug: 7, Sep: 8, Oct: 9, Nov: 10, Dec: 11 };
-      const currentYear = new Date().getFullYear();
-      const selectedDate = new Date(currentYear, monthMap[monthAbbr], parseInt(day));
-      setBookingData(prev => ({ ...prev, selectedDate, selectedTime: slot.slot }));
-    } else {
-      setBookingData(prev => ({ ...prev, selectedDate: null, selectedTime: null }));
-    }
+  // NEW: Handle multi‑date/time selection
+  const handleSlotSelection = useCallback((slots: SelectedSlot[]) => {
+    setBookingData(prev => ({ ...prev, selectedSlots: slots }));
   }, []);
 
   // Form input change
@@ -353,105 +415,98 @@ export default function NewAppointment() {
     }));
   };
 
-  // Validation (same as original)
-  const validatePersonalInfo = () => {
-      const errors: string[] = [];
-      const { firstName, lastName, appointmentFor, guardianFirstName, guardianLastName, email, phone, dob, terms } = bookingData.personalInfo;
-
-      const nameRegex = /^[A-Za-z\s'-]{2,}$/;
-      // Required field validations
-      if (!firstName || firstName.trim() === '') {
-        errors.push('First name is required');
-      } else if (firstName.trim().length < 2) {
-        errors.push('First name must be at least 2 characters long');
-      } else if (firstName.trim().length > 50) {
-        errors.push('First name cannot exceed 50 characters');
-      } else if (!nameRegex.test(firstName)) {
-        errors.push('First name can only contain letters');
-      }
-
-
-      if (!lastName || lastName.trim() === '') {
-        errors.push('Last name is required');
-      } else if (lastName.trim().length < 2) {
-        errors.push('Last name must be at least 2 characters long');
-      } else if (lastName.trim().length > 50) {
-        errors.push('Last name cannot exceed 50 characters');
-      } else if (!nameRegex.test(lastName)) {
-        errors.push('Last name can only contain letters');
-      }
-
-
-      if (appointmentFor === "child") {
-        if (!guardianFirstName || guardianFirstName.trim() === '') {
-          errors.push('Guardian first name is required');
-        } else if (guardianFirstName.trim().length < 2) {
-          errors.push('Guardian first name must be at least 2 characters long');
-        } else if (guardianFirstName.trim().length > 50) {
-          errors.push('Guardian first name cannot exceed 50 characters');
-        } else if (!nameRegex.test(guardianFirstName)) {
-          errors.push('Guardian first name can only contain letters');
-        }
-      }
-
-      if (appointmentFor === "child") {
-        if (!guardianLastName || guardianLastName.trim() === '') {
-          errors.push('Guardian last name is required');
-        } else if (guardianLastName.trim().length < 2) {
-          errors.push('Guardian last name must be at least 2 characters long');
-        } else if (guardianLastName.trim().length > 50) {
-          errors.push('Guardian last name cannot exceed 50 characters');
-        } else if (!nameRegex.test(guardianLastName)) {
-          errors.push('Guardian last name can only contain letters');
-        }
-      }
-      
-      if (!email || email.trim() === '') {
-        errors.push('Email address is required');
-      } else if (email.length > 100) {
-        errors.push('Email address cannot exceed 100 characters');
-      } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-        errors.push('Please enter a valid email address');
-      }
-
-
-      if (!phone || phone.trim() === '') {
-        errors.push('Phone number is required');
-      } else if (phone.length > 20) {
-        errors.push('Phone number cannot exceed 20 characters');
-      } else if (!/^[\d\s\-\(\)]+$/.test(phone) || phone.replace(/\D/g, '').length < 10) {
-        errors.push('Please enter a valid phone number (at least 10 digits)');
-      }
-
-      if (!dob || dob.trim() === '') {
-        errors.push('Date of birth is required');
-      } else {
-        const birthDate = new Date(dob);
-        const today = new Date();
-                  
-        // Check future date first
-        if (birthDate > today) {
-          errors.push('Date of birth cannot be in the future');
-        }
-      }
-
-      if (
-        bookingData.personalInfo.appointmentFor === "self" &&
-        age !== null &&
-        age < 18
-      ) {
-        errors.push("Patients under 18 must be booked by a parent or guardian.");
-      }
-
-      if (!terms) {
-        errors.push('You must agree to the terms and conditions');
-      }
-
-
-      return errors;
-    };
-
+  // Validation
   const age = bookingData.personalInfo.dob ? calculateAge(bookingData.personalInfo.dob) : null;
+
+  const validatePersonalInfo = () => {
+    const errors: string[] = [];
+    const { firstName, lastName, appointmentFor, guardianFirstName, guardianLastName, email, phone, dob, terms } = bookingData.personalInfo;
+
+    const nameRegex = /^[A-Za-z\s'-]{2,}$/;
+
+    if (!firstName || firstName.trim() === '') {
+      errors.push('First name is required');
+    } else if (firstName.trim().length < 2) {
+      errors.push('First name must be at least 2 characters long');
+    } else if (firstName.trim().length > 50) {
+      errors.push('First name cannot exceed 50 characters');
+    } else if (!nameRegex.test(firstName)) {
+      errors.push('First name can only contain letters');
+    }
+
+    if (!lastName || lastName.trim() === '') {
+      errors.push('Last name is required');
+    } else if (lastName.trim().length < 2) {
+      errors.push('Last name must be at least 2 characters long');
+    } else if (lastName.trim().length > 50) {
+      errors.push('Last name cannot exceed 50 characters');
+    } else if (!nameRegex.test(lastName)) {
+      errors.push('Last name can only contain letters');
+    }
+
+    if (appointmentFor === "child") {
+      if (!guardianFirstName || guardianFirstName.trim() === '') {
+        errors.push('Guardian first name is required');
+      } else if (guardianFirstName.trim().length < 2) {
+        errors.push('Guardian first name must be at least 2 characters long');
+      } else if (guardianFirstName.trim().length > 50) {
+        errors.push('Guardian first name cannot exceed 50 characters');
+      } else if (!nameRegex.test(guardianFirstName)) {
+        errors.push('Guardian first name can only contain letters');
+      }
+    }
+
+    if (appointmentFor === "child") {
+      if (!guardianLastName || guardianLastName.trim() === '') {
+        errors.push('Guardian last name is required');
+      } else if (guardianLastName.trim().length < 2) {
+        errors.push('Guardian last name must be at least 2 characters long');
+      } else if (guardianLastName.trim().length > 50) {
+        errors.push('Guardian last name cannot exceed 50 characters');
+      } else if (!nameRegex.test(guardianLastName)) {
+        errors.push('Guardian last name can only contain letters');
+      }
+    }
+
+    if (!email || email.trim() === '') {
+      errors.push('Email address is required');
+    } else if (email.length > 100) {
+      errors.push('Email address cannot exceed 100 characters');
+    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      errors.push('Please enter a valid email address');
+    }
+
+    if (!phone || phone.trim() === '') {
+      errors.push('Phone number is required');
+    } else if (phone.length > 20) {
+      errors.push('Phone number cannot exceed 20 characters');
+    } else if (!/^[\d\s\-\(\)]+$/.test(phone)) {
+      errors.push('Please enter a valid phone number');
+    } else if (phone.replace(/\D/g, '').length < 10) {
+      errors.push('Phone number must be at least 10 digits.');
+    }
+
+    if (!dob || dob.trim() === '') {
+      errors.push('Date of birth is required');
+    } else {
+      const birthDate = new Date(dob);
+      const today = new Date();
+      if (birthDate > today) {
+        errors.push('Date of birth cannot be in the future');
+      }
+    }
+
+    if (bookingData.personalInfo.appointmentFor === "self" && age !== null && age < 18) {
+      errors.push("Patients under 18 must be booked by a parent or guardian.");
+    }
+
+    if (!terms) {
+      errors.push('You must agree to the terms and conditions');
+    }
+
+    return errors;
+  };
+
   const isPersonalInfoComplete = () => {
     const { firstName, lastName, email, phone, contactMethod, dob, terms } = bookingData.personalInfo;
     return !!(
@@ -472,16 +527,18 @@ export default function NewAppointment() {
       updateStep(4);
     }
   };
-  
+
+  const [confirmErrors, setConfirmErrors] = useState<string[]>([]);
   const handleConfirm = async () => {
     setIsLoading(true);
+    setConfirmErrors([]);
     const result = await sendAppointmentEmail(bookingData);
     setIsLoading(false);
     if (result.success) {
       clearBookingData();
       updateStep(5);
     } else {
-      alert('Failed to send appointment request. Please try again.');
+      setConfirmErrors(['Failed to send your appointment request. Please try again or call us at (876) 691-9136.']);
     }
   };
 
@@ -498,15 +555,16 @@ export default function NewAppointment() {
   }, [currentStep, bookingData.selectedService, mounted]);
 
   return (
-    <div className='bg-[#EAF3F7]'>
+    <div className='bg-[#F7FBFC]'>
       <div className={`${styles.background}`} />
-      <Header
-        navItems={navItems}
-        inter_heading={inter_heading}
-        tt_wellingtons_demi={tt_wellingtons_demi}
-        levenim={levenim}
-      />
-      <MobileMenuClient navItems={navItems} />
+      <header role="banner">
+        <HeaderWrapper
+          navItems={navItems}
+          inter_heading={inter_heading}
+          tt_wellingtons_demi={tt_wellingtons_demi}
+          levenim={levenim}
+        />
+      </header>
 
       {currentStep <= 4 && (
         <div className="flex flex-col md:flex-row gap-2 md:items-end mb-6 lg:mt-36 mt-31 w-full bg-[#058080] relative">
@@ -514,7 +572,7 @@ export default function NewAppointment() {
         </div>
       )}
 
-      <div className="relative w-[95%] mx-auto bg-[#EAF3F7]">
+      <div className="relative w-[95%] mx-auto bg-[#F7FBFC]">
         {currentStep === 1 && (
           <div>
             <h2 ref={stepHeadingRef} tabIndex={-1} className="sr-only">Step 1: Select Service</h2>
@@ -532,9 +590,8 @@ export default function NewAppointment() {
           <div>
             <h2 ref={stepHeadingRef} tabIndex={-1} className="sr-only">Step 2: Select Date & Time</h2>
             <Step2
-              selectedDate={bookingData.selectedDate}
-              selectedTime={bookingData.selectedTime}
-              onSelectSlot={handleSlotSelection}
+              selectedSlots={bookingData.selectedSlots}
+              onSelectSlots={handleSlotSelection}
               onPrevious={() => updateStep(1)}
               onNext={() => updateStep(3)}
               fontClasses={fontClasses}
@@ -569,6 +626,7 @@ export default function NewAppointment() {
               onBack={() => updateStep(3)}
               isLoading={isLoading}
               fontClasses={fontClasses}
+              errors={confirmErrors}
             />
           </div>
         )}

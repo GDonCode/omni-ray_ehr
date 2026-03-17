@@ -4,7 +4,7 @@ import { Mail, Phone } from 'lucide-react';
 import Image from 'next/image';
 
 type AppointmentFor = 'self' | 'child';
-type ContactMethod = 'email' | 'whatsapp' | null;
+type ContactMethod = 'email' | null;
 
 interface PersonalInfo {
   appointmentFor: AppointmentFor;
@@ -18,6 +18,7 @@ interface PersonalInfo {
   isReturningPatient: string | null;
   dob: string;
   notes: string;
+  message: string;
   terms: boolean;
 }
 
@@ -96,7 +97,7 @@ export default function Step3PersonalInfo({
               id="firstName"
               name="firstName"
               required
-              className={`${fontClasses.tt_wellingtons_demi} w-full px-4 py-3 bg-white border-2 border-[#036d6d] rounded-md text-[#036d6d] placeholder:text-[#036d6d]/50 font-medium text-xl focus:outline-none focus:ring-2 focus:ring-[#FFD700] focus:border-transparent transition-all`}
+              className={`${fontClasses.inter_heading} w-full px-4 py-3 rounded-sm border-2 border-[#D0E6E6] bg-white text-[#181818] font-medium text-xl placeholder:text-[#9DBDBD] transition-all duration-200 focus:outline-none focus:border-[#0D6E6E] focus:ring-2 focus:ring-[#0D6E6E]/10 tracking-wide`}
               placeholder="Enter your first name"
               value={personalInfo.firstName}
               onChange={onInputChange}
@@ -111,7 +112,7 @@ export default function Step3PersonalInfo({
               id="lastName"
               name="lastName"
               required
-              className={`${fontClasses.tt_wellingtons_demi} w-full px-4 py-3 bg-white border-2 border-[#036d6d] rounded-md text-[#036d6d] placeholder:text-[#036d6d]/50 font-medium text-xl focus:outline-none focus:ring-2 focus:ring-[#FFD700] focus:border-transparent transition-all`}
+              className={`${fontClasses.inter_heading} w-full px-4 py-3 rounded-sm border-2 border-[#D0E6E6] bg-white text-[#181818] font-medium text-xl placeholder:text-[#9DBDBD] transition-all duration-200 focus:outline-none focus:border-[#0D6E6E] focus:ring-2 focus:ring-[#0D6E6E]/10 tracking-wide`}
               placeholder="Enter your last name"
               value={personalInfo.lastName}
               onChange={onInputChange}
@@ -130,7 +131,7 @@ export default function Step3PersonalInfo({
                 id="guardianFirstName"
                 name="guardianFirstName"
                 required
-                className="w-full px-4 py-3 bg-white border-2 border-[#036d6d] rounded-md text-[#036d6d] placeholder:text-[#036d6d]/50 font-medium text-xl focus:outline-none focus:ring-2 focus:ring-[#FFD700] focus:border-transparent transition-all"
+                className={`${fontClasses.inter_heading} w-full px-4 py-3 rounded-sm border-2 border-[#D0E6E6] bg-white text-[#181818] font-medium text-xl placeholder:text-[#9DBDBD] transition-all duration-200 focus:outline-none focus:border-[#0D6E6E] focus:ring-2 focus:ring-[#0D6E6E]/10 tracking-wide`}
                 value={personalInfo.guardianFirstName}
                 onChange={onInputChange}
               />
@@ -144,7 +145,7 @@ export default function Step3PersonalInfo({
                 id="guardianLastName"
                 name="guardianLastName"
                 required
-                className="w-full px-4 py-3 bg-white border-2 border-[#036d6d] rounded-md text-[#036d6d] placeholder:text-[#036d6d]/50 font-medium text-xl focus:outline-none focus:ring-2 focus:ring-[#FFD700] focus:border-transparent transition-all"
+                className={`${fontClasses.inter_heading} w-full px-4 py-3 rounded-sm border-2 border-[#D0E6E6] bg-white text-[#181818] font-medium text-xl placeholder:text-[#9DBDBD] transition-all duration-200 focus:outline-none focus:border-[#0D6E6E] focus:ring-2 focus:ring-[#0D6E6E]/10 tracking-wide`}
                 value={personalInfo.guardianLastName}
                 onChange={onInputChange}
               />
@@ -162,7 +163,7 @@ export default function Step3PersonalInfo({
               id="email"
               name="email"
               required
-              className={`${fontClasses.tt_wellingtons_demi} w-full px-4 py-3 bg-white border-2 border-[#036d6d] rounded-md text-[#036d6d] placeholder:text-[#036d6d]/50 font-medium text-xl focus:outline-none focus:ring-2 focus:ring-[#FFD700] focus:border-transparent transition-all`}
+              className={`${fontClasses.inter_heading} w-full px-4 py-3 rounded-sm border-2 border-[#D0E6E6] bg-white text-[#181818] font-medium text-xl placeholder:text-[#9DBDBD] transition-all duration-200 focus:outline-none focus:border-[#0D6E6E] focus:ring-2 focus:ring-[#0D6E6E]/10 tracking-wide`}
               placeholder="your.email@example.com"
               value={personalInfo.email}
               onChange={onInputChange}
@@ -177,7 +178,7 @@ export default function Step3PersonalInfo({
               id="phone"
               name="phone"
               required
-              className={`${fontClasses.inter} w-full px-4 py-3 bg-white border-2 border-[#036d6d] rounded-md text-[#036d6d] placeholder:text-[#036d6d]/50 font-bold text-xl focus:outline-none focus:ring-2 focus:ring-[#FFD700] focus:border-transparent transition-all`}
+              className={`${fontClasses.inter_heading} w-full px-4 py-3 rounded-sm border-2 border-[#D0E6E6] bg-white text-[#181818] font-medium text-xl placeholder:text-[#9DBDBD] transition-all duration-200 focus:outline-none focus:border-[#0D6E6E] focus:ring-2 focus:ring-[#0D6E6E]/10 tracking-wide`}
               placeholder="(876) 123-4567"
               value={personalInfo.phone}
               onChange={onInputChange}
@@ -185,38 +186,36 @@ export default function Step3PersonalInfo({
           </div>
         </div>
 
+        <div>
+          <label htmlFor="dob" className={`${fontClasses.inter_heading} block text-xl font-medium text-[#036d6d] mb-2`}>
+            Date of Birth *
+          </label>
+          <input
+            type="date"
+            id="dob"
+            name="dob"
+            required
+            className={`${fontClasses.inter_heading} w-full px-4 py-3 rounded-sm border-2 border-[#D0E6E6] bg-white text-[#181818] font-medium text-xl placeholder:text-[#9DBDBD] transition-all duration-200 focus:outline-none focus:border-[#0D6E6E] focus:ring-2 focus:ring-[#0D6E6E]/10 tracking-wide`}
+            value={personalInfo.dob}
+            onChange={onInputChange}
+          />
+        </div>
+
+        <div>
+          <label htmlFor="notes" className={`${fontClasses.inter_heading} block text-xl font-medium text-[#036d6d] mb-2`}>
+            Additional Notes
+          </label>
+          <textarea
+            id="notes"
+            name="notes"
+            className={`${fontClasses.inter_heading} w-full px-4 py-3 rounded-sm border-2 border-[#D0E6E6] bg-white text-[#181818] font-medium text-xl placeholder:text-[#9DBDBD] transition-all duration-200 focus:outline-none focus:border-[#0D6E6E] focus:ring-2 focus:ring-[#0D6E6E]/10 tracking-wide`}
+            placeholder="Any special requests or information we should know?"
+            value={personalInfo.notes}
+            onChange={onInputChange}
+          />
+        </div>
+
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div>
-            <label className={`${fontClasses.tt_wellingtons_demi} block text-xl font-medium text-[#036d6d] mb-2`}>
-              Preferred Contact Method *
-            </label>
-            <div className="flex flex-wrap gap-4">
-              <label className="flex items-center gap-3 px-4 py-3 bg-white border-2 border-[#036d6d] rounded-md cursor-pointer transition-all hover:bg-white/15">
-                <input
-                  type="radio"
-                  name="contactMethod"
-                  value="email"
-                  checked={personalInfo.contactMethod === 'email'}
-                  onChange={onInputChange}
-                  required
-                  className="accent-[#FFD700] w-5 h-5"
-                />
-                <span className={`${fontClasses.tt_wellingtons_demi} text-[#036d6d] text-xl`}>Email</span>
-              </label>
-              <label className="flex items-center gap-3 px-4 py-3 bg-white border-2 border-[#036d6d] rounded-md cursor-pointer transition-all hover:bg-white/15">
-                <input
-                  type="radio"
-                  name="contactMethod"
-                  value="whatsapp"
-                  checked={personalInfo.contactMethod === 'whatsapp'}
-                  onChange={onInputChange}
-                  required
-                  className="accent-[#FFD700] w-5 h-5"
-                />
-                <span className={`${fontClasses.tt_wellingtons_demi} text-[#036d6d] text-xl`}>WhatsApp</span>
-              </label>
-            </div>
-          </div>
           <div>
             <label className={`${fontClasses.tt_wellingtons_demi} block text-xl font-medium text-[#036d6d] mb-2`}>
               Have you been to Aurelia Dental before? *
@@ -250,35 +249,6 @@ export default function Step3PersonalInfo({
           </div>
         </div>
 
-        <div>
-          <label htmlFor="dob" className={`${fontClasses.inter_heading} block text-xl font-medium text-[#036d6d] mb-2`}>
-            Date of Birth *
-          </label>
-          <input
-            type="date"
-            id="dob"
-            name="dob"
-            required
-            className="w-full px-4 py-3 bg-white border-2 border-[#036d6d] rounded-md text-[#036d6d] placeholder:text-[#036d6d]/50 font-medium text-xl focus:outline-none focus:ring-2 focus:ring-[#FFD700] focus:border-transparent transition-all"
-            value={personalInfo.dob}
-            onChange={onInputChange}
-          />
-        </div>
-
-        <div>
-          <label htmlFor="notes" className={`${fontClasses.inter_heading} block text-xl font-medium text-[#036d6d] mb-2`}>
-            Additional Notes
-          </label>
-          <textarea
-            id="notes"
-            name="notes"
-            className={`${fontClasses.tt_wellingtons_demi} w-full px-4 py-3 bg-white border-2 border-[#036d6d] rounded-md text-[#036d6d] placeholder:text-[#036d6d]/50 font-medium text-xl focus:outline-none focus:ring-2 focus:ring-[#FFD700] focus:border-transparent transition-all resize-none`}
-            placeholder="Any special requests or information we should know?"
-            value={personalInfo.notes}
-            onChange={onInputChange}
-          />
-        </div>
-
         <div className="flex items-start gap-3">
           <input
             type="checkbox"
@@ -301,7 +271,7 @@ export default function Step3PersonalInfo({
             aria-live="polite"
             className="p-4 bg-red-500/20 border border-red-500/50 rounded-lg"
           >
-            <ul className={`${fontClasses.tt_wellingtons_demi} list-disc list-inside text-[#181818] font-semibold space-y-1`}>
+            <ul className={`${fontClasses.inter_heading} list-disc list-inside text-[#181818] font-semibold tracking-wide space-y-1`}>
               {errors.map((error, index) => (
                 <li key={index}>{error}</li>
               ))}
@@ -313,7 +283,12 @@ export default function Step3PersonalInfo({
           <button
             type="button"
             onClick={onPrevious}
-            className={`${fontClasses.inter} bg-[#f6d212] text-gray-900 fixed bottom-10 right-48 z-100 rounded-lg px-8 py-4 hover:scale-105 cursor-pointer text-xl lg:text-2xl font-semibold shadow-md flex gap-2 items-center`}
+            className={`${fontClasses.inter} fixed bottom-10 right-52 z-100 rounded-xl px-8 py-4 cursor-pointer text-xl font-semibold flex gap-2 items-center transition-all duration-200 hover:scale-[1.02] hover:brightness-105`}
+          style={{
+            background: 'linear-gradient(180deg, #ffe14d 0%, #ffd808 50%, #e6b800 100%)',
+            boxShadow: '0px 0.5px 0.5px rgba(180,130,0,0.3), 0px 1px 0.5px rgba(180,130,0,0.15)',
+            color: '#181818',
+          }}
           >
             <Image src="/arrow-left.svg" alt="arrow left" width={30} height={30} />
             Previous
@@ -321,7 +296,12 @@ export default function Step3PersonalInfo({
           {isComplete && (
             <button
               type="submit"
-              className={`${fontClasses.inter} bg-[#f6d212] text-gray-900 fixed bottom-10 right-4 z-100 rounded-lg px-8 py-4 hover:scale-105 cursor-pointer text-2xl font-semibold shadow-md flex gap-2 items-center`}
+              className={`${fontClasses.inter} fixed bottom-10 right-4 z-100 rounded-xl px-8 py-4 cursor-pointer text-2xl font-semibold flex gap-2 items-center transition-all duration-200 hover:scale-[1.02] hover:brightness-105`}
+          style={{
+            background: 'linear-gradient(180deg, #ffe14d 0%, #ffd808 50%, #e6b800 100%)',
+            boxShadow: '0px 0.5px 0.5px rgba(180,130,0,0.3), 0px 1px 0.5px rgba(180,130,0,0.15)',
+            color: '#181818',
+          }}
             >
               Next
               <Image src="/arrow-right.svg" alt="arrow right" width={30} height={30} />

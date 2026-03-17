@@ -16,7 +16,7 @@ const CallToAction: React.FC<CallToActionProps> = ({
   styles
 }) => {
   return (
-    <section className="w-[95%] lg:w-[75%] mx-auto px-6 flex flex-col lg:flex-row lg:justify-around lg:items-center bg-[#EAF3F7]">
+    <section className="w-[95%] lg:w-[75%] mx-auto px-6 flex flex-col lg:flex-row lg:justify-around lg:items-center bg-transparent">
       {/* Content */}
       <div className="lg:w-[50%]">
         <p className={`${inter_heading.className} inline-block text-[#181818] bg-[#ffdf20] px-2.5 py-0.5 mb-1 rounded-full text-xs font-semibold tracking-wide`}>
@@ -36,7 +36,7 @@ const CallToAction: React.FC<CallToActionProps> = ({
       {/* CTA Button */}
       <Link
         href="/appointment"
-        className={`${tt_wellingtons_demi.className} ${styles?.animate_pulse_scale || 'animate-pulse'} bg-[#f6d212] text-[#181818] py-4 px-8 tracking-wide flex items-center justify-center rounded-md text-2xl font-bold text-center cursor-pointer hover:scale-103 transition-all duration-300`}
+        className={`${tt_wellingtons_demi.className} ${styles?.animate_pulse_scale || 'animate-pulse'} px-8 py-5 bg-[linear-gradient(180deg,#ffe14d_0%,#ffd808_50%,#e6b800_100%)] shadow-[0px_0.5px_0.5px_rgba(180,130,0,0.3),0px_1px_0.5px_rgba(180,130,0,0.15)] rounded-[6px] border-0 outline-none transition-all duration-300 ease-[cubic-bezier(0.15,0.83,0.66,1)] cursor-pointer text-[#181818] tracking-wide flex items-center justify-center text-2xl font-bold text-center hover:scale-103 transition-all duration-300`}
       >
         REQUEST APPOINTMENT
       </Link>

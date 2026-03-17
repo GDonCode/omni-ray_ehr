@@ -69,105 +69,145 @@ export default function About() {
   };
   return (
     <>
-      <div className={`${styles.background}`}>
+      <div className="bg-[#1a75c4] flex justify-end items-center gap-7 px-10 py-1.5">
+  <a href="#" className="flex items-center gap-1.5 text-white text-[13px] no-underline hover:opacity-75 transition-opacity">
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+      <circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/>
+    </svg>
+    My Account
+  </a>
+
+  <a href="#" className="flex items-center gap-1.5 text-white text-[13px] no-underline hover:opacity-75 transition-opacity">
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+      <rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 9h18M9 4v5"/>
+    </svg>
+    Register
+  </a>
+
+  <a href="#" className="flex items-center gap-1.5 text-white text-[13px] no-underline hover:opacity-75 transition-opacity">
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+    </svg>
+    Wish List
+  </a>
       </div>
-      {/* Header */}
-      <div className={`backdrop-blur-md shadow-lg z-20 fixed top-0 w-full flex flex-col`}>
-        <Link href={"https://www.google.com/maps?client=firefox-b-d&um=1&ie=UTF-8&fb=1&gl=jm&sa=X&geocode=Kess0v_mK9qOMblqgL_gLwtH&daddr=40-41,+Overton+Plaza,+49+Union+Street,+Montego+Bay"} className={`${inter_heading.className} w-full bg-[#82bfbf] text-[#181818] text-[0.8rem] flex items-center gap-1 py-1 px-2`}> 
-          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor" className="size-4 text-[#181818] group-hover:scale-105 transition-all">
-            <path strokeLinecap="round" strokeLinejoin="round" d="M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
-            <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1 1 15 0Z" />
-          </svg>
-          <p className={`${tt_wellingtons_demi.className}`}>Shop 40, 41 Overton Plaza</p>
-          <p className={`${tt_wellingtons_demi.className} text-right ml-auto`}>click for map</p>
-        </Link>
-          <div className="w-full bg-[#036d6d] px-4 lg:px-14 flex items-center justify-between py-2">
-            <Link href={"/"} className="flex items-center gap-2">
-              <Image src={"/aurelia-dental_logo.png"} alt="Logo" width={75} height={75} className="cursor-pointer lg:w-[90px] lg:h-[90px]"/>
-              <h1 className={`${levenim.className} text-white lg:text-3xl text-2xl font-bold items-center flex flex-col mt-2 tracking-widest`}>
-                Aurelia <span className="block -mt-1 text-white">Dental</span>
-              </h1>
-            </Link>
-            <nav className={`${tt_wellingtons_demi.className} hidden lg:block`}>
-              <ul className="flex items-center gap-12 font-medium text-lg">
-                {navItems.map((item) => (
-                  <li key={item.id}>
-                    <a
-                      href={item.href}
-                      className={`
-                        cursor-pointer transition-all duration-200
-                        ${activeItem === item.id 
-                          ? 'text-[#D9BE2E] font-bold border-b-2 border-[#D9BE2E]' 
-                          : 'text-white hover:text-[#D9BE2E] hover:border-b-2 hover:border-[#D9BE2E]'
-                        }
-                      `}
-                    >
-                      {item.label}
-                    </a>
-                  </li>
-                ))}
-              </ul>
-            </nav>
-            <div className="flex items-center gap-2 lg:hidden ml-auto mr-1">
-              <button onClick={() => setIsOpen(prev => !prev)} className="block lg:hidden py-2 px-4 rounded-xs border-2 border-[#D9BE2E] bg-[#D9BE2E]">
-                <span className={`${tt_wellingtons_demi.className} text-[#181818] font-extrabold tracking-widest`}>MENU</span>
-              </button>
+
+      <nav className="bg-white flex items-center px-10 shadow-md h-[80px]">
+        <a href="#" className="flex flex-col items-center no-underline shrink-0 mr-[40px]">
+          <div className="relative w-[80px] h-[52px]">
+            <svg className="absolute top-[2px] left-0 w-[80px] h-[46px]" viewBox="0 0 80 46" fill="none">
+              <path d="M6 38 Q40 -8 74 12" stroke="#1a75c4" strokeWidth="3" strokeLinecap="round"/>
+            </svg>
+            <div className="absolute top-[6px] left-[8px] flex align-end font-bold leading-none">
+              <span className="text-[32px] text-[#c0392b]">F</span>
+              <span className="text-[32px] text-[#1a75c4]">L</span>
             </div>
+            <svg className="absolute top-0 right-0" width="22" height="22" viewBox="0 0 24 24" fill="none">
+              <path d="M22 2L11 13" stroke="#c0392b" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+              <path d="M22 2L15 22l-4-9-9-4 20-7z" stroke="#c0392b" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+            </svg>
           </div>
-
-      </div>
-
-      {/* Mobile Nav */}
-      <nav className={`fixed right-0 top-0 w-70 h-fit bg-gradient-to-br from-white to-gray-50 z-50 shadow-2xl transform transition-transform duration-500 ease-out ${isOpen ? 'translate-x-0' : 'translate-x-full'}`}>
-        
-        {/* Close Button */}
-        <div className="flex items-center block lg:hidden px-8 py-4">
-          <button onClick={toggleMenu} className="ml-auto block lg:hidden py-2 px-4 border-3 border-[#069494]">
-            <span className="text-[#069494] font-extrabold text-xl tracking-widest">X</span>
-          </button>
-        </div>
-          
-        {/* Menu Items */}
-        <div className="px-8 py-4">
-          <ul className="space-y-4">
-            {navItems.map((link) => (
-              <li key={link.id}>
-                <a href={link.href} 
-                  className={`block py-3 px-4 rounded-lg transition-all ${activeMobileLink === link.id ? 'text-[#faf9f6] font-bold text-[1.4rem] bg-[#069494] border-l-8 border-[#036d6d]' : 'text-gray-700 font-medium text-[1.3rem] bg-gray-200 hover:text-[#3c5b64] border-l-4 border-gray-300'}`}
-                  onClick={() => handleMobileLinkClick(link.id)}
-                >
-                  {link.label}
-                </a>
-              </li>
-            ))}
-          </ul>
-
-          {/* Social Links (Optional) */}
-          <div className="mt-8 flex justify-center gap-4">
-            <a href="https://www.facebook.com/p/Aurelia-Dental-61559217540517/" aria-label="Facebook" className="p-2 text-gray-400 hover:text-[#1b75bc] transition-colors">
-              <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
-                <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
-              </svg>
-            </a>
-            <a href="https://www.instagram.com/aurelia_dental/" aria-label="Instagram" className="p-2 text-gray-400 hover:text-[#1b75bc] transition-colors">
-              <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
-                <path d="M12 0C8.74 0 8.333.015 7.053.072 5.775.132 4.905.333 4.14.63c-.789.306-1.459.717-2.126 1.384S.935 3.35.63 4.14C.333 4.905.131 5.775.072 7.053.012 8.333 0 8.74 0 12s.015 3.667.072 4.947c.06 1.277.261 2.148.558 2.913.306.788.717 1.459 1.384 2.126.667.666 1.336 1.079 2.126 1.384.766.296 1.636.499 2.913.558C8.333 23.988 8.74 24 12 24s3.667-.015 4.947-.072c1.277-.06 2.148-.262 2.913-.558.788-.306 1.459-.718 2.126-1.384.666-.667 1.079-1.335 1.384-2.126.296-.765.499-1.636.558-2.913.06-1.28.072-1.687.072-4.947s-.015-3.667-.072-4.947c-.06-1.277-.262-2.149-.558-2.913-.306-.789-.718-1.459-1.384-2.126C21.319 1.347 20.651.935 19.86.63c-.765-.297-1.636-.499-2.913-.558C15.667.012 15.26 0 12 0zm0 2.16c3.203 0 3.585.016 4.85.071 1.17.055 1.805.249 2.227.415.562.217.96.477 1.382.896.419.42.679.819.896 1.381.164.422.36 1.057.413 2.227.057 1.266.07 1.646.07 4.85s-.015 3.585-.074 4.85c-.061 1.17-.256 1.805-.421 2.227-.224.562-.479.96-.899 1.382-.419.419-.824.679-1.38.896-.42.164-1.065.36-2.235.413-1.274.057-1.649.07-4.859.07-3.211 0-3.586-.015-4.859-.074-1.171-.061-1.816-.256-2.236-.421-.569-.224-.96-.479-1.379-.899-.421-.419-.69-.824-.9-1.38-.165-.42-.359-1.065-.42-2.235-.045-1.26-.061-1.649-.061-4.844 0-3.196.016-3.586.061-4.861.061-1.17.255-1.814.42-2.234.21-.57.479-.96.9-1.381.419-.419.81-.689 1.379-.898.42-.166 1.051-.361 2.221-.421 1.275-.045 1.65-.06 4.859-.06l.045.03zm0 3.678c-3.405 0-6.162 2.76-6.162 6.162 0 3.405 2.76 6.162 6.162 6.162 3.405 0 6.162-2.76 6.162-6.162 0-3.405-2.76-6.162-6.162-6.162zM12 16c-2.21 0-4-1.79-4-4s1.79-4 4-4 4 1.79 4 4-1.79 4-4 4zm7.846-10.405c0 .795-.646 1.44-1.44 1.44-.795 0-1.44-.646-1.44-1.44 0-.794.646-1.439 1.44-1.439.793-.001 1.44.645 1.44 1.439z"/>
-              </svg>
-            </a>
+          <div className="flex flex-col items-center -mt-[4px]">
+            <span className="text-[11px] font-bold tracking-wider text-[#1a75c4] uppercase">
+              Logistic<sup className="text-[7px] text-[#888]">EXCL</sup> <sup className="text-[7px] text-[#888]">INTL</sup> LLC
+            </span>
+            <span className="text-[7px] text-[#aaa] tracking-wide uppercase mt-[1px]">Think of it we ship it</span>
           </div>
-        </div>
+        </a>
+
+        <ul className="flex items-stretch flex-1 justify-center list-none m-0 p-0 h-[80px]">
+          <li className="relative flex items-center">
+            <a href="#" className="flex items-center font-mont font-bold text-gray-800 no-underline hover:text-[#1a75c4] transition-colors py-0 px-[18px] h-full text-[13.5px] tracking-tighter relative">
+              HOME
+              {/* Converted style attribute: absolute, bottom-0, left-[18px], right-[18px], h-[3px], bg-[#1a75c4], rounded-t-[2px] */}
+              <span className="absolute bottom-0 left-[18px] right-[18px] h-[3px] bg-[#1a75c4] rounded-t-[2px]"></span>
+            </a>
+          </li>
+
+          <li className="relative flex items-center">
+            {/* Converted style="padding:0 18px;height:100%;font-size:13.5px;letter-spacing:.4px;" -> px-[18px] h-full text-[13.5px] tracking-[.4px] */}
+            <a href="#" className="flex items-center font-mont font-bold text-gray-800 no-underline hover:text-[#1a75c4] transition-colors px-[18px] h-full text-[13.5px] tracking-[.4px]">
+              ABOUT
+            </a>
+          </li>
+
+          <li className="relative flex items-center group">
+            {/* Converted style="padding:0 18px;height:80px;font-size:13.5px;letter-spacing:.4px;" -> px-[18px] h-[80px] text-[13.5px] tracking-[.4px] */}
+            <button className="flex items-center gap-1 font-mont font-bold text-gray-800 bg-transparent border-none cursor-pointer hover:text-[#1a75c4] transition-colors px-[18px] h-[80px] text-[13.5px] tracking-[.4px]">
+              SERVICES
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"
+                  className="transition-transform duration-200 group-hover:rotate-180">
+                <polyline points="6 9 12 15 18 9"/>
+              </svg>
+            </button>
+            {/* Converted style: top:100%;left:0;border-top:3px solid #1a75c4; -> top-full left-0 border-t-[3px] border-[#1a75c4] border-solid */}
+            <div className="hidden group-hover:block absolute bg-white z-50 min-w-[200px] shadow-lg top-full left-0 border-t-[3px] border-[#1a75c4] border-solid">
+              <a href="#" className="block font-mont font-semibold text-gray-800 no-underline border-b border-gray-100 hover:bg-blue-50 transition-colors px-[20px] py-[11px] text-[13px]">Air Freight</a>
+              <a href="#" className="block font-mont font-semibold text-gray-800 no-underline border-b border-gray-100 hover:bg-blue-50 transition-colors px-[20px] py-[11px] text-[13px]">Ocean Freight</a>
+              <a href="#" className="block font-mont font-semibold text-gray-800 no-underline border-b border-gray-100 hover:bg-blue-50 transition-colors px-[20px] py-[11px] text-[13px]">Ground Shipping</a>
+              <a href="#" className="block font-mont font-semibold text-gray-800 no-underline border-b border-gray-100 hover:bg-blue-50 transition-colors px-[20px] py-[11px] text-[13px]">Warehousing</a>
+              <a href="#" className="block font-mont font-semibold text-gray-800 no-underline hover:bg-blue-50 transition-colors px-[20px] py-[11px] text-[13px]">Customs Brokerage</a>
+            </div>
+          </li>
+
+          <li className="relative flex items-center">
+            <a href="#" className="flex items-center font-mont font-bold text-gray-800 no-underline hover:text-[#1a75c4] transition-colors px-[18px] h-full text-[13.5px] tracking-[.4px]">SHOP</a>
+          </li>
+
+          <li className="relative flex items-center">
+            <a href="#" className="flex items-center font-mont font-bold text-gray-800 no-underline hover:text-[#1a75c4] transition-colors px-[18px] h-full text-[13.5px] tracking-[.4px]">CONTACT</a>
+          </li>
+
+          <li className="relative flex items-center">
+            <a href="#" className="flex items-center font-mont font-bold text-gray-800 no-underline hover:text-[#1a75c4] transition-colors px-[18px] h-full text-[13.5px] tracking-[.4px]">FAQs</a>
+          </li>
+        </ul>
+
+        {/* Converted style="width:50px;height:50px;margin-left:20px;" -> w-[50px] h-[50px] ml-5 (or ml-[20px]) */}
+        <button className="bg-[#2ab0a8] hover:bg-[#21998f] flex items-center justify-center rounded-md shrink-0 border-none cursor-pointer transition-all hover:scale-105 w-[50px] h-[50px] ml-5"
+                aria-label="Shopping cart">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/>
+            <line x1="3" y1="6" x2="21" y2="6"/>
+            <path d="M16 10a4 4 0 0 1-8 0"/>
+          </svg>
+        </button>
       </nav>
-      {/* Backdrop */}
-      <div className={`fixed inset-0 bg-black/40 backdrop-blur-sm z-40 transition-opacity duration-300 ${
-          isOpen ? 'opacity-100' : 'opacity-0 pointer-events-none'
-        }`}
-        onClick={closeMenu}
-      >
-      </div>
 
-      <div className="bg-[#058080] py-4 w-full mt-29 relative">
-        <h1 className={`${tt_wellingtons_demi.className} text-white text-3xl text-center`}>About Us</h1>
-      </div>
+      <div className="grid grid-cols-3 w-full relative gap-6 px-10 py-12">
+  {/* Air Freight */}
+  <div className="bg-white rounded-lg p-8 text-center flex flex-col items-center">
+    <h3 className="text-2xl font-bold text-brand mb-3">Air Freight</h3>
+    <p className="text-gray-600 text-sm leading-relaxed mb-6">
+      Time‑critical shipments delivered globally. Our air freight solutions ensure your cargo reaches its destination fast and safely, with real‑time tracking and dedicated support.
+    </p>
+    <a href="#" className="bg-red-500 hover:bg-brand-dark text-white font-semibold py-2 px-6 rounded-md transition-colors">
+      Get a Quote
+    </a>
+  </div>
+
+  {/* Sea Freight */}
+  <div className="bg-white rounded-lg p-8 text-center flex flex-col items-center">
+    <h3 className="text-2xl font-bold text-brand mb-3">Sea Freight</h3>
+    <p className="text-gray-600 text-sm leading-relaxed mb-6">
+      Ideal for large volumes and heavy cargo. We offer FCL and LCL options, flexible schedules, and end‑to‑end logistics management to optimise your supply chain.
+    </p>
+    <a href="#" className="bg-red-500 hover:bg-brand-dark text-white font-semibold py-2 px-6 rounded-md transition-colors">
+      Explore Rates
+    </a>
+  </div>
+
+  {/* Ground Freight */}
+  <div className="bg-white rounded-lg p-8 text-center flex flex-col items-center">
+    <h3 className="text-2xl font-bold text-brand mb-3">Ground Freight</h3>
+    <p className="text-gray-600 text-sm leading-relaxed mb-6">
+      Reliable trucking and rail solutions across the continent. Whether it's LTL, full truckload, or intermodal, we deliver your goods on time, every time.
+    </p>
+    <a href="#" className="bg-red-500 hover:bg-brand-dark text-white font-semibold py-2 px-6 rounded-md transition-colors">
+      Request a Quote
+    </a>
+  </div>
+</div>
     </>
   )
 }

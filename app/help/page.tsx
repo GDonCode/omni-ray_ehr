@@ -4,8 +4,7 @@ import Link from "next/link";
 import "../globals.css";
 import localFont from "next/font/local";
 
-import Header from '../components/Header';
-import MobileMenuClient from '../components/MobileMenuClient';
+import HeaderWrapper from '../components/HeaderWrapper';
 import Footer from '../components/Footer';
 import PageTitle from "../components/PageTitle";
 import FAQ, { type FAQItem } from "../components/Help/FAQ";
@@ -113,13 +112,12 @@ export default function Help() {
     <div className={`${styles.background}`}>
     </div>
     <header role="banner">
-      <Header
+      <HeaderWrapper
         navItems={navItems}
         inter_heading={inter_heading}
         tt_wellingtons_demi={tt_wellingtons_demi}
         levenim={levenim}
       />
-      <MobileMenuClient navItems={navItems} />
     </header>
 
     <main role="main">
@@ -135,21 +133,32 @@ export default function Help() {
         <FAQ
           tabs={tabsWithQuestions}
           titleFont={tt_wellingtons_demi.className}
-          bodyFont={tt_wellingtons.className}
+          bodyFont={inter_heading.className}
         />
 
         <div className="mt-8 lg:mt-0">
           {/* Contact Support Card */}
-          <div className="bg-gradient-to-r from-[#036d6d] to-[#058080] rounded-lg p-6 mb-8 text-center shadow-lg">
-            <h3 className={`${tt_wellingtons_demi.className} text-white text-xl mb-2`}>
+          <div
+            className="rounded-lg p-6 mb-8 text-center"
+            style={{
+              background: 'linear-gradient(180deg, #1a9e9e 0%, #058080 50%, #036d6d 100%)',
+              boxShadow: '0 4px 24px rgba(3,80,80,0.25), 0 0 0 1px rgba(3,80,80,0.1)',
+            }}
+          >
+            <h3 className={`${tt_wellingtons_demi.className} text-white text-xl mb-4`}>
               Still need help?
             </h3>
-            <p className={`${tt_wellingtons.className} text-white/90 mb-4`}>
+            <p className={`${tt_wellingtons_demi.className} text-md text-white/90 mb-6`}>
               Our team is here to assist you with any questions or concerns
             </p>
             <Link
               href="/contact"
-              className={`${tt_wellingtons_demi.className} inline-block bg-white text-[#036d6d] px-8 py-3 rounded-lg hover:bg-gray-100 transition-all shadow-md hover:shadow-lg`}
+              className={`${tt_wellingtons_demi.className} inline-block px-8 py-3 rounded-xl font-bold transition-all duration-200 hover:scale-[1.02] hover:brightness-105`}
+              style={{
+                background: 'linear-gradient(180deg, #ffe14d 0%, #ffd808 50%, #e6b800 100%)',
+                boxShadow: '0px 0.5px 0.5px rgba(180,130,0,0.3), 0px 1px 0.5px rgba(180,130,0,0.15)',
+                color: '#181818',
+              }}
             >
               Contact Us
             </Link>

@@ -34,8 +34,10 @@ export default function ServicesMainWrapper({
   const [expandedService, setExpandedService] = useState<string | null>(null);
 
   return (
-    <>
+  <div className='-mt-2'>
+    {preventiveServices.length > 0 && (
       <ServiceSection
+        icon="/number_1.png"
         titlePrefix="Maintain"
         titleSuffix="your smile."
         subtitle="Keep your smile healthy with regular checkups to clean, screen and maintain it."
@@ -45,8 +47,11 @@ export default function ServicesMainWrapper({
         setExpandedService={setExpandedService}
         fontClasses={fontClasses}
       />
+    )}
 
+    {restorativeServices.length > 0 && (
       <ServiceSection
+        icon="/number_2.png"
         titlePrefix="Repair"
         titleSuffix="your smile."
         subtitle="Treatments designed to repair damaged teeth, restore function, and protect your long-term oral health."
@@ -56,8 +61,11 @@ export default function ServicesMainWrapper({
         setExpandedService={setExpandedService}
         fontClasses={fontClasses}
       />
+    )}
 
+    {cosmeticServices.length > 0 && (
       <ServiceSection
+        icon="/number_3.png"
         titlePrefix="Transform"
         titleSuffix="your smile."
         subtitle="Enhance the shape, color and/or alignment of your smile."
@@ -67,6 +75,7 @@ export default function ServicesMainWrapper({
         setExpandedService={setExpandedService}
         fontClasses={fontClasses}
       />
-    </>
+    )}
+  </div>
   );
 }
