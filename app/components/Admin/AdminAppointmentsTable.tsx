@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation';
 import localFont from "next/font/local";
 import { Search, X } from 'lucide-react';
 import Fuse from 'fuse.js';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import AdminAppointmentForm from '../../admin/[id]/AdminAppointmentForm';
 
 const inter = localFont({ src: "../../fonts/Inter/Inter-Regular.otf" })
@@ -66,16 +67,14 @@ function AppointmentDrawer({
 }: {
   appointment: Appointment | null;
   onClose: () => void;
-  onSuccess: () => void;
+  onSuccess: (updatedAppointment: Appointment) => void;
 }) {
-  // Close on Escape key
   useEffect(() => {
     const handler = (e: KeyboardEvent) => { if (e.key === 'Escape') onClose(); };
     document.addEventListener('keydown', handler);
     return () => document.removeEventListener('keydown', handler);
   }, [onClose]);
 
-  // Prevent body scroll when open
   useEffect(() => {
     if (appointment) document.body.style.overflow = 'hidden';
     else document.body.style.overflow = '';
@@ -86,17 +85,13 @@ function AppointmentDrawer({
 
   return (
     <>
-      {/* Backdrop */}
       <div
         onClick={onClose}
         className={`fixed inset-0 bg-black/30 z-40 transition-opacity duration-300 ${isOpen ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}
       />
-
-      {/* Drawer panel */}
       <div
         className={`fixed top-0 right-0 h-full w-full max-w-lg bg-white z-50 shadow-2xl flex flex-col transition-transform duration-300 ease-in-out ${isOpen ? 'translate-x-0' : 'translate-x-full'}`}
       >
-        {/* Drawer header */}
         <div className="flex items-center justify-between px-6 py-4 border-b border-gray-200 bg-[#EAF3F7]">
           <div>
             <p className={`${tt_wellingtons_bold.className} text-lg text-teal-900`}>
@@ -114,8 +109,6 @@ function AppointmentDrawer({
             <X className="w-8 h-8 cursor-pointer" />
           </button>
         </div>
-
-        {/* Drawer body — scrollable */}
         <div className="flex-1 overflow-y-auto px-6 py-6">
           {appointment && (
             <AdminAppointmentForm
@@ -129,18 +122,32 @@ function AppointmentDrawer({
   );
 }
 
-export default function AdminAppointmentsTable({ appointments }: { appointments: Appointment[] }) {
+export default function AdminAppointmentsTable({ initialAppointments }: { initialAppointments: Appointment[] }) {
   const router = useRouter();
+  const queryClient = useQueryClient();
+
+  // React Query for appointments – explicitly typed
+  const { data: appointments } = useQuery<Appointment[]>({
+    queryKey: ['appointments'],
+    queryFn: async () => {
+      const res = await fetch('/api/admin/appointments');
+      if (!res.ok) throw new Error('Failed to fetch appointments');
+      return res.json();
+    },
+    initialData: initialAppointments,
+    refetchOnWindowFocus: false,
+  });
 
   // AUTO-COMPLETE APPOINTMENTS
   const hasAutoCompleted = useRef(false);
   useEffect(() => {
     if (hasAutoCompleted.current) return;
+    if (!appointments) return; // guard to ensure appointments is defined
     const run = async () => {
       const now = new Date();
-      const toUpdate = appointments.filter(apt =>
+      const toUpdate = appointments.filter((apt: Appointment) =>
         apt.status === 'confirmed' && apt.confirmed_date && apt.confirmed_time
-      ).filter(apt => {
+      ).filter((apt: Appointment) => {
         const [y, m, d] = apt.confirmed_date!.split('-').map(Number);
         const [h, min] = apt.confirmed_time!.split(':').map(Number);
         return new Date(y, m - 1, d, h, min) < now;
@@ -153,16 +160,16 @@ export default function AdminAppointmentsTable({ appointments }: { appointments:
             body: JSON.stringify({ status: 'completed' }),
           })
         ));
-        router.refresh();
+        queryClient.invalidateQueries({ queryKey: ['appointments'] });
       }
       hasAutoCompleted.current = true;
     };
     run();
-  }, [appointments, router]);
+  }, [appointments, queryClient]);
 
-  // FUSE SEARCH
+  // FUSE SEARCH – use empty array if appointments is undefined (shouldn't happen after guard)
   const [searchQuery, setSearchQuery] = useState('');
-  const fuse = useMemo(() => new Fuse(appointments, {
+  const fuse = useMemo(() => new Fuse(appointments ?? [], {
     keys: ['first_name', 'last_name'],
     threshold: 0.3,
     ignoreLocation: true,
@@ -175,25 +182,26 @@ export default function AdminAppointmentsTable({ appointments }: { appointments:
   const todayStr = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
 
   const filteredByFilter = useMemo(() => {
+    const safeAppointments = appointments ?? [];
     switch (activeFilter) {
-      case 'all': return appointments;
-      case 'today': return appointments.filter(apt =>
+      case 'all': return safeAppointments;
+      case 'today': return safeAppointments.filter((apt: Appointment) =>
         apt.status === 'new' || (apt.status === 'confirmed' && apt.confirmed_date === todayStr)
       );
-      case 'upcoming': return appointments.filter(apt =>
+      case 'upcoming': return safeAppointments.filter((apt: Appointment) =>
         apt.status === 'confirmed' && apt.confirmed_date !== todayStr
       );
-      case 'past': return appointments.filter(apt =>
+      case 'past': return safeAppointments.filter((apt: Appointment) =>
         apt.status === 'completed' || apt.status === 'cancelled'
       );
-      default: return appointments;
+      default: return safeAppointments;
     }
   }, [appointments, activeFilter, todayStr]);
 
   const filteredAppointments = useMemo(() => {
     if (!searchQuery.trim()) return filteredByFilter;
     const fuseIds = new Set(fuse.search(searchQuery).map(r => r.item.id));
-    return filteredByFilter.filter(apt => fuseIds.has(apt.id));
+    return filteredByFilter.filter((apt: Appointment) => fuseIds.has(apt.id));
   }, [searchQuery, filteredByFilter, fuse]);
 
   // SORT
@@ -294,9 +302,17 @@ export default function AdminAppointmentsTable({ appointments }: { appointments:
   // DRAWER STATE
   const [drawerAppointment, setDrawerAppointment] = useState<Appointment | null>(null);
 
-  const handleUpdateSuccess = () => {
+  const handleUpdateSuccess = (updatedAppointment: Appointment) => {
     setDrawerAppointment(null);
-    router.refresh();
+
+    // Optimistically update the cache
+    queryClient.setQueryData(['appointments'], (old: Appointment[] | undefined) => {
+      if (!old) return old;
+      return old.map(apt => apt.id === updatedAppointment.id ? updatedAppointment : apt);
+    });
+
+    // Optionally refetch in background to ensure consistency
+    queryClient.invalidateQueries({ queryKey: ['appointments'] });
   };
 
   const welcomeDate = today.toLocaleDateString('en-US', {
@@ -305,14 +321,12 @@ export default function AdminAppointmentsTable({ appointments }: { appointments:
 
   return (
     <div className="bg-[#F7FBFC]">
-      {/* Slide-over drawer */}
       <AppointmentDrawer
         appointment={drawerAppointment}
         onClose={() => setDrawerAppointment(null)}
         onSuccess={handleUpdateSuccess}
       />
 
-      {/* Welcome */}
       <div className="px-5 pb-2">
         <h2 className={`${tt_wellingtons_bold.className} text-2xl text-teal-900`}>
           Good {today.getHours() < 12 ? 'Morning' : today.getHours() < 18 ? 'Afternoon' : 'Evening'}
@@ -320,7 +334,6 @@ export default function AdminAppointmentsTable({ appointments }: { appointments:
         <p className={`${inter_heading.className} text-lg text-teal-700`}>{welcomeDate}</p>
       </div>
 
-      {/* Search and Filter */}
       <div className="px-5 pt-2 pb-6 flex flex-col lg:flex-row lg:gap-6 gap-2">
         <div className="flex flex-wrap gap-2">
           {(['all', 'today', 'upcoming', 'past'] as FilterType[]).map(filter => (
@@ -421,7 +434,6 @@ export default function AdminAppointmentsTable({ appointments }: { appointments:
                       <span className="text-gray-400">—</span>
                     )}
                   </td>
-                  {/* Status cell with full background and borders */}
                   <td className={getStatusCellClass(apt.status)}>
                     {STATUS_STYLES[apt.status?.toLowerCase()]?.label ?? 'New'}
                   </td>
@@ -452,13 +464,11 @@ export default function AdminAppointmentsTable({ appointments }: { appointments:
                   </h3>
                   <p className={`${inter.className} text-lg text-[#181818]`}>{apt.service_name}</p>
                 </div>
-                {/* Mobile pills remain unchanged */}
                 <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-lg font-medium ${STATUS_STYLES[apt.status?.toLowerCase()]?.pill ?? STATUS_STYLES.new.pill}`}>
                   <span className={`w-1.5 h-1.5 rounded-full ${STATUS_STYLES[apt.status?.toLowerCase()]?.dot ?? STATUS_STYLES.new.dot}`} />
                   {STATUS_STYLES[apt.status?.toLowerCase()]?.label ?? 'New'}
                 </span>
               </div>
-
               <div className="text-[#181818] text-base space-y-2">
                 {(apt.status === 'confirmed' || apt.status === 'completed') && apt.confirmed_date && apt.confirmed_time ? (
                   <div>
@@ -485,4 +495,7 @@ export default function AdminAppointmentsTable({ appointments }: { appointments:
       </div>
     </div>
   );
+
+  
 }
+export type { Appointment }

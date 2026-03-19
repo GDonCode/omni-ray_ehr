@@ -1,5 +1,5 @@
 'use client'
-
+import type { Appointment } from '../../components/Admin/AdminAppointmentsTable'; 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import localFont from "next/font/local";
@@ -14,27 +14,11 @@ interface SelectedSlot {
   times: string[];   // e.g., ["10:00 AM", "2:00 PM"]
 }
 
-interface Appointment {
-  id: string
-  service_name: string
-  selected_slots: SelectedSlot[] | null
-  requested_date: string
-  requested_time: string
-  confirmed_date: string | null
-  confirmed_time: string | null
-  first_name: string
-  last_name: string
-  email: string
-  phone: string
-  contact_method: string | null
-  notes: string | null
-  message: string | null
-  status: string
-}
+
 
 interface AppointmentFormProps {
   appointment: Appointment;
-  onSuccess?: () => void; // called after successful update instead of redirect
+  onSuccess?: (updatedAppointment: Appointment) => void; // changed
 }
 
 export default function AppointmentForm({ appointment, onSuccess }: AppointmentFormProps) {
@@ -116,8 +100,9 @@ export default function AppointmentForm({ appointment, onSuccess }: AppointmentF
 
     setIsLoading(false)
     if (res.ok) {
+      const result = await res.json(); // result.data should be the updated appointment
       if (onSuccess) {
-        onSuccess();
+        onSuccess(result.data);
       } else {
         router.push('/admin');
       }

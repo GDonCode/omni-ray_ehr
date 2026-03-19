@@ -17,16 +17,16 @@ const tt_wellingtons = localFont({ src: "../fonts/TT_Wellingtons/TT Wellingtons 
 
 export default async function AdminAppointmentsPage() {
   const session = await getServerSession(authOptions)
+  if (!session) {
+    redirect('/admin/login')
+  }
+
   const navItems = [
     { id: 'home', label: 'Home', href: '/' },
     { id: 'services', label: 'Services', href: '/services' },
     { id: 'help', label: 'Help', href: '/help' },
     { id: 'contact', label: 'Contact', href: '/contact' }
   ];
-
-  if (!session) {
-    redirect('/admin/login')
-  }
 
   // Fetch all appointment requests, ordered by most recent first
   const { data: appointments, error } = await supabaseAdmin
@@ -51,7 +51,7 @@ export default async function AdminAppointmentsPage() {
       </header>
       <main role='main' className='lg:mt-36 mt-34 flex-grow'>
         <div className="container mx-auto lg:p-4 lg:pb-6">
-          <AdminAppointmentsTable appointments={appointments || []} />
+          <AdminAppointmentsTable initialAppointments={appointments || []} />
         </div>
       </main>
       <AdminFooter 
