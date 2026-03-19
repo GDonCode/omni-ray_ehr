@@ -18,7 +18,7 @@ const EMAIL_CONFIG = {
   },
 };
 
-const ENV = (process.env.NODE_ENV === 'production' ? 'production' : 'testing') as 'testing' | 'production';
+const ENV = 'testing' as const; //const ENV = (process.env.NODE_ENV === 'production' ? 'production' : 'testing') as 'testing' | 'production';
 const config = EMAIL_CONFIG[ENV];
 
 // Format date as "Monday, January 1, 2026"
@@ -82,19 +82,15 @@ export async function sendConfirmationToPatient(
   const formattedTime = formatTimeTo12Hour(confirmedTime);
 
   const content = `
-    <!-- Header -->
     <tr>
       <td style="background-color:#058080; padding:30px 20px; text-align:center; border-radius:8px 8px 0 0;">
         <h1 style="margin:0; color:#faf9f6; font-size:28px; font-weight:bold;">Appointment Confirmed</h1>
         <p style="margin:10px 0 0 0; color:#faf9f6; font-size:20px;">${config.practiceName}</p>
       </td>
     </tr>
-
-    <!-- Content -->
     <tr>
       <td style="padding:30px; background-color:#ffffff; border-left:1px solid #ddd; border-right:1px solid #ddd; border-bottom:1px solid #ddd; border-radius:0 0 8px 8px;">
         
-        <!-- Section: Greeting -->
         <table width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-bottom:25px;">
           <tr>
             <td style="font-size:20px; font-weight:bold; color:#058080; border-bottom:2px solid #058080; padding-bottom:5px; margin-bottom:10px;">Your appointment is confirmed</td>
@@ -107,7 +103,6 @@ export async function sendConfirmationToPatient(
           </tr>
         </table>
 
-        <!-- Section: Details -->
         <table width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-bottom:25px;">
           <tr>
             <td style="font-size:20px; font-weight:bold; color:#058080; border-bottom:2px solid #058080; padding-bottom:5px; margin-bottom:10px;">Appointment Details</td>
@@ -132,10 +127,7 @@ export async function sendConfirmationToPatient(
           </tr>
         </table>
 
-        ${
-          message
-            ? `
-        <!-- Section: Message from practice -->
+        ${message ? `
         <table width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-bottom:25px;">
           <tr>
             <td style="font-size:20px; font-weight:bold; color:#058080; border-bottom:2px solid #058080; padding-bottom:5px; margin-bottom:10px;">Message from the practice</td>
@@ -146,11 +138,8 @@ export async function sendConfirmationToPatient(
             </td>
           </tr>
         </table>
-        `
-            : ''
-        }
+        ` : ''}
 
-        <!-- Footer note -->
         <table width="100%" cellpadding="0" cellspacing="0" border="0">
           <tr>
             <td style="padding-top:20px; border-top:2px solid #ddd; font-size:16px; color:#777; text-align:center;">
@@ -181,28 +170,32 @@ We look forward to seeing you. If you need to reschedule, please call us at +1 (
 Thank you for choosing ${config.practiceName}.
   `.trim();
 
-  if (patient.contactMethod === 'email') {
-    try {
-      await resend.emails.send({
-        from: config.from,
-        to: patient.email,
-        subject: `Your appointment is confirmed – ${config.practiceName}`,
-        html: emailHtml,
-        text: plainText,
-      });
-      console.log('Confirmation email sent to', patient.email);
-    } catch (error) {
-      console.error('Failed to send confirmation email:', error);
-    }
-  } else if (patient.contactMethod === 'whatsapp') {
+  // Always send email for confirmation
+  try {
+    await resend.emails.send({
+      from: config.from,
+      to: patient.email,
+      subject: `Your appointment is confirmed – ${config.practiceName}`,
+      html: emailHtml,
+      text: plainText,
+    });
+    console.log('Confirmation email sent to', patient.email);
+  } catch (error) {
+    console.error('Failed to send confirmation email:', error);
+    throw error; // Re-throw so caller knows it failed
+  }
+
+  // Optionally send WhatsApp if contact method is WhatsApp
+  if (patient.contactMethod === 'whatsapp') {
     try {
       await twilioClient.messages.create({
         from: process.env.TWILIO_WHATSAPP_NUMBER,
-        to: `whatsapp:+18767922584`, // or patient.phone
+        to: `whatsapp:+18767922584`,
         body: plainText,
       });
     } catch (error) {
       console.error('Failed to send WhatsApp confirmation:', error);
+      // Don't throw – email already sent, WhatsApp is bonus
     }
   }
 }
@@ -269,20 +262,23 @@ export async function sendReminderToPatient(
   const emailHtml = baseEmailWrapper(content);
   const plainText = `Reminder: Your appointment at ${config.practiceName} is tomorrow, ${formattedDate} at ${formattedTime}. Service: ${service}. Please call +1 (876) 691 9136 if you have questions.`;
 
-  if (patient.contactMethod === 'email') {
-    try {
-      await resend.emails.send({
-        from: config.from,
-        to: patient.email,
-        subject: `Reminder: Your appointment tomorrow at ${config.practiceName}`,
-        html: emailHtml,
-        text: plainText,
-      });
-      console.log(`Reminder email sent to ${patient.email}`);
-    } catch (error) {
-      console.error('Failed to send reminder email:', error);
-    }
-  } else if (patient.contactMethod === 'whatsapp') {
+  // Always send email for reminder
+  try {
+    await resend.emails.send({
+      from: config.from,
+      to: patient.email,
+      subject: `Reminder: Your appointment tomorrow at ${config.practiceName}`,
+      html: emailHtml,
+      text: plainText,
+    });
+    console.log(`Reminder email sent to ${patient.email}`);
+  } catch (error) {
+    console.error('Failed to send reminder email:', error);
+    throw error; // Re-throw so caller knows it failed
+  }
+
+  // Optionally send WhatsApp
+  if (patient.contactMethod === 'whatsapp') {
     try {
       await twilioClient.messages.create({
         from: process.env.TWILIO_WHATSAPP_NUMBER,
@@ -295,6 +291,8 @@ export async function sendReminderToPatient(
     }
   }
 }
+
+// sendRescheduleNotification remains unchanged (optional WhatsApp)
 
 export async function sendRescheduleNotification(
   patient: {
