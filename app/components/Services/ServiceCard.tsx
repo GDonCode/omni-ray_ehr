@@ -59,7 +59,7 @@ export default function ServiceCard({
         </div>
 
         {/* Description */}
-        <p className={`${fontClasses.tt_wellingtons} text-[#181818] mb-6 leading-relaxed`}>
+        <p className={`${fontClasses.tt_wellingtons_demi} text-[#181818] mb-6 leading-relaxed`}>
           {service.description}
         </p>
 
@@ -70,7 +70,7 @@ export default function ServiceCard({
               <h4 className={`${fontClasses.tt_wellingtons_demi} font-bold text-xl text-[#036d6d] mb-2`}>
                 What to Expect
               </h4>
-              <p className={`${fontClasses.tt_wellingtons} text-[#181818]/90 text-md leading-relaxed`}>
+              <p className={`${fontClasses.tt_wellingtons_demi} text-[#181818]/90 text-md leading-relaxed`}>
                 {service.details}
               </p>
             </div>
@@ -78,7 +78,7 @@ export default function ServiceCard({
               <h4 className={`${fontClasses.tt_wellingtons_demi} font-bold text-xl text-[#036d6d] mb-2`}>
                 When You Need This
               </h4>
-              <ul className={`${fontClasses.tt_wellingtons} text-[#181818]/90 text-md space-y-1`}>
+              <ul className={`${fontClasses.tt_wellingtons_demi} text-[#181818]/90 text-md space-y-1`}>
                 {service.when.map((item, idx) => (
                   <li key={idx}>• {item}</li>
                 ))}

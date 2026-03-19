@@ -1,7 +1,7 @@
 'use client';
 
 import Image from 'next/image';
-import { Mail, Phone, Calendar, Clock } from 'lucide-react';
+import { Mail, Phone, Calendar, Clock, SquarePen } from 'lucide-react';
 
 interface SelectedSlot {
   date: Date;
@@ -59,7 +59,7 @@ export default function Step4Confirmation({
 
   return (
     <div className="pt-0 lg:pt-4 p-4 lg:mt-5 relative">
-      <div className="max-w-3xl mx-auto">
+      <div className="max-w-4xl mx-auto">
         <div className="bg-white backdrop-blur-sm border-2 border-white/20 rounded-md p-6 py-4 mb-6 shadow-lg relative lg:flex lg:items-start lg:justify-around gap-8 lg:gap-12">
           {/* Personal Info Section */}
           <div>
@@ -81,14 +81,14 @@ export default function Step4Confirmation({
                 </div>
                 <button
                   onClick={onEditPersonalInfo}
-                  className="text-[#181818] px-5 py-2.5 rounded-md font-semibold text-md hover:scale-103 cursor-pointer transition-all duration-300 hover:scale-105 flex items-center gap-2 self-end md:self-start"
+                  className="text-white px-5 py-2.5 rounded-md font-semibold text-md hover:scale-103 cursor-pointer transition-all duration-300 hover:scale-105 flex items-center gap-2 self-end md:self-start"
                   style={{
-                    background: 'linear-gradient(180deg, #ffe14d 0%, #ffd808 50%, #e6b800 100%)',
-                    boxShadow: '0px 0.5px 0.5px rgba(180,130,0,0.3), 0px 1px 0.5px rgba(180,130,0,0.15)',
-                    color: '#181818',
+                    background: 'linear-gradient(180deg, #1a9e9e 0%, #058080 50%, #036d6d 100%)',
+                    boxShadow: '0px 0.5px 0.5px rgba(3,80,80,0.3), 0px 1px 0.5px rgba(3,80,80,0.15)',
+                    color: '#ffffff',
                   }}
                 >
-                  <Image src="/edit.svg" alt="Edit" width={23} height={23} />
+                  <SquarePen />
                   Edit Details
                 </button>
               </div>
@@ -131,14 +131,14 @@ export default function Step4Confirmation({
 
                 <button
                   onClick={onEditDateTime}
-                  className="text-[#181818] px-5 py-2.5 rounded-md font-semibold text-md transition-all duration-300 hover:scale-103 cursor-pointer flex items-center gap-2 self-end md:self-start"
+                  className="text-white px-5 py-2.5 rounded-md font-semibold text-md transition-all duration-300 hover:scale-103 cursor-pointer flex items-center gap-2 self-end md:self-start"
                   style={{
-                    background: 'linear-gradient(180deg, #ffe14d 0%, #ffd808 50%, #e6b800 100%)',
-                    boxShadow: '0px 0.5px 0.5px rgba(180,130,0,0.3), 0px 1px 0.5px rgba(180,130,0,0.15)',
-                    color: '#181818',
+                    background: 'linear-gradient(180deg, #1a9e9e 0%, #058080 50%, #036d6d 100%)',
+                    boxShadow: '0px 0.5px 0.5px rgba(3,80,80,0.3), 0px 1px 0.5px rgba(3,80,80,0.15)',
+                    color: '#ffffff',
                   }}
                 >
-                  <Image src="/edit.svg" alt="Edit" width={23} height={23} />
+                  <SquarePen />
                   Edit Details
                 </button>
               </div>

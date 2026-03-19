@@ -41,7 +41,7 @@ const Header: React.FC<HeaderProps> = ({
       <div className="backdrop-blur-md shadow-lg z-20 fixed top-0 w-full flex flex-col">
         {/* Location Bar */}
         <Link 
-          href="https://www.google.com/maps?client=firefox-b-d&um=1&ie=UTF-8&fb=1&gl=jm&sa=X&geocode=Kess0v_mK9qOMblqgL_gLwtH&daddr=40-41,+Overton+Plaza,+49+Union+Street,+Montego+Bay"
+          href="https://www.google.com/maps/place/Aurelia+Dental/@18.4740022,-77.9208353,17z/data=!3m1!4b1!4m6!3m5!1s0x8eda2be6ffd22ceb:0x470b2fe0bf806ab9!8m2!3d18.4739971!4d-77.9182604!16s%2Fg%2F11vyvdsfr9?entry=ttu&g_ep=EgoyMDI2MDMxNy4wIKXMDSoASAFQAw%3D%3D"
           className={`${inter_heading.className} w-full bg-[#82bfbf] text-[#181818] text-[0.8rem] lg:text-[1rem] flex items-center gap-1 py-2 px-2`}
           target="_blank"
           rel="noopener noreferrer"

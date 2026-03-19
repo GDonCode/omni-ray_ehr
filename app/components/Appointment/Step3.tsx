@@ -45,6 +45,8 @@ export default function Step3PersonalInfo({
   fontClasses,
   isComplete,
 }: Props) {
+  const isChild = personalInfo.appointmentFor === 'child';
+
   return (
     <div className="-mt-4 p-4 relative">
       <form
@@ -89,7 +91,7 @@ export default function Step3PersonalInfo({
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div>
             <label htmlFor="firstName" className={`${fontClasses.tt_wellingtons_demi} block text-xl font-medium text-[#036d6d] mb-2`}>
-              First Name *
+              {isChild ? "Child's First Name *" : "First Name *"}
             </label>
             <input
               type="text"
@@ -97,14 +99,14 @@ export default function Step3PersonalInfo({
               name="firstName"
               required
               className={`${fontClasses.inter_heading} w-full px-4 py-3 rounded-sm border-2 border-[#D0E6E6] bg-white text-[#181818] font-medium text-xl placeholder:text-[#9DBDBD] transition-all duration-200 focus:outline-none focus:border-[#0D6E6E] focus:ring-2 focus:ring-[#0D6E6E]/10 tracking-wide`}
-              placeholder="Enter your first name"
+              placeholder={isChild ? "Enter child's first name" : "Enter your first name"}
               value={personalInfo.firstName}
               onChange={onInputChange}
             />
           </div>
           <div>
             <label htmlFor="lastName" className={`${fontClasses.tt_wellingtons_demi} block text-xl font-medium text-[#036d6d] mb-2`}>
-              Last Name *
+              {isChild ? "Child's Last Name *" : "Last Name *"}
             </label>
             <input
               type="text"
@@ -112,14 +114,14 @@ export default function Step3PersonalInfo({
               name="lastName"
               required
               className={`${fontClasses.inter_heading} w-full px-4 py-3 rounded-sm border-2 border-[#D0E6E6] bg-white text-[#181818] font-medium text-xl placeholder:text-[#9DBDBD] transition-all duration-200 focus:outline-none focus:border-[#0D6E6E] focus:ring-2 focus:ring-[#0D6E6E]/10 tracking-wide`}
-              placeholder="Enter your last name"
+              placeholder={isChild ? "Enter child's last name" : "Enter your last name"}
               value={personalInfo.lastName}
               onChange={onInputChange}
             />
           </div>
         </div>
 
-        {personalInfo.appointmentFor === 'child' && (
+        {isChild && (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
               <label htmlFor="guardianFirstName" className={`${fontClasses.tt_wellingtons_demi} block text-xl font-medium text-[#036d6d] mb-2`}>
@@ -131,6 +133,7 @@ export default function Step3PersonalInfo({
                 name="guardianFirstName"
                 required
                 className={`${fontClasses.inter_heading} w-full px-4 py-3 rounded-sm border-2 border-[#D0E6E6] bg-white text-[#181818] font-medium text-xl placeholder:text-[#9DBDBD] transition-all duration-200 focus:outline-none focus:border-[#0D6E6E] focus:ring-2 focus:ring-[#0D6E6E]/10 tracking-wide`}
+                placeholder="Enter guardian's first name"
                 value={personalInfo.guardianFirstName}
                 onChange={onInputChange}
               />
@@ -145,6 +148,7 @@ export default function Step3PersonalInfo({
                 name="guardianLastName"
                 required
                 className={`${fontClasses.inter_heading} w-full px-4 py-3 rounded-sm border-2 border-[#D0E6E6] bg-white text-[#181818] font-medium text-xl placeholder:text-[#9DBDBD] transition-all duration-200 focus:outline-none focus:border-[#0D6E6E] focus:ring-2 focus:ring-[#0D6E6E]/10 tracking-wide`}
+                placeholder="Enter guardian's last name"
                 value={personalInfo.guardianLastName}
                 onChange={onInputChange}
               />

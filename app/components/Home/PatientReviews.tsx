@@ -66,13 +66,13 @@ const PatientReviews: React.FC<PatientReviewsProps> = ({
   };
 
   return (
-    <section className="w-full lg:w-[95%] mx-auto mt-16 p-4 bg-[#058080]">
+    <section className="w-full lg:w-[95%] mx-auto mt-16 p-6 bg-[#058080]">
       {/* Header */}
-      <div className="flex flex-col items-center pb-8 pt-6">
+      <div className="flex flex-col items-center pb-8">
         <p className={`${inter_heading.className} inline-block text-[#181818] bg-[#ffdf20] px-2.5 py-0.5 mb-1 rounded-full text-xs font-semibold tracking-wide`}>
           User Reviews
         </p>
-        <h2 className={`${tt_wellingtons_demi.className} tracking-wide text-3xl text-[#FAF9F6]`}>
+        <h2 className={`${tt_wellingtons_demi.className} tracking-wide text-3xl text-[#FAF9F6] text-center`}>
           What our Patients Say
         </h2>
       </div>
@@ -137,19 +137,6 @@ const PatientReviews: React.FC<PatientReviewsProps> = ({
             ))}
           </Slider>
         )}
-      </div>
-
-      {/* Stats Section */}
-      <div className="flex flex-col items-center mb-6">
-        <span className={`${cinzel.className} text-[2.5rem] font-bold text-center text-gray-100`}>
-          <span className={`${cinzel.className} text-[2rem] font-bold text-center text-white`}>
-            Over
-          </span>{' '}
-          200,000
-        </span>
-        <span className={`${tt_wellingtons_demi.className} text-xl text-gray-100 -mt-2 font-semibold tracking-wider`}>
-          patients served!
-        </span>
       </div>
     </section>
   );
