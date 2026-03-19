@@ -30,7 +30,6 @@ export default function Help() {
   const navItems = [
     { id: 'home', label: 'Home', href: '/' },
     { id: 'services', label: 'Services', href: '/services' },
-    { id: 'about', label: 'About', href: '/about' },
     { id: 'help', label: 'Help', href: '/help' },
     { id: 'contact', label: 'Contact', href: '/contact' }
   ];

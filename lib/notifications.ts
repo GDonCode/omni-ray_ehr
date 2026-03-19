@@ -2,11 +2,9 @@ import { Resend } from 'resend';
 import twilio from 'twilio';
 
 const resend = new Resend(process.env.RESEND_API_KEY);
-// const twilioClient = twilio(process.env.TWILIO_SID, process.env.TWILIO_AUTH_TOKEN);
-
 const twilioClient = twilio(
-  process.env.TWILIO_ACCOUNT_SID,
-  process.env.TWILIO_AUTH_TOKEN
+  process.env.TWILIO_ACCOUNT_SID!,
+  process.env.TWILIO_AUTH_TOKEN!
 );
 
 const EMAIL_CONFIG = {
@@ -17,11 +15,55 @@ const EMAIL_CONFIG = {
   production: {
     from: 'Aurelia Dental <appointments@aureliadental.com>',
     practiceName: 'Aurelia Dental',
-  }
+  },
 };
 
 const ENV = (process.env.NODE_ENV === 'production' ? 'production' : 'testing') as 'testing' | 'production';
 const config = EMAIL_CONFIG[ENV];
+
+// Format date as "Monday, January 1, 2026"
+const formatDateLong = (dateStr: string) => {
+  const d = new Date(dateStr);
+  return d.toLocaleDateString('en-US', {
+    weekday: 'long',
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+  });
+};
+
+// Format time to 12‑hour (e.g., "2:00 PM")
+const formatTimeTo12Hour = (time: string): string => {
+  if (time.includes('AM') || time.includes('PM')) return time;
+  const [hourStr, minute] = time.split(':');
+  const hour = parseInt(hourStr, 10);
+  const suffix = hour >= 12 ? 'PM' : 'AM';
+  const hour12 = hour % 12 || 12;
+  return `${hour12}:${minute} ${suffix}`;
+};
+
+// Base email wrapper (tables + inline styles)
+const baseEmailWrapper = (content: string) => `
+  <!DOCTYPE html>
+  <html>
+    <head>
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <title>${config.practiceName}</title>
+    </head>
+    <body style="margin:0; padding:0; background-color:#F7FBFC; font-family: Helvetica, Arial, sans-serif; font-size:18px; line-height:1.6; color:#181818;">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color:#F7FBFC; width:100%;">
+        <tr>
+          <td align="center" style="padding:20px;">
+            <table width="800" cellpadding="0" cellspacing="0" border="0" style="max-width:800px; width:100%; background-color:#ffffff; border-collapse:collapse; box-shadow:0 2px 8px rgba(0,0,0,0.05);">
+              ${content}
+            </table>
+          </td>
+        </tr>
+      </table>
+    </body>
+  </html>
+`;
 
 export async function sendConfirmationToPatient(
   patient: {
@@ -36,133 +78,108 @@ export async function sendConfirmationToPatient(
   service: string,
   message: string
 ) {
-  const formattedDate = new Date(confirmedDate).toLocaleDateString('en-US', {
-    weekday: 'long',
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric'
-  });
+  const formattedDate = formatDateLong(confirmedDate);
+  const formattedTime = formatTimeTo12Hour(confirmedTime);
 
-  const emailHtml = `
-    <!DOCTYPE html>
-    <html>
-      <head>
-        <style>
-          body {
-            font-family: Helvetica, sans-serif;
-            line-height: 1.6;
-            color: #F7FBFC;
-            max-width: 600px;
-            margin: 0 auto;
-            padding: 20px;
-          }
-          .header {
-            background-color: #058080;
-            color: #faf9f6;
-            padding: 20px;
-            text-align: center;
-            border-radius: 8px 8px 0 0;
-          }
-          .content {
-            background-color: #ffffff;
-            padding: 30px;
-            border: 1px solid #ddd;
-            border-top: none;
-            border-radius: 0 0 8px 8px;
-          }
-          .section {
-            margin-bottom: 25px;
-          }
-          .section-title {
-            font-size: 18px;
-            font-weight: bold;
-            color: #181818;
-            margin-bottom: 10px;
-            border-bottom: 2px solid #058080;
-            padding-bottom: 5px;
-          }
-          .info-row {
-            display: flex;
-            margin-bottom: 8px;
-          }
-          .label {
-            font-weight: bold;
-            width: 150px;
-            color: #555;
-          }
-          .value {
-            flex: 1;
-            color: #333;
-          }
-          .footer {
-            margin-top: 30px;
-            padding-top: 20px;
-            border-top: 2px solid #ddd;
-            font-size: 12px;
-            color: #777;
-            text-align: center;
-          }
-        </style>
-      </head>
-      <body>
-        <div class="header">
-          <h1 style="margin: 0;">Appointment Confirmed</h1>
-          <p style="margin: 10px 0 0 0;">${config.practiceName}</p>
-        </div>
+  const content = `
+    <!-- Header -->
+    <tr>
+      <td style="background-color:#058080; padding:30px 20px; text-align:center; border-radius:8px 8px 0 0;">
+        <h1 style="margin:0; color:#faf9f6; font-size:28px; font-weight:bold;">Appointment Confirmed</h1>
+        <p style="margin:10px 0 0 0; color:#faf9f6; font-size:20px;">${config.practiceName}</p>
+      </td>
+    </tr>
+
+    <!-- Content -->
+    <tr>
+      <td style="padding:30px; background-color:#ffffff; border-left:1px solid #ddd; border-right:1px solid #ddd; border-bottom:1px solid #ddd; border-radius:0 0 8px 8px;">
         
-        <div class="content">
-          <div class="section">
-            <div class="section-title">Your appointment is confirmed</div>
-            <p>Dear ${patient.firstName} ${patient.lastName},</p>
-            <p>We're pleased to confirm your upcoming appointment at ${config.practiceName}.</p>
-          </div>
+        <!-- Section: Greeting -->
+        <table width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-bottom:25px;">
+          <tr>
+            <td style="font-size:20px; font-weight:bold; color:#058080; border-bottom:2px solid #058080; padding-bottom:5px; margin-bottom:10px;">Your appointment is confirmed</td>
+          </tr>
+          <tr>
+            <td style="padding-top:10px;">Dear ${patient.firstName} ${patient.lastName},</td>
+          </tr>
+          <tr>
+            <td style="padding-top:10px;">We're pleased to confirm your upcoming appointment at ${config.practiceName}.</td>
+          </tr>
+        </table>
 
-          <div class="section">
-            <div class="section-title">Appointment Details</div>
-            <div class="info-row">
-              <span class="label">Service:</span>
-              <span class="value">${service}</span>
-            </div>
-            <div class="info-row">
-              <span class="label">Date:</span>
-              <span class="value">${formattedDate}</span>
-            </div>
-            <div class="info-row">
-              <span class="label">Time:</span>
-              <span class="value">${confirmedTime}</span>
-            </div>
-          </div>
+        <!-- Section: Details -->
+        <table width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-bottom:25px;">
+          <tr>
+            <td style="font-size:20px; font-weight:bold; color:#058080; border-bottom:2px solid #058080; padding-bottom:5px; margin-bottom:10px;">Appointment Details</td>
+          </tr>
+          <tr>
+            <td style="padding-top:10px;">
+              <table width="100%" cellpadding="5" cellspacing="0" border="0">
+                <tr>
+                  <td width="120" style="font-weight:bold; color:#555;">Service:</td>
+                  <td style="color:#333;">${service}</td>
+                </tr>
+                <tr>
+                  <td style="font-weight:bold; color:#555;">Date:</td>
+                  <td style="color:#333;">${formattedDate}</td>
+                </tr>
+                <tr>
+                  <td style="font-weight:bold; color:#555;">Time:</td>
+                  <td style="color:#333;">${formattedTime}</td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+        </table>
 
-          <div>
-            <p>${message}</p>
-          </div>
+        ${
+          message
+            ? `
+        <!-- Section: Message from practice -->
+        <table width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-bottom:25px;">
+          <tr>
+            <td style="font-size:20px; font-weight:bold; color:#058080; border-bottom:2px solid #058080; padding-bottom:5px; margin-bottom:10px;">Message from the practice</td>
+          </tr>
+          <tr>
+            <td style="background-color:#f0f8fa; padding:15px; border-left:4px solid #058080; border-radius:4px; margin-top:10px; color:#181818;">
+              ${message}
+            </td>
+          </tr>
+        </table>
+        `
+            : ''
+        }
 
-          <div class="section">
-            <p>We look forward to seeing you. If you need to reschedule or have any questions, please call us at <strong>+1 (876) 691 9136</strong>.</p>
-          </div>
-        </div>
+        <!-- Footer note -->
+        <table width="100%" cellpadding="0" cellspacing="0" border="0">
+          <tr>
+            <td style="padding-top:20px; border-top:2px solid #ddd; font-size:16px; color:#777; text-align:center;">
+              <p>We look forward to seeing you. If you need to reschedule or have any questions, please call us at <strong>+1 (876) 691 9136</strong>.</p>
+              <p style="margin-top:15px;">This is an automated confirmation email.</p>
+              <p>${config.practiceName} © ${new Date().getFullYear()}</p>
+            </td>
+          </tr>
+        </table>
 
-        <div class="footer">
-          <p>This is an automated confirmation email.</p>
-          <p>${config.practiceName} © ${new Date().getFullYear()}</p>
-        </div>
-      </body>
-    </html>
+      </td>
+    </tr>
   `;
 
+  const emailHtml = baseEmailWrapper(content);
   const plainText = `
-    Dear ${patient.firstName} ${patient.lastName},
+Dear ${patient.firstName} ${patient.lastName},
 
-    Your appointment at ${config.practiceName} has been confirmed!
+Your appointment at ${config.practiceName} has been confirmed!
 
-    Service: ${service}
-    Date: ${formattedDate}
-    Time: ${confirmedTime}
+Service: ${service}
+Date: ${formattedDate}
+Time: ${formattedTime}
 
-    We look forward to seeing you. If you need to reschedule, please call us at +1 (876) 691 9136.
+${message ? `Message from the practice: ${message}\n` : ''}
+We look forward to seeing you. If you need to reschedule, please call us at +1 (876) 691 9136.
 
-    Thank you for choosing ${config.practiceName}.
-  `;
+Thank you for choosing ${config.practiceName}.
+  `.trim();
 
   if (patient.contactMethod === 'email') {
     try {
@@ -178,13 +195,10 @@ export async function sendConfirmationToPatient(
       console.error('Failed to send confirmation email:', error);
     }
   } else if (patient.contactMethod === 'whatsapp') {
-    console.log('Twilio SID exists:', !!process.env.TWILIO_ACCOUNT_SID);
-    console.log('Twilio token exists:', !!process.env.TWILIO_AUTH_TOKEN);
-    console.log('WhatsApp from:', process.env.TWILIO_WHATSAPP_NUMBER);
     try {
       await twilioClient.messages.create({
         from: process.env.TWILIO_WHATSAPP_NUMBER,
-        to: `whatsapp:+18767922584`,
+        to: `whatsapp:+18767922584`, // or patient.phone
         body: plainText,
       });
     } catch (error) {
@@ -205,116 +219,55 @@ export async function sendReminderToPatient(
   confirmedTime: string,
   service: string
 ) {
-  const formattedDate = new Date(confirmedDate).toLocaleDateString('en-US', {
-    weekday: 'long',
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric'
-  });
+  const formattedDate = formatDateLong(confirmedDate);
+  const formattedTime = formatTimeTo12Hour(confirmedTime);
 
-  const emailHtml = `
-    <!DOCTYPE html>
-    <html>
-      <head>
-        <style>
-          body {
-            font-family: Helvetica, sans-serif;
-            line-height: 1.6;
-            color: #F7FBFC;
-            max-width: 600px;
-            margin: 0 auto;
-            padding: 20px;
-          }
-          .header {
-            background-color: #058080;
-            color: #faf9f6;
-            padding: 20px;
-            text-align: center;
-            border-radius: 8px 8px 0 0;
-          }
-          .content {
-            background-color: #ffffff;
-            padding: 30px;
-            border: 1px solid #ddd;
-            border-top: none;
-            border-radius: 0 0 8px 8px;
-          }
-          .section {
-            margin-bottom: 25px;
-          }
-          .section-title {
-            font-size: 18px;
-            font-weight: bold;
-            color: #181818;
-            margin-bottom: 10px;
-            border-bottom: 2px solid #058080;
-            padding-bottom: 5px;
-          }
-          .info-row {
-            display: flex;
-            margin-bottom: 8px;
-          }
-          .label {
-            font-weight: bold;
-            width: 150px;
-            color: #555;
-          }
-          .value {
-            flex: 1;
-            color: #333;
-          }
-          .footer {
-            margin-top: 30px;
-            padding-top: 20px;
-            border-top: 2px solid #ddd;
-            font-size: 12px;
-            color: #777;
-            text-align: center;
-          }
-        </style>
-      </head>
-      <body>
-        <div class="header">
-          <h1 style="margin: 0;">Appointment Reminder</h1>
-          <p style="margin: 10px 0 0 0;">${config.practiceName}</p>
-        </div>
+  const content = `
+    <tr>
+      <td style="background-color:#058080; padding:30px 20px; text-align:center; border-radius:8px 8px 0 0;">
+        <h1 style="margin:0; color:#faf9f6; font-size:28px;">Appointment Reminder</h1>
+        <p style="margin:10px 0 0 0; color:#faf9f6; font-size:20px;">${config.practiceName}</p>
+      </td>
+    </tr>
+    <tr>
+      <td style="padding:30px; background-color:#ffffff; border-left:1px solid #ddd; border-right:1px solid #ddd; border-bottom:1px solid #ddd; border-radius:0 0 8px 8px;">
         
-        <div class="content">
-          <div class="section">
-            <p>Dear ${patient.firstName} ${patient.lastName},</p>
-            <p>This is a friendly reminder that you have an appointment tomorrow at ${config.practiceName}.</p>
-          </div>
+        <table width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-bottom:25px;">
+          <tr><td style="padding-bottom:10px;">Dear ${patient.firstName} ${patient.lastName},</td></tr>
+          <tr><td style="padding-bottom:10px;">This is a friendly reminder that you have an appointment tomorrow at ${config.practiceName}.</td></tr>
+        </table>
 
-          <div class="section">
-            <div class="section-title">Appointment Details</div>
-            <div class="info-row">
-              <span class="label">Service:</span>
-              <span class="value">${service}</span>
-            </div>
-            <div class="info-row">
-              <span class="label">Date:</span>
-              <span class="value">${formattedDate}</span>
-            </div>
-            <div class="info-row">
-              <span class="label">Time:</span>
-              <span class="value">${confirmedTime}</span>
-            </div>
-          </div>
+        <table width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-bottom:25px;">
+          <tr>
+            <td style="font-size:20px; font-weight:bold; color:#058080; border-bottom:2px solid #058080; padding-bottom:5px; margin-bottom:10px;">Appointment Details</td>
+          </tr>
+          <tr>
+            <td style="padding-top:10px;">
+              <table width="100%" cellpadding="5" cellspacing="0" border="0">
+                <tr><td width="120" style="font-weight:bold; color:#555;">Service:</td><td style="color:#333;">${service}</td></tr>
+                <tr><td style="font-weight:bold; color:#555;">Date:</td><td style="color:#333;">${formattedDate}</td></tr>
+                <tr><td style="font-weight:bold; color:#555;">Time:</td><td style="color:#333;">${formattedTime}</td></tr>
+              </table>
+            </td>
+          </tr>
+        </table>
 
-          <div class="section">
-            <p>We look forward to seeing you. If you need to cancel or reschedule, please call us at <strong>+1 (876) 691 9136</strong>.</p>
-          </div>
-        </div>
+        <table width="100%" cellpadding="0" cellspacing="0" border="0">
+          <tr>
+            <td style="padding-top:20px; border-top:2px solid #ddd; font-size:16px; color:#777; text-align:center;">
+              <p>We look forward to seeing you. If you need to cancel or reschedule, please call us at <strong>+1 (876) 691 9136</strong>.</p>
+              <p style="margin-top:15px;">This is an automated reminder email.</p>
+              <p>${config.practiceName} © ${new Date().getFullYear()}</p>
+            </td>
+          </tr>
+        </table>
 
-        <div class="footer">
-          <p>This is an automated reminder email.</p>
-          <p>${config.practiceName} © ${new Date().getFullYear()}</p>
-        </div>
-      </body>
-    </html>
+      </td>
+    </tr>
   `;
 
-  const plainText = `Reminder: Your appointment at ${config.practiceName} is tomorrow, ${formattedDate} at ${confirmedTime}. Service: ${service}. Please call +1 (876) 691 9136 if you have questions.`;
+  const emailHtml = baseEmailWrapper(content);
+  const plainText = `Reminder: Your appointment at ${config.practiceName} is tomorrow, ${formattedDate} at ${formattedTime}. Service: ${service}. Please call +1 (876) 691 9136 if you have questions.`;
 
   if (patient.contactMethod === 'email') {
     try {
@@ -330,7 +283,7 @@ export async function sendReminderToPatient(
       console.error('Failed to send reminder email:', error);
     }
   } else if (patient.contactMethod === 'whatsapp') {
-     try {
+    try {
       await twilioClient.messages.create({
         from: process.env.TWILIO_WHATSAPP_NUMBER,
         to: `whatsapp:${patient.phone}`,
@@ -353,125 +306,91 @@ export async function sendRescheduleNotification(
   },
   newDate: string,
   newTime: string,
-  service: string
+  service: string,
+  message?: string
 ) {
-  const formattedDate = new Date(newDate).toLocaleDateString('en-US', {
-    weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
-  });
+  const formattedDate = formatDateLong(newDate);
+  const formattedTime = formatTimeTo12Hour(newTime);
 
-  const emailHtml = `
-    <!DOCTYPE html>
-    <html>
-      <head>
-        <style>
-          body {
-            font-family: Helvetica, sans-serif;
-            line-height: 1.6;
-            color: #F7FBFC;
-            max-width: 600px;
-            margin: 0 auto;
-            padding: 20px;
-          }
-          .header {
-            background-color: #058080;
-            color: #faf9f6;
-            padding: 20px;
-            text-align: center;
-            border-radius: 8px 8px 0 0;
-          }
-          .content {
-            background-color: #ffffff;
-            padding: 30px;
-            border: 1px solid #ddd;
-            border-top: none;
-            border-radius: 0 0 8px 8px;
-          }
-          .section {
-            margin-bottom: 25px;
-          }
-          .section-title {
-            font-size: 18px;
-            font-weight: bold;
-            color: #181818;
-            margin-bottom: 10px;
-            border-bottom: 2px solid #058080;
-            padding-bottom: 5px;
-          }
-          .info-row {
-            display: flex;
-            margin-bottom: 8px;
-          }
-          .label {
-            font-weight: bold;
-            width: 150px;
-            color: #555;
-          }
-          .value {
-            flex: 1;
-            color: #333;
-          }
-          .footer {
-            margin-top: 30px;
-            padding-top: 20px;
-            border-top: 2px solid #ddd;
-            font-size: 12px;
-            color: #777;
-            text-align: center;
-          }
-        </style>
-      </head>
-      <body>
-        <div class="header">
-          <h1 style="margin: 0;">Appointment Rescheduled</h1>
-          <p style="margin: 10px 0 0 0;">${config.practiceName}</p>
-        </div>
+  const content = `
+    <tr>
+      <td style="background-color:#058080; padding:30px 20px; text-align:center; border-radius:8px 8px 0 0;">
+        <h1 style="margin:0; color:#faf9f6; font-size:28px;">Appointment Rescheduled</h1>
+        <p style="margin:10px 0 0 0; color:#faf9f6; font-size:20px;">${config.practiceName}</p>
+      </td>
+    </tr>
+    <tr>
+      <td style="padding:30px; background-color:#ffffff; border-left:1px solid #ddd; border-right:1px solid #ddd; border-bottom:1px solid #ddd; border-radius:0 0 8px 8px;">
         
-        <div class="content">
-          <div class="section">
-            <div class="section-title">Your appointment is confirmed</div>
-            <p>Dear ${patient.firstName} ${patient.lastName},</p>
-            <p>We're pleased to confirm your upcoming appointment at ${config.practiceName}.</p>
-          </div>
+        <table width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-bottom:25px;">
+          <tr><td style="padding-bottom:10px;">Dear ${patient.firstName} ${patient.lastName},</td></tr>
+          <tr><td style="padding-bottom:10px;">Your appointment at ${config.practiceName} has been rescheduled.</td></tr>
+        </table>
 
-          <div class="section">
-            <div class="section-title">Appointment Details</div>
-            <div class="info-row">
-              <span class="label">Service:</span>
-              <span class="value">${service}</span>
-            </div>
-            <div class="info-row">
-              <span class="label">Date:</span>
-              <span class="value">${formattedDate}</span>
-            </div>
-            <div class="info-row">
-              <span class="label">Time:</span>
-              <span class="value">${newTime}</span>
-            </div>
-          </div>
+        <table width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-bottom:25px;">
+          <tr>
+            <td style="font-size:20px; font-weight:bold; color:#058080; border-bottom:2px solid #058080; padding-bottom:5px; margin-bottom:10px;">New Appointment Details</td>
+          </tr>
+          <tr>
+            <td style="padding-top:10px;">
+              <table width="100%" cellpadding="5" cellspacing="0" border="0">
+                <tr><td width="120" style="font-weight:bold; color:#555;">Service:</td><td style="color:#333;">${service}</td></tr>
+                <tr><td style="font-weight:bold; color:#555;">Date:</td><td style="color:#333;">${formattedDate}</td></tr>
+                <tr><td style="font-weight:bold; color:#555;">Time:</td><td style="color:#333;">${formattedTime}</td></tr>
+              </table>
+            </td>
+          </tr>
+        </table>
 
-          <div class="section">
-            <p>We look forward to seeing you. If you need to reschedule or have any questions, please call us at <strong>+1 (876) 691 9136</strong>.</p>
-          </div>
-        </div>
+        ${
+          message
+            ? `
+        <table width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-bottom:25px;">
+          <tr>
+            <td style="font-size:20px; font-weight:bold; color:#058080; border-bottom:2px solid #058080; padding-bottom:5px; margin-bottom:10px;">Message from the practice</td>
+          </tr>
+          <tr>
+            <td style="background-color:#f0f8fa; padding:15px; border-left:4px solid #058080; border-radius:4px; margin-top:10px; color:#181818;">
+              ${message}
+            </td>
+          </tr>
+        </table>
+        `
+            : ''
+        }
 
-        <div class="footer">
-          <p>This is an automated confirmation email.</p>
-          <p>${config.practiceName} © ${new Date().getFullYear()}</p>
-        </div>
-      </body>
-    </html>
+        <table width="100%" cellpadding="0" cellspacing="0" border="0">
+          <tr>
+            <td style="padding-top:20px; border-top:2px solid #ddd; font-size:16px; color:#777; text-align:center;">
+              <p>We look forward to seeing you. If this new time doesn't work, please call us at <strong>+1 (876) 691 9136</strong>.</p>
+              <p style="margin-top:15px;">This is an automated reschedule notification.</p>
+              <p>${config.practiceName} © ${new Date().getFullYear()}</p>
+            </td>
+          </tr>
+        </table>
+
+      </td>
+    </tr>
   `;
-  const plainText = `Your appointment at ${config.practiceName} has been rescheduled to ${formattedDate} at ${newTime}. Service: ${service}. Please call us if this doesn't work.`;
+
+  const emailHtml = baseEmailWrapper(content);
+  const plainText = `Your appointment at ${config.practiceName} has been rescheduled to ${formattedDate} at ${formattedTime}. Service: ${service}.${
+    message ? `\nMessage from the practice: ${message}` : ''
+  }\nPlease call us if this doesn't work.`;
 
   if (patient.contactMethod === 'email') {
-    await resend.emails.send({
-      from: config.from,
-      to: patient.email,
-      subject: `Your appointment has been rescheduled – ${config.practiceName}`,
-      html: emailHtml,
-      text: plainText,
-    });
+    try {
+      await resend.emails.send({
+        from: config.from,
+        to: patient.email,
+        subject: `Your appointment has been rescheduled – ${config.practiceName}`,
+        html: emailHtml,
+        text: plainText,
+      });
+    } catch (error) {
+      console.error('Failed to send reschedule email:', error);
+    }
   } else if (patient.contactMethod === 'whatsapp') {
-    // WhatsApp integration (if implemented)
+    // WhatsApp integration
   }
 }

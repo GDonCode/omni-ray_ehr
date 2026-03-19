@@ -23,7 +23,7 @@ const Footer: React.FC<FooterProps> = ({ tt_wellingtons, inter_heading }) => {
   };
 
   return (
-    <footer role="contentinfo" className="relative bg-[#004c4c] px-8 pb-8 pt-2 lg:px-10 lg:pt-3">
+    <footer role="contentinfo" className="bg-[#004c4c] px-8 pb-8 pt-2 lg:px-10 lg:pt-3">
       {/* Bottom Section */}
       <div className="flex flex-col items-center">
         <Image 

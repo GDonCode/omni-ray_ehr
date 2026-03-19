@@ -199,35 +199,35 @@ export default function AdminAppointmentsTable({ appointments }: { appointments:
   // SORT
   const [sortConfig, setSortConfig] = useState<SortConfig>({ key: 'created_at', direction: 'desc' });
   const sortedAppointments = useMemo(() => {
-  const sorted = [...filteredAppointments];
-  sorted.sort((a, b) => {
-    const val = (item: Appointment, key: keyof Appointment): string | number => {
-      if (key === 'created_at') return new Date(item.created_at).getTime();
-      if (key === 'requested_date') {
-        if (item.selected_slots?.length) {
-          const first = item.selected_slots[0];
-          return new Date(`${first.date} ${first.times[0] || '00:00'}`).getTime();
+    const sorted = [...filteredAppointments];
+    sorted.sort((a, b) => {
+      const val = (item: Appointment, key: keyof Appointment): string | number => {
+        if (key === 'created_at') return new Date(item.created_at).getTime();
+        if (key === 'requested_date') {
+          if (item.selected_slots?.length) {
+            const first = item.selected_slots[0];
+            return new Date(`${first.date} ${first.times[0] || '00:00'}`).getTime();
+          }
+          if (item.requested_date && item.requested_time)
+            return new Date(`${item.requested_date} ${item.requested_time}`).getTime();
+          return 0;
         }
-        if (item.requested_date && item.requested_time)
-          return new Date(`${item.requested_date} ${item.requested_time}`).getTime();
-        return 0;
-      }
-      if (key === 'confirmed_date') {
-        if (item.confirmed_date && item.confirmed_time) {
-          return new Date(`${item.confirmed_date} ${item.confirmed_time}`).getTime();
+        if (key === 'confirmed_date') {
+          if (item.confirmed_date && item.confirmed_time) {
+            return new Date(`${item.confirmed_date} ${item.confirmed_time}`).getTime();
+          }
+          return 0;
         }
-        return 0; // items without confirmed date go to the end (or beginning) depending on sort direction
-      }
-      return (item[key] as string).toLowerCase();
-    };
-    const aVal = val(a, sortConfig.key);
-    const bVal = val(b, sortConfig.key);
-    if (aVal < bVal) return sortConfig.direction === 'asc' ? -1 : 1;
-    if (aVal > bVal) return sortConfig.direction === 'asc' ? 1 : -1;
-    return 0;
-  });
-  return sorted;
-}, [filteredAppointments, sortConfig]);
+        return (item[key] as string).toLowerCase();
+      };
+      const aVal = val(a, sortConfig.key);
+      const bVal = val(b, sortConfig.key);
+      if (aVal < bVal) return sortConfig.direction === 'asc' ? -1 : 1;
+      if (aVal > bVal) return sortConfig.direction === 'asc' ? 1 : -1;
+      return 0;
+    });
+    return sorted;
+  }, [filteredAppointments, sortConfig]);
 
   const requestSort = (key: keyof Appointment) => {
     setSortConfig(prev => ({
@@ -237,8 +237,15 @@ export default function AdminAppointmentsTable({ appointments }: { appointments:
   };
 
   // FORMAT HELPERS
-  const formatDate = (d: string) =>
-    new Date(d).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+  const formatDate = (d: string) => {
+    if (d.includes('T') || d.includes(' ')) {
+      const date = new Date(d);
+      return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+    } else {
+      const date = new Date(d + 'T12:00:00');
+      return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+    }
+  };
 
   const formatTime = (t: string) => {
     if (t.includes('AM') || t.includes('PM')) return t;
@@ -265,6 +272,23 @@ export default function AdminAppointmentsTable({ appointments }: { appointments:
       );
     }
     return <div className="text-sm text-gray-500">No slots</div>;
+  };
+
+  // Helper for status cell background (desktop)
+  const getStatusCellClass = (status: string) => {
+    const base = 'px-5 py-4 text-center font-medium border-l';
+    switch (status?.toLowerCase()) {
+      case 'new':
+        return `${base} bg-green-50 text-green-800 border-green-800`;
+      case 'confirmed':
+        return `${base} bg-sky-50 text-sky-800 border-sky-800`;
+      case 'cancelled':
+        return `${base} bg-red-50 text-red-800 border-red-800`;
+      case 'completed':
+        return `${base} bg-teal-50 text-teal-800 border-teal-800`;
+      default:
+        return `${base} bg-green-50 text-green-800 border-green-800`;
+    }
   };
 
   // DRAWER STATE
@@ -383,25 +407,23 @@ export default function AdminAppointmentsTable({ appointments }: { appointments:
                   <td className="px-5 py-4">
                     <span className={`${inter.className} text-md text-[#181818]`}>{apt.service_name}</span>
                   </td>
-                  <td className="pl-8 pr-5 py-4 text-md text-[#181818]">
+                  <td className={`pl-8 pr-5 py-4 ${inter_heading.className} text-md text-[#181818] whitespace-nowrap`}>
                     <div className="flex flex-col space-y-1">
                       {renderAllRequestedSlots(apt.selected_slots, apt.requested_date, apt.requested_time)}
                     </div>
                   </td>
-                  <td className="pl-8 pr-5 py-4 text-md text-[#181818] whitespace-nowrap">
+                  <td className={`pl-8 pr-5 py-4 ${inter_heading.className} text-md text-[#181818] whitespace-nowrap`}>
                     {(apt.status === 'confirmed' || apt.status === 'completed') && apt.confirmed_date && apt.confirmed_time ? (
                       <span>
-                        {formatDate(apt.confirmed_date)} <span className="text-gray-600">({formatTime(apt.confirmed_time)})</span>
+                        {formatDate(apt.confirmed_date)} <span>({formatTime(apt.confirmed_time)})</span>
                       </span>
                     ) : (
                       <span className="text-gray-400">—</span>
                     )}
                   </td>
-                  <td className="px-5 py-4">
-                    <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-md font-medium ${STATUS_STYLES[apt.status?.toLowerCase()]?.pill ?? STATUS_STYLES.new.pill}`}>
-                      <span className={`w-1.5 h-1.5 rounded-full ${STATUS_STYLES[apt.status?.toLowerCase()]?.dot ?? STATUS_STYLES.new.dot}`} />
-                      {STATUS_STYLES[apt.status?.toLowerCase()]?.label ?? 'New'}
-                    </span>
+                  {/* Status cell with full background and borders */}
+                  <td className={getStatusCellClass(apt.status)}>
+                    {STATUS_STYLES[apt.status?.toLowerCase()]?.label ?? 'New'}
                   </td>
                 </tr>
               ))
@@ -430,6 +452,7 @@ export default function AdminAppointmentsTable({ appointments }: { appointments:
                   </h3>
                   <p className={`${inter.className} text-lg text-[#181818]`}>{apt.service_name}</p>
                 </div>
+                {/* Mobile pills remain unchanged */}
                 <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-lg font-medium ${STATUS_STYLES[apt.status?.toLowerCase()]?.pill ?? STATUS_STYLES.new.pill}`}>
                   <span className={`w-1.5 h-1.5 rounded-full ${STATUS_STYLES[apt.status?.toLowerCase()]?.dot ?? STATUS_STYLES.new.dot}`} />
                   {STATUS_STYLES[apt.status?.toLowerCase()]?.label ?? 'New'}

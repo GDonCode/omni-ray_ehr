@@ -75,7 +75,8 @@ export async function PATCH(
           patientInfo,
           confirmed_date,
           confirmed_time,
-          current.service_name
+          current.service_name,
+          message  // <-- pass the message from the request body
         ).catch(err => console.error('Background reschedule error:', err));
       }
     } else if (!wasConfirmed && isNowConfirmed) {

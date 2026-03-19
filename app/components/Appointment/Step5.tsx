@@ -6,6 +6,7 @@ import Link from 'next/link';
 interface Props {
   onHome: () => void;
   onServices: () => void;
+  onClearData: () => void;
   fontClasses: {
     tt_wellingtons_demi: string;
     tt_wellingtons: string;
@@ -13,8 +14,19 @@ interface Props {
   };
 }
 
-export default function Step5Success({ onHome, onServices, fontClasses }: Props) {
+export default function Step5Success({ onHome, onServices, onClearData, fontClasses }: Props) {
   const router = useRouter();
+
+    const handleHome = () => {
+      onClearData();   // clear stored booking data
+      onHome();        // then navigate home
+    };
+
+    const handleServices = () => {
+      onClearData();   // clear stored booking data
+      onServices();    // then navigate to services
+    };
+
   return (
     <div className="flex flex-col gap-6 pb-6 px-2 -mt-2 lg:pt-44 pt-38">
       <div>
@@ -52,7 +64,7 @@ export default function Step5Success({ onHome, onServices, fontClasses }: Props)
       </div>
       <div className="flex flex-col items-center justify-center mt-2">
         <button
-          onClick={() => router.push('/')}
+          onClick={handleHome}
           className={`${fontClasses.tt_wellingtons_demi} mt-4 px-8 py-4 w-[85%] bg-[#036d6d] text-white text-xl rounded-md cursor-pointer hover:scale-104 transition-all font-medium`}
           style={{
             background: 'linear-gradient(180deg, #1a9e9e 0%, #058080 50%, #036d6d 100%)',
@@ -63,7 +75,7 @@ export default function Step5Success({ onHome, onServices, fontClasses }: Props)
           Back to Home
         </button>
         <button
-          onClick={() => router.push('/services')}
+          onClick={handleServices}
           className={`${fontClasses.tt_wellingtons_demi} mt-4 px-8 py-4 w-[85%] text-[#181818] text-xl rounded-md cursor-pointer hover:scale-104 transition-all font-medium`}
           style={{
               background: 'linear-gradient(180deg, #ffe14d 0%, #ffd808 50%, #e6b800 100%)',

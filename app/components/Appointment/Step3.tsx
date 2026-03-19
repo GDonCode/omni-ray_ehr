@@ -16,7 +16,6 @@ interface PersonalInfo {
   phone: string;
   contactMethod: ContactMethod;
   isReturningPatient: string | null;
-  dob: string;
   notes: string;
   message: string;
   terms: boolean;
@@ -184,21 +183,6 @@ export default function Step3PersonalInfo({
               onChange={onInputChange}
             />
           </div>
-        </div>
-
-        <div>
-          <label htmlFor="dob" className={`${fontClasses.inter_heading} block text-xl font-medium text-[#036d6d] mb-2`}>
-            Date of Birth *
-          </label>
-          <input
-            type="date"
-            id="dob"
-            name="dob"
-            required
-            className={`${fontClasses.inter_heading} w-full px-4 py-3 rounded-sm border-2 border-[#D0E6E6] bg-white text-[#181818] font-medium text-xl placeholder:text-[#9DBDBD] transition-all duration-200 focus:outline-none focus:border-[#0D6E6E] focus:ring-2 focus:ring-[#0D6E6E]/10 tracking-wide`}
-            value={personalInfo.dob}
-            onChange={onInputChange}
-          />
         </div>
 
         <div>

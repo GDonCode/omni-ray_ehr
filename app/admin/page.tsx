@@ -20,7 +20,6 @@ export default async function AdminAppointmentsPage() {
   const navItems = [
     { id: 'home', label: 'Home', href: '/' },
     { id: 'services', label: 'Services', href: '/services' },
-    { id: 'about', label: 'About', href: '/about' },
     { id: 'help', label: 'Help', href: '/help' },
     { id: 'contact', label: 'Contact', href: '/contact' }
   ];
@@ -41,7 +40,7 @@ export default async function AdminAppointmentsPage() {
   }
 
   return (
-    <div className='bg-[#F7FBFC]'>
+    <div className='bg-[#F7FBFC] flex flex-col min-h-screen'>
       <header role="banner">
         <HeaderWrapper
           navItems={navItems}
@@ -50,8 +49,8 @@ export default async function AdminAppointmentsPage() {
           levenim={levenim}
         />
       </header>
-      <main role='main' className='lg:mt-36 mt-34'>
-        <div className="container mx-auto lg:p-4">
+      <main role='main' className='lg:mt-36 mt-34 flex-grow'>
+        <div className="container mx-auto lg:p-4 lg:pb-6">
           <AdminAppointmentsTable appointments={appointments || []} />
         </div>
       </main>

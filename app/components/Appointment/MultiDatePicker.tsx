@@ -61,6 +61,19 @@ export default function MultiDatePicker({ selectedSlots, onChange, clinicHours }
   const nextMonth = () => {
     setCurrentMonth(new Date(currentMonth.getFullYear(), currentMonth.getMonth() + 1, 1));
   };
+
+    // Helper to get a Date object for the first day of a month (for comparison)
+  const getMonthStart = (date: Date) => new Date(date.getFullYear(), date.getMonth(), 1);
+
+  const todayMonthStart = getMonthStart(new Date());
+  const currentMonthStart = getMonthStart(currentMonth);
+
+  // Calculate max allowed month (today + 6 months)
+  const maxMonthStart = new Date(todayMonthStart);
+  maxMonthStart.setMonth(todayMonthStart.getMonth() + 6);
+
+  const canGoPrev = currentMonthStart > todayMonthStart;
+  const canGoNext = currentMonthStart < maxMonthStart;
   // MONTH NAVIGATION --- MONTH NAVIGATION --- MONTH NAVIGATION --- MONTH NAVIGATION
 
   // TIME SLOTS FOR DATE --- TIME SLOTS FOR DATE --- TIME SLOTS FOR DATE
@@ -142,14 +155,22 @@ const toggleTime = (date: Date, time: string) => {
     <div className="space-y-6 mb-8 lg:w-7xl lg:mx-auto">
       {/* MONTH NAVIGATION HEADER --- MONTH NAVIGATION HEADER */}
       <div className="flex items-center justify-center space-x-8">
-        <button onClick={prevMonth} className="p-2 rounded-full bg-[#036d6d] text-white hover:bg-[#036d6d] cursor-pointer">
+        <button
+          onClick={prevMonth}
+          disabled={!canGoPrev}
+          className={`p-2 rounded-full bg-[#036d6d] text-white ${!canGoPrev ? 'opacity-40 cursor-not-allowed' : 'hover:bg-[#036d6d] cursor-pointer'}`}
+        >
           <ChevronLeft size={30} />
         </button>
         <p className={`${tt_wellingtons_demi.className} text-2xl font-bold text-[#036D6D] flex flex-col justify-center items-center`}>
           {currentMonth.toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}
           <span className={`${tt_wellingtons_medium.className} text-lg`}>Select 1 or 2 days</span>
         </p>
-        <button onClick={nextMonth} className="p-2 rounded-full bg-[#036d6d] text-white hover:bg-[#036d6d] cursor-pointer">
+        <button
+          onClick={nextMonth}
+          disabled={!canGoNext}
+          className={`p-2 rounded-full bg-[#036d6d] text-white ${!canGoNext ? 'opacity-40 cursor-not-allowed' : 'hover:bg-[#036d6d] cursor-pointer'}`}
+        >
           <ChevronRight size={30} />
         </button>
       </div>
@@ -168,21 +189,32 @@ const toggleTime = (date: Date, time: string) => {
         {cells.map((cellDate, index) => {
           const isCurrentMonth = cellDate.getMonth() === currentMonth.getMonth();
           const isFuture = cellDate >= today;
-          const isSelected = isCurrentMonth && isFuture && isDateSelected(cellDate);
+          const isSunday = cellDate.getDay() === 0;
+          const isSelectable = isCurrentMonth && isFuture && !isSunday;
 
-          if (!isCurrentMonth || !isFuture) {
-            return <div key={index} className="p-2" />; // empty cell
+          if (!isCurrentMonth) {
+            return <div key={index} className="p-2" />; // empty cell for other months
           }
+
+          // Current month cell – always show the day number
+          const isSelected = isSelectable && isDateSelected(cellDate);
 
           return (
             <button
               key={index}
-              onClick={() => toggleDate(cellDate)}
-              className={`${inter_heading.className} p-2 rounded-md text-lg font-bold transition-all cursor-pointer ${
-                isSelected
-                  ? 'bg-[#ffd808] border-2 border-[#e6c200] scale-110 lg:scale-102'
-                  : 'bg-white hover:bg-[#EAF3F7] text-[#181818] border border-[#D0E6E6]'
-              }`}
+              onClick={isSelectable ? () => toggleDate(cellDate) : undefined}
+              disabled={!isSelectable}
+              className={`
+                ${inter_heading.className} p-2 rounded-md text-lg font-bold transition-all
+                ${isSelectable ? 'cursor-pointer' : 'cursor-not-allowed opacity-40'}
+                ${
+                  isSelected
+                    ? 'bg-[#ffd808] border-2 border-[#e6c200] scale-110 lg:scale-102'
+                    : isSelectable
+                    ? 'bg-white hover:bg-[#EAF3F7] text-[#181818] border border-[#D0E6E6]'
+                    : 'bg-gray-100 text-gray-500 border border-gray-200'
+                }
+              `}
             >
               {cellDate.getDate()}
             </button>
@@ -202,7 +234,7 @@ const toggleTime = (date: Date, time: string) => {
               <X size={18} />
             </button>
           </div>
-          <p className={`${inter.className} text-md text-[#024c4c] mb-2`}>Select <span className='font-bold'>2 times</span> that work for you:</p>
+          <p className={`${inter.className} text-md text-[#024c4c] mb-2`}>Pick up to <span className='font-bold'>2 preferred times.</span> We'll confirm the best one.</p>
           <div className="flex flex-wrap gap-2">
             {getTimeSlotsForDate(slot.date).map(time => {
               const isSelected = slot.times.includes(time);

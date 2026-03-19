@@ -78,7 +78,6 @@ const Footer: React.FC<FooterProps> = ({ tt_wellingtons, inter_heading }) => {
 
   const quickLinks: QuickLink[] = [
     { label: 'Home', href: '/' },
-    { label: 'About Us', href: '/about' },
     { label: 'Services', href: '/services' },
     { label: 'Contact Us', href: '/contact' },
   ];
@@ -193,21 +192,13 @@ const Footer: React.FC<FooterProps> = ({ tt_wellingtons, inter_heading }) => {
       </div>
 
       {/* Bottom Section */}
-      <div className="flex flex-col items-center border-t border-gray-300 mt-12 pt-6">
-        <Image
-          src="/aurelia-dental_logo.png"
-          alt="Aurelia Dental Logo"
-          width={60}
-          height={60}
-          loading="lazy"
-        />
+      <div className="flex flex-col items-center border-t border-gray-300 mt-12 pt-2">
+                <ScrollToTopButton />
         <p className={`${inter_heading.className} text-[#181818]`}>
           &copy; 2026 Aurelia Dental. All rights reserved.
         </p>
 
-        <ScrollToTopButton />
-
-        <p className={`${inter_heading.className} text-sm text-[#181818] -mb-4`}>
+        <p className={`${inter_heading.className} text-sm text-[#181818] -mb-2`}>
           Powered by <span className="underline">Omni-Ray Software Solutions</span>
         </p>
       </div>
