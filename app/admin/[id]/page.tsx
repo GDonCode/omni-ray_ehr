@@ -13,6 +13,7 @@ const levenim = localFont({ src: "../../fonts/Levenim_MT/levenim-mt.ttf" })
 const inter = localFont({ src: "../../fonts/Inter/Inter-Regular.otf" })
 const inter_heading = localFont({ src: "../../fonts/Inter/Inter-Medium.otf" })
 const tt_wellingtons_demi = localFont({ src: "../../fonts/TT_Wellingtons/TT Wellingtons Trial DemiBold.otf" })
+const tt_wellingtons_medium = localFont({ src: "../../fonts/TT_Wellingtons/TT Wellingtons Trial Medium.otf" })
 const tt_wellingtons = localFont({ src: "../../fonts/TT_Wellingtons/TT Wellingtons Trial Regular.otf" })
 
 export default async function AppointmentDetailPage(props: { params: Promise<{ id: string }> }) {
@@ -46,6 +47,7 @@ export default async function AppointmentDetailPage(props: { params: Promise<{ i
           navItems={navItems}
           inter_heading={inter_heading}
           tt_wellingtons_demi={tt_wellingtons_demi}
+          tt_wellingtons_medium={tt_wellingtons_medium}
           levenim={levenim}
         />
             </header>
