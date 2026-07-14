@@ -19,13 +19,16 @@ const cinzel = localFont ({
   src: "./fonts/Cinzel/CinzelDecorative-Regular.otf"
 })
 const inter_heading = localFont ({
-  src: "./fonts/Inter/Inter-Medium.otf"
+  src: "./fonts/Inter/Inter-Regular.otf"
 })
 const tt_wellingtons_demi = localFont ({
   src: "./fonts/TT_Wellingtons/TT Wellingtons Trial DemiBold.otf"
 })
 const tt_wellingtons = localFont ({
   src: "./fonts/TT_Wellingtons/TT Wellingtons Trial Regular.otf"
+})
+const tt_wellingtons_medium = localFont ({
+  src: "./fonts/TT_Wellingtons/TT Wellingtons Trial Medium.otf"
 })
 
 export default function Home() {
@@ -48,7 +51,7 @@ export default function Home() {
     {
       name: 'Petrina Mayan Williams',
       img: '/PMW-review.png',
-      review: '100% recommend Aurelia Dental! I had an absolutely amazing experience from start to finish. The front desk staff were friendly, and the dentists were professional and caring. I had two fillings done and it was completely painless. I’m so impressed with the level of care and attention to detail. No regrets at all - I’d go back in a heartbeat! Five stars isn’t enough, I’d give them ten stars if I could.',
+      review: '100% recommend Aurelia Dental! I had an absolutely amazing experience from start to finish. The front desk staff were friendly, and the dentists were professional and caring. I had two fillings done and it was completely painless. I’m so impressed with the level of care and attention to detail. Five stars isn’t enough, I’d give them ten stars if I could.',
       link: 'https://maps.app.goo.gl/Z8yksxTWdKxLQ5Wo8'
     },
     {
@@ -66,13 +69,13 @@ export default function Home() {
     {
       name: 'Jodie Currie',
       img: '/JC-review.png',
-      review: 'I recently brought my daughter here and was truly impressed. The staff were warm, friendly, and professional, instantly putting us at ease. The dentist took the time to explain everything clearly, making sure we understood each step. The office is spotless, beautifully maintained, and has such a welcoming atmosphere. As a parent, I couldn’t ask for a better experience for my child’s dental care.',
+      review: 'Recently brought my daughter here and was truly impressed. The staff were friendly and professional, instantly putting us at ease. The dentist took the time to explain everything clearly, making sure we understood each step. The office is spotless, beautifully maintained, and has such a welcoming atmosphere. As a parent, I couldn’t ask for a better experience.',
       link: 'https://maps.app.goo.gl/mW9cGu36gnTLFPYn7'
     }, 
     {
       name: 'Shericka James',
       img: '/SJ-review.png',
-      review: 'I was really scared going to the dentist yesterday but I had a wonderful visit to Aurelia Dental and was really impressed with everyone and everything. The staff was warm and welcoming, and the environment was clean, modern, and calming. The doctor and assistant was gentle, professional, and took the time to explain everything she was doing, which really helped me feel at ease.',
+      review: 'I was really scared going to the dentist yesterday but I had a wonderful visit to Aurelia Dental and was really impressed with everyone and everything. The staff was warm and welcoming, and the environment was clean, modern, and calming. The doctor and assistant was gentle, professional, and took the time to explain everything she was doing.',
       link: 'https://maps.app.goo.gl/bzi3ToHsxawAcchn9'
     }
   ]
@@ -88,6 +91,7 @@ export default function Home() {
         <HeaderWrapper
           navItems={navItems}
           inter_heading={inter_heading}
+          tt_wellingtons_medium={tt_wellingtons_medium}
           tt_wellingtons_demi={tt_wellingtons_demi}
           levenim={levenim}
         />
@@ -103,8 +107,8 @@ export default function Home() {
           images={images}
         />
 
-        <section className="bg-transparent lg:-mb-12 lg:pb-8 -mt-8 lg:-mt-0">
-          <div className="relative lg:w-full lg:mx-auto lg:my-13 shadow-b-xl">
+        <section className={`${styles.container} lg:-mb-12 lg:pb-8 -mt-8 lg:-mt-0`}>
+          <div className="relative lg:w-full lg:mx-auto lg:py-13 shadow-b-xl">
             <WhyChooseUs
               inter_heading={inter_heading}
               tt_wellingtons_demi={tt_wellingtons_demi}
@@ -119,6 +123,7 @@ export default function Home() {
             <PatientReviews
               inter_heading={inter_heading}
               tt_wellingtons_demi={tt_wellingtons_demi}
+              tt_wellingtons_medium={tt_wellingtons_medium}
               tt_wellingtons={tt_wellingtons}
               cinzel={cinzel}
               levenim={levenim}

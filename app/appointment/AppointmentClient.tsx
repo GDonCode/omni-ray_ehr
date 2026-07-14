@@ -21,6 +21,7 @@ import Step5 from '../components/Appointment/Step5';
 const levenim = localFont({ src: '../fonts/Levenim_MT/levenim-mt.ttf' });
 const inter_heading = localFont({ src: '../fonts/Inter/Inter-Medium.otf' });
 const inter = localFont({ src: '../fonts/Inter/Inter-Regular.otf' });
+const tt_wellingtons_medium = localFont({ src: '../fonts/TT_Wellingtons/TT Wellingtons Trial Medium.otf' });
 const tt_wellingtons_demi = localFont({ src: '../fonts/TT_Wellingtons/TT Wellingtons Trial DemiBold.otf' });
 const tt_wellingtons = localFont({ src: '../fonts/TT_Wellingtons/TT Wellingtons Trial Regular.otf' });
 
@@ -531,13 +532,14 @@ export default function NewAppointment() {
         <HeaderWrapper
           navItems={navItems}
           inter_heading={inter_heading}
+          tt_wellingtons_medium={tt_wellingtons_medium}
           tt_wellingtons_demi={tt_wellingtons_demi}
           levenim={levenim}
         />
       </header>
 
       {currentStep <= 4 && (
-        <div className="flex flex-col md:flex-row gap-2 md:items-end mb-6 lg:mt-36 mt-31 w-full bg-[#058080] relative">
+        <div className="flex flex-col md:flex-row gap-2 md:items-end mb-6 lg:mt-30 mt-31 w-full bg-[#058080] relative">
           <StepIndicator currentStep={currentStep} onStepClick={handleStepClick} maxReachedStep={maxReachedStep} />
         </div>
       )}

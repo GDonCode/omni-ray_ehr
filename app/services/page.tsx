@@ -22,6 +22,9 @@ const inter_heading = localFont ({
 const tt_wellingtons_demi = localFont ({
   src: "../fonts/TT_Wellingtons/TT Wellingtons Trial DemiBold.otf"
 })
+const tt_wellingtons_medium = localFont ({
+  src: "../fonts/TT_Wellingtons/TT Wellingtons Trial Medium.otf"
+})
 const tt_wellingtons = localFont ({
   src: "../fonts/TT_Wellingtons/TT Wellingtons Trial Regular.otf"
 })
@@ -243,6 +246,7 @@ export default function Services(){
         <HeaderWrapper
           navItems={navItems}
           inter_heading={inter_heading}
+          tt_wellingtons_medium={tt_wellingtons_medium}
           tt_wellingtons_demi={tt_wellingtons_demi}
           levenim={levenim}
         />

@@ -1,6 +1,7 @@
 // components/WhyChooseUs.tsx
 import React from 'react';
 import { Trophy, User, Zap } from 'lucide-react';
+import BeforeAfterCarousel from './BeforeAfterCarousel';
 
 interface WhyChooseUsProps {
   inter_heading: { className: string };
@@ -56,7 +57,7 @@ const WhyChooseUs: React.FC<WhyChooseUsProps> = ({
     <section className="pb-14 z-10 lg:w-full lg:pt-0 mx-auto p-6 bg-transparent">
       <div className="lg:w-[95%] w-full">
         {/* Badge */}
-        <p className={`${inter_heading.className} mx-auto w-fit text-[#181818] bg-[#ffdf20] px-2.5 py-0.5 mb-1 rounded-full text-xs font-semibold tracking-wide`}>
+        <p className={`${inter_heading.className} mx-auto w-fit text-[#181818] bg-[#ffdf20] px-2.5 py-0.5 mb-1 rounded-full text-sm font-semibold  tracking-wide`}>
           Why Choose Us
         </p>
 
@@ -74,7 +75,8 @@ const WhyChooseUs: React.FC<WhyChooseUsProps> = ({
         </p>
       </div>
 
-      {/* Feature Cards */}
+      {/* Feature Cards - commented out, replaced by Before/After slider below */}
+      {/*
       <div className="flex flex-col lg:flex-row lg:px-4 lg:py-4 lg:gap-14 gap-10 mt-10">
         {features.map((feature, index) => (
           <div 
@@ -93,6 +95,12 @@ const WhyChooseUs: React.FC<WhyChooseUsProps> = ({
             />
           </div>
         ))}
+      </div>
+      */}
+
+      {/* Before / After Carousel */}
+      <div className="mt-10 lg:px-4 lg:py-4 max-w-4xl mx-auto">
+        <BeforeAfterCarousel />
       </div>
     </section>
   );

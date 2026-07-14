@@ -19,7 +19,7 @@ const CallToAction: React.FC<CallToActionProps> = ({
     <section className="w-[95%] lg:w-[75%] mx-auto px-6 flex flex-col lg:flex-row lg:justify-around lg:items-center bg-transparent">
       {/* Content */}
       <div className="lg:w-[50%]">
-        <p className={`${inter_heading.className} inline-block text-[#181818] bg-[#ffdf20] px-2.5 py-0.5 mb-1 rounded-full text-xs font-semibold tracking-wide`}>
+        <p className={`${inter_heading.className} inline-block text-[#181818] bg-[#ffdf20] px-2.5 py-0.5 mb-1 rounded-full text-sm font-semibold tracking-wide`}>
           Book in 4 steps
         </p>
         <h2 className={`${tt_wellingtons_demi.className} text-4xl text-[#036d6d] font-bold mb-6`}>

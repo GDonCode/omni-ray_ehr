@@ -8,6 +8,7 @@ import type { NavItem } from './MobileMenu';
 interface HeaderWrapperProps {
   navItems: NavItem[];
   inter_heading: { className: string };
+  tt_wellingtons_medium: { className: string };
   tt_wellingtons_demi: { className: string };
   levenim: { className: string };
 }
@@ -15,6 +16,7 @@ interface HeaderWrapperProps {
 export default function HeaderWrapper({
   navItems,
   inter_heading,
+  tt_wellingtons_medium,
   tt_wellingtons_demi,
   levenim
 }: HeaderWrapperProps) {
@@ -31,6 +33,7 @@ export default function HeaderWrapper({
       <Header
         navItems={navItems}
         inter_heading={inter_heading}
+        tt_wellingtons_medium={tt_wellingtons_medium}
         tt_wellingtons_demi={tt_wellingtons_demi}
         levenim={levenim}
         isMobileMenuOpen={isMobileMenuOpen}

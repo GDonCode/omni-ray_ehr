@@ -13,12 +13,14 @@ const EMAIL_CONFIG = {
   testing: {
     from: 'Dental Practice <onboarding@resend.dev>',
     to: 'gavinrayne1@gmail.com',
-    practiceName: 'Dental Practice (Test Mode)'
+    practiceName: 'Dental Practice (Test Mode)',
+    baseUrl: 'https://live-dental-demo.vercel.app', // Demo URL – replace with env variable later
   },
   production: {
     from: 'Dental Practice <appointments@clientdomain.com>',
     to: 'clientreception@example.com',
-    practiceName: 'Client Dental Practice Name'
+    practiceName: 'Client Dental Practice Name',
+    baseUrl: 'https://clientdomain.com', // Production URL
   }
 };
 
@@ -85,6 +87,46 @@ export async function POST(request: Request) {
     const bookingData: BookingData = await request.json();
 
     const parseDate = (dateStr: string): Date => new Date(dateStr);
+
+    // Prepare slots for database
+    const slotsForDb = bookingData.selectedSlots.map(slot => ({
+      date: parseDate(slot.date).toISOString().split('T')[0],
+      times: slot.times
+    }));
+
+    // 1. Insert into Supabase first so we get the appointment ID
+    const { data: inserted, error: dbError } = await supabase
+      .from('appointment_requests')
+      .insert({
+        service_name: bookingData.selectedService,
+        selected_slots: slotsForDb,
+        requested_date: null,
+        requested_time: null,
+        appointment_for: bookingData.personalInfo.appointmentFor,
+        first_name: bookingData.personalInfo.firstName,
+        last_name: bookingData.personalInfo.lastName,
+        guardian_first_name: bookingData.personalInfo.appointmentFor === 'child' ? bookingData.personalInfo.guardianFirstName : null,
+        guardian_last_name: bookingData.personalInfo.appointmentFor === 'child' ? bookingData.personalInfo.guardianLastName : null,
+        email: bookingData.personalInfo.email,
+        phone: bookingData.personalInfo.phone,
+        contact_method: bookingData.personalInfo.contactMethod,
+        is_returning_patient: bookingData.personalInfo.isReturningPatient === 'yes' ? true : bookingData.personalInfo.isReturningPatient === 'no' ? false : null,
+        notes: bookingData.personalInfo.notes,
+        message: bookingData.personalInfo.message,
+        status: 'new',
+      })
+      .select()
+      .single();
+
+    if (dbError) {
+      console.error('Supabase insert error:', dbError);
+      return NextResponse.json({ error: 'Database error' }, { status: 500 });
+    }
+
+    const appointmentId = inserted.id;
+
+    // 2. Build email HTML with a link to the specific appointment
+    const adminLink = `${config.baseUrl}/admin/${appointmentId}`;
 
     // Build slots HTML (as a nested table)
     const slotsRows = bookingData.selectedSlots.map((slot) => {
@@ -194,6 +236,15 @@ export async function POST(request: Request) {
             </tr>
           </table>
 
+          <!-- Admin Link -->
+          <table width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-bottom:25px;">
+            <tr>
+              <td style="text-align:center; padding:20px 0;">
+                <a href="${adminLink}" style="background-color:#058080; color:white; padding:12px 24px; text-decoration:none; border-radius:5px; display:inline-block; font-size:18px;">View in Admin Dashboard</a>
+              </td>
+            </tr>
+          </table>
+
           <!-- Footer -->
           <table width="100%" cellpadding="0" cellspacing="0" border="0">
             <tr>
@@ -241,11 +292,13 @@ ${bookingData.personalInfo.message}
 
 Terms Accepted: ${bookingData.personalInfo.terms ? 'Yes' : 'No'}
 
+View this request in the admin dashboard: ${adminLink}
+
 -------------------
 Received: ${new Date().toLocaleString()}
     `.trim();
 
-    // 1. Send email to practice
+    // 2. Send email to practice
     const { data, error } = await resend.emails.send({
       from: config.from,
       to: config.to,
@@ -256,45 +309,23 @@ Received: ${new Date().toLocaleString()}
 
     if (error) {
       console.error('Resend error:', error);
-      return NextResponse.json({ error: error.message }, { status: 400 });
-    }
-
-    // 2. Save to Supabase
-    const slotsForDb = bookingData.selectedSlots.map(slot => ({
-      date: parseDate(slot.date).toISOString().split('T')[0],
-      times: slot.times
-    }));
-
-    const { error: dbError } = await supabase
-      .from('appointment_requests')
-      .insert({
-        service_name: bookingData.selectedService,
-        selected_slots: slotsForDb,
-        requested_date: null,
-        requested_time: null,
-        appointment_for: bookingData.personalInfo.appointmentFor,
-        first_name: bookingData.personalInfo.firstName,
-        last_name: bookingData.personalInfo.lastName,
-        guardian_first_name: bookingData.personalInfo.appointmentFor === 'child' ? bookingData.personalInfo.guardianFirstName : null,
-        guardian_last_name: bookingData.personalInfo.appointmentFor === 'child' ? bookingData.personalInfo.guardianLastName : null,
-        email: bookingData.personalInfo.email,
-        phone: bookingData.personalInfo.phone,
-        contact_method: bookingData.personalInfo.contactMethod,
-        is_returning_patient: bookingData.personalInfo.isReturningPatient === 'yes' ? true : bookingData.personalInfo.isReturningPatient === 'no' ? false : null,
-        notes: bookingData.personalInfo.notes,
-        message: bookingData.personalInfo.message,
-        status: 'new',
+      // Even if email fails, the appointment is saved; we can still return success but indicate email failure
+      return NextResponse.json({
+        success: true,
+        appointmentId,
+        messageId: null,
+        message: 'Appointment request saved but email notification failed',
+        dbStatus: 'saved',
+        emailError: error.message,
       });
-
-    if (dbError) {
-      console.error('Supabase insert error:', dbError);
     }
 
     return NextResponse.json({
       success: true,
+      appointmentId,
       messageId: data?.id,
       message: 'Appointment request sent successfully',
-      dbStatus: dbError ? 'failed' : 'saved'
+      dbStatus: 'saved'
     });
 
   } catch (error) {

@@ -34,11 +34,11 @@ interface Service {
 const Footer: React.FC<FooterProps> = ({ tt_wellingtons, inter_heading }) => {
   const contactInfo: ContactItem[] = [
     {
-      icon: <MapPin className="size-5 text-[#181818] group-hover:scale-104 transition-all" strokeWidth={1.5} />,
+      icon: <MapPin className="size-5 text-white group-hover:scale-104 transition-all" strokeWidth={1.5} />,
       content: (
         <a
           href="https://www.google.com/maps/dir//40-41,+Aurelia+Dental,+Overton+Plaza,+49+Union+Street,+Montego+Bay/@18.4739971,-77.9208353,17z/data=!4m16!1m7!3m6!1s0x8eda2be6ffd22ceb:0x470b2fe0bf806ab9!2sAurelia+Dental!8m2!3d18.4739971!4d-77.9182604!16s%2Fg%2F11vyvdsfr9!4m7!1m0!1m5!1m1!1s0x8eda2be6ffd22ceb:0x470b2fe0bf806ab9!2m2!1d-77.9182604!2d18.4739971?entry=ttu&g_ep=EgoyMDI2MDIwNC4wIKXMDSoKLDEwMDc5MjA2OUgBUAM%3D"
-          className={`${inter_heading.className} text-[#181818] -mt-1 text-lg tracking-wide group-hover:text-[#058080] transition-all duration-300`}
+          className={`${inter_heading.className} text-white -mt-1 text-lg tracking-wide group-hover:text-[#f6d212] transition-all duration-300`}
         >
           Shop 40, 41<br />
           Overton Plaza<br />
@@ -47,22 +47,22 @@ const Footer: React.FC<FooterProps> = ({ tt_wellingtons, inter_heading }) => {
       ),
     },
     {
-      icon: <Phone className="size-5 text-[#181818] group-hover:scale-104 transition-all duration-300" strokeWidth={1.5} />,
+      icon: <Phone className="size-5 text-white group-hover:scale-104 transition-all duration-300" strokeWidth={1.5} />,
       content: (
         <a
           href="tel:+18766919136"
-          className={`${inter_heading.className} text-[#181818] text-lg tracking-wide group-hover:text-[#058080] transition-all duration-300`}
+          className={`${inter_heading.className} text-white text-lg tracking-wide group-hover:text-[#f6d212] transition-all duration-300`}
         >
           +1 (876) 691 9136
         </a>
       ),
     },
     {
-      icon: <Mail className="size-5 text-[#181818] group-hover:scale-104 transition-all duration-300" strokeWidth={1.5} />,
+      icon: <Mail className="size-5 text-white group-hover:scale-104 transition-all duration-300" strokeWidth={1.5} />,
       content: (
         <a
           href="mailto:aureliadental@gmail.com"
-          className={`${inter_heading.className} text-[#181818] text-lg tracking-wide group-hover:text-[#058080] transition-all duration-300`}
+          className={`${inter_heading.className} text-white text-lg tracking-wide group-hover:text-[#f6d212] transition-all duration-300`}
         >
           aureliadental@gmail.com
         </a>
@@ -92,13 +92,13 @@ const Footer: React.FC<FooterProps> = ({ tt_wellingtons, inter_heading }) => {
   return (
     <footer
       role="contentinfo"
-      className="relative bg-[#FFFFFF] p-8 lg:p-12 lg:mt-12  shadow-[inset_2px_2px_6px_rgba(0,0,0,0.05),inset_-2px_-2px_6px_rgba(255,255,255,0.7)]"
+      className="relative bg-[#25283d] p-8 lg:p-12 lg:mt-12"
     >
       <div className="flex flex-col lg:flex-row lg:justify-between gap-8">
         {/* Contact Us Section */}
         <div>
           <p
-            className={`${tt_wellingtons.className} text-[#181818] text-xl font-semibold border-b border-gray-300 w-fit pb-1 mb-6`}
+            className={`${tt_wellingtons.className} text-white text-xl font-semibold border-b border-white/20 w-fit pb-1 mb-6`}
           >
             Contact Us
           </p>
@@ -115,16 +115,16 @@ const Footer: React.FC<FooterProps> = ({ tt_wellingtons, inter_heading }) => {
         {/* Opening Hours Section */}
         <div>
           <p
-            className={`${tt_wellingtons.className} text-[#181818] text-xl font-semibold border-b border-gray-300 w-fit pb-1 mb-6`}
+            className={`${tt_wellingtons.className} text-white text-xl font-semibold border-b border-white/20 w-fit pb-1 mb-6`}
           >
             Opening Hours
           </p>
           <div className="flex flex-col gap-6">
             {openingHours.map((schedule, index) => (
-              <div key={index} className="flex border-b border-b-gray-300 pb-1">
-                <Calendar className="size-5 text-[#181818] mr-2" strokeWidth={1.5} />
+              <div key={index} className="flex border-b border-white/20 pb-1">
+                <Calendar className="size-5 text-white mr-2" strokeWidth={1.5} />
                 <div
-                  className={`${inter_heading.className} text-[#181818] w-full flex justify-between gap-12 text-lg tracking-wide`}
+                  className={`${inter_heading.className} text-white w-full flex justify-between gap-12 text-lg tracking-wide`}
                 >
                   <p>{schedule.day}</p>
                   <p>{schedule.hours}</p>
@@ -137,7 +137,7 @@ const Footer: React.FC<FooterProps> = ({ tt_wellingtons, inter_heading }) => {
         {/* Quick Links Section */}
         <div>
           <p
-            className={`${tt_wellingtons.className} text-[#181818] text-xl font-semibold border-b border-gray-300 w-fit pb-1 mb-4`}
+            className={`${tt_wellingtons.className} text-white text-xl font-semibold border-b border-white/20 w-fit pb-1 mb-4`}
           >
             Quick Links
           </p>
@@ -149,11 +149,11 @@ const Footer: React.FC<FooterProps> = ({ tt_wellingtons, inter_heading }) => {
                 className="flex gap-1 items-center group cursor-pointer"
               >
                 <ChevronRight
-                  className="size-4 text-[#181818] transition-transform duration-200 ease-in-out group-hover:translate-x-1"
+                  className="size-4 text-white transition-transform duration-200 ease-in-out group-hover:translate-x-1"
                   strokeWidth={1.5}
                 />
                 <p
-                  className={`${inter_heading.className} text-[#181818] group-hover:text-[#058080] text-lg tracking-wide`}
+                  className={`${inter_heading.className} text-white group-hover:text-[#f6d212] text-lg tracking-wide`}
                 >
                   {link.label}
                 </p>
@@ -165,11 +165,11 @@ const Footer: React.FC<FooterProps> = ({ tt_wellingtons, inter_heading }) => {
         {/* Services Section */}
         <div>
           <p
-            className={`${tt_wellingtons.className} text-[#181818] text-xl font-semibold border-b border-gray-300 w-fit pb-1 mb-4`}
+            className={`${tt_wellingtons.className} text-white text-xl font-semibold border-b border-white/20 w-fit pb-1 mb-4`}
           >
             Our Services
           </p>
-          <div className="flex flex-col gap-3 text-[#181818]">
+          <div className="flex flex-col gap-3 text-white">
             {services.map((service, index) => (
               <Link
                 key={index}
@@ -177,11 +177,11 @@ const Footer: React.FC<FooterProps> = ({ tt_wellingtons, inter_heading }) => {
                 className="flex gap-1 items-center group cursor-pointer"
               >
                 <ChevronRight
-                  className="size-4 text-[#181818] transition-transform duration-200 ease-in-out group-hover:translate-x-1"
+                  className="size-4 text-white transition-transform duration-200 ease-in-out group-hover:translate-x-1"
                   strokeWidth={1.5}
                 />
                 <p
-                  className={`${inter_heading.className} text-[#181818] group-hover:text-[#058080] text-lg tracking-wide`}
+                  className={`${inter_heading.className} text-white group-hover:text-[#f6d212] text-lg tracking-wide`}
                 >
                   {service.label}
                 </p>
@@ -192,14 +192,14 @@ const Footer: React.FC<FooterProps> = ({ tt_wellingtons, inter_heading }) => {
       </div>
 
       {/* Bottom Section */}
-      <div className="flex flex-col items-center border-t border-gray-300 mt-12 pt-2">
-                <ScrollToTopButton />
-        <p className={`${inter_heading.className} text-[#181818]`}>
+      <div className="flex flex-col items-center border-t border-white/20 mt-12 pt-2">
+        <ScrollToTopButton />
+        <p className={`${inter_heading.className} text-white`}>
           &copy; 2026 Aurelia Dental. All rights reserved.
         </p>
 
-        <p className={`${inter_heading.className} text-sm text-[#181818] -mb-2`}>
-          Powered by <span className="underline">Omni-Ray Software Solutions</span>
+        <p className={`${inter_heading.className} text-sm text-white -mb-2`}>
+          Powered by <span className="underline text-white hover:text-[#f6d212] transition-colors">Omni-Ray Software Solutions</span>
         </p>
       </div>
     </footer>

@@ -19,6 +19,7 @@ interface Review {
 interface PatientReviewsProps {
   inter_heading: { className: string };
   tt_wellingtons_demi: { className: string };
+  tt_wellingtons_medium: { className: string };
   tt_wellingtons: { className: string };
   cinzel: { className: string };
   levenim: { className: string };
@@ -28,6 +29,7 @@ interface PatientReviewsProps {
 const PatientReviews: React.FC<PatientReviewsProps> = ({
   inter_heading,
   tt_wellingtons_demi,
+  tt_wellingtons_medium,
   tt_wellingtons,
   cinzel,
   levenim,
@@ -69,7 +71,7 @@ const PatientReviews: React.FC<PatientReviewsProps> = ({
     <section className="w-full lg:w-[95%] mx-auto mt-16 p-6 bg-[#058080]">
       {/* Header */}
       <div className="flex flex-col items-center pb-8">
-        <p className={`${inter_heading.className} inline-block text-[#181818] bg-[#ffdf20] px-2.5 py-0.5 mb-1 rounded-full text-xs font-semibold tracking-wide`}>
+        <p className={`${inter_heading.className} inline-block text-[#181818] bg-[#ffdf20] px-2.5 py-0.5 mb-1 rounded-full text-sm font-semibold tracking-wide`}>
           User Reviews
         </p>
         <h2 className={`${tt_wellingtons_demi.className} tracking-wide text-3xl text-[#FAF9F6] text-center`}>
@@ -83,7 +85,7 @@ const PatientReviews: React.FC<PatientReviewsProps> = ({
           <Slider {...settings}>
             {reviews.map((review, index) => (
               <div key={index} className="lg:px-4">
-                <div className="rounded-sm bg-[#eef3f9] p-4 lg:h-[20rem] h-[27rem] flex flex-col">
+                <div className="rounded-sm bg-[#eef3f9] p-4 lg:h-[24rem] h-[27rem] flex flex-col">
                   {/* Review Header */}
                   <div className="flex gap-2 mb-4">
                     <Image 
@@ -95,7 +97,7 @@ const PatientReviews: React.FC<PatientReviewsProps> = ({
                       loading="lazy"
                     />
                     <div className="flex flex-col">
-                      <p className={`${tt_wellingtons_demi.className} font-bold`}>
+                      <p className={`${tt_wellingtons_medium.className}`}>
                         {review.name}
                       </p>
                       <div className="text-[#FFD700] text-lg -mt-1">★★★★★</div>

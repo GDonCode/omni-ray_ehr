@@ -1,6 +1,5 @@
 import React from 'react';
 import Link from 'next/link';
-import HeroSlider from './HeroSlider';
 import HeroActions from './HeroActions';
 
 interface HomeHeroProps {
@@ -22,15 +21,29 @@ const HomeHero: React.FC<HomeHeroProps> = ({
 }) => {
 
   return (
-    <section className="relative mt-31 lg:mt-32 lg:pb-12 pb-8 bg-[#058080]">
-      <div className="relative max-w-7xl mx-auto">
-        <div className="relative flex flex-col lg:flex-row items-center lg:gap-40 px-6 pt-6 pb-10 lg:pb-8 lg:pt-16 lg:px-0">
+    <section className="relative mt-31 lg:mt-30 min-h-[calc(100vh-7.75rem)] lg:min-h-[calc(100vh-7.5rem)] lg:pb-12 pb-8 bg-[#058080] overflow-hidden">
+      {/* Video Background */}
+      <video
+        autoPlay
+        muted
+        loop
+        playsInline
+        className="absolute inset-0 w-full h-full object-cover"
+      >
+        <source src="/hero-bg.mp4" type="video/mp4" />
+      </video>
+
+      {/* Overlay for content contrast */}
+      <div className="absolute inset-0 bg-black/50" />
+
+      <div className="relative max-w-7xl mx-auto min-h-[calc(100vh-7.75rem)] lg:min-h-[calc(100vh-7.5rem)]">
+        <div className="relative flex flex-col items-center justify-center h-full min-h-[calc(100vh-7.75rem)] lg:min-h-[calc(100vh-7.5rem)] px-6 lg:px-0">
           {/* Content Section */}
-          <div className="lg:w-[60%] z-10 lg:-mt-4">
+          <div className="z-10 w-full lg:w-[70%] mx-auto text-center">
             {/* Heading */}
             <h1 className="flex flex-col items-center">
               <p className={`${tt_wellingtons_demi.className} text-2xl text-[#FAF9F6] font-semibold tracking-wider`}>
-                the <span className="text-[#f6d212]">golden</span> touch for
+                the <span className="text-[#f6d212]">golden</span> touch to
               </p>
               <span
                 className={`${cinzel.className} text-[3.25rem] lg:text-7xl text-[#FAF9F6] font-bold -mt-2 lg:-mt-0`}
@@ -54,21 +67,6 @@ const HomeHero: React.FC<HomeHeroProps> = ({
               tt_wellingtons={tt_wellingtons}
               styles={styles}
             />
-          </div>
-
-          {/* Image Section */}
-          <div className="w-[92%] sm:w-[80%] lg:w-[35%] mx-auto mt-14 lg:mt-0">
-            <div className="relative">
-              <div className="aspect-[4/4] relative bg-gray-100">
-                <HeroSlider images={images} />
-              </div>
-              {/* Image Label */}
-              <div className="absolute -bottom-4 left-1/2 -translate-x-1/2 bg-[#f6d212] px-6 py-2">
-                <p className={`${inter_heading.className} text-sm uppercase tracking-wider text-[#181818] text-center font-bold`}>
-                  Before & After
-                </p>
-              </div>
-            </div>
           </div>
         </div>
       </div>
