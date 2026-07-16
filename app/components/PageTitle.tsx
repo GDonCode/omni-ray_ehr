@@ -19,7 +19,7 @@ export default function PageTitle({
 }: PageTitleProps) {
   return (
     <div
-      className={`py-4 w-full lg:mt-30 mt-31 relative ${className}`}
+      className={`py-4 w-full lg:mt-30 mt-16.5 relative ${className}`}
       style={{ backgroundColor: bgColor }}
     >
       <h1 className={`${titleFont} text-3xl lg:text-4xl text-center`} style={{ color: textColor }}>

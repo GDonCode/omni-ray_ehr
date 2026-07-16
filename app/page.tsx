@@ -5,7 +5,6 @@ import localFont from "next/font/local";
 
 import Header from './components/Header';
 import HeaderWrapper from './components/HeaderWrapper'; 
-import MobileMenuClient from './components/MobileMenuClient';
 import HomeHero from './components/Home/HomeHero';
 import Footer from './components/Footer';
 import WhyChooseUs from './components/Home/WhyChooseUs';
@@ -83,7 +82,7 @@ export default function Home() {
     return (
     <div className={styles.pageBackground}>
       {/* Floating WhatsApp Icon */}
-      <a href="https://wa.link/2cyzq4" className="fixed bottom-5 right-4 z-40 rounded-full p-2 bg-[#3FC050]" aria-label="Chat with us on WhatsApp">
+      <a href="https://wa.link/2cyzq4" className="fixed bottom-5 right-4 z-40 rounded-full p-2 bg-[#3FC050] hidden md:fixed" aria-label="Chat with us on WhatsApp">
         <Image src={"/icons8-whatsapp.svg"} alt="Whatsapp Logo" width={34} height={34} />
       </a>
 

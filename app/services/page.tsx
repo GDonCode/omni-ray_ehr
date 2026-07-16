@@ -256,7 +256,7 @@ export default function Services(){
           bodyFont={`${tt_wellingtons.className}`}
         />
 
-        <div className="bg-[#F7FBFC] mx-auto p-6 lg:p-8 relative backdrop-blur-md shadow-lg z-10 lg:-mb-12">
+        <div className={`${styles.container} mx-auto p-6 lg:p-8 relative backdrop-blur-md shadow-lg z-10 lg:-mb-12`}>
           {/* Search Bar */}
           <div className="mb-8 max-w-2xl mx-auto relative">
             <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />

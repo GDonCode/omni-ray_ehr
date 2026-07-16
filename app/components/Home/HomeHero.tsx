@@ -21,7 +21,7 @@ const HomeHero: React.FC<HomeHeroProps> = ({
 }) => {
 
   return (
-    <section className="relative mt-31 lg:mt-30 min-h-[calc(100vh-7.75rem)] lg:min-h-[calc(100vh-7.5rem)] lg:pb-12 pb-8 bg-[#058080] overflow-hidden">
+    <section className="relative mt-16.5 lg:mt-30 min-h-[calc(100vh-7.75rem)] lg:min-h-[calc(100vh-7.5rem)] lg:pb-12 pb-8 bg-[#058080] overflow-hidden">
       {/* Video Background */}
       <video
         autoPlay
@@ -42,7 +42,7 @@ const HomeHero: React.FC<HomeHeroProps> = ({
           <div className="z-10 w-full lg:w-[70%] mx-auto text-center">
             {/* Heading */}
             <h1 className="flex flex-col items-center">
-              <p className={`${tt_wellingtons_demi.className} text-2xl text-[#FAF9F6] font-semibold tracking-wider`}>
+              <p className={`${tt_wellingtons_demi.className} mt-4 md:mt-0 text-2xl text-[#FAF9F6] font-semibold tracking-wider`}>
                 the <span className="text-[#f6d212]">golden</span> touch to
               </p>
               <span

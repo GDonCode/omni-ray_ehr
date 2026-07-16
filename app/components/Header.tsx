@@ -1,6 +1,7 @@
 // Header.tsx
 'use client';
 
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { MapPin } from 'lucide-react';
@@ -17,17 +18,13 @@ interface HeaderProps {
   inter_heading: { className: string };
   tt_wellingtons_demi: { className: string };
   levenim: { className: string };
-  isMobileMenuOpen: boolean;
-  onMobileMenuToggle: () => void;
 }
 
 const Header: React.FC<HeaderProps> = ({ 
   navItems,
   inter_heading,
   tt_wellingtons_demi,
-  levenim,
-  isMobileMenuOpen,
-  onMobileMenuToggle
+  levenim
 }) => {
   const pathname = usePathname();
 
@@ -36,39 +33,55 @@ const Header: React.FC<HeaderProps> = ({
       ? 'home'
       : pathname?.split('/')[1] || 'home';
 
+  const [isHeaderVisible, setIsHeaderVisible] = useState(true);
+  const [lastScrollY, setLastScrollY] = useState(0);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      const currentScrollY = window.scrollY;
+
+      if (currentScrollY <= 0) {
+        setIsHeaderVisible(true);
+      } else if (currentScrollY > lastScrollY) {
+        setIsHeaderVisible(false); // scrolling down
+      } else {
+        setIsHeaderVisible(true); // scrolling up
+      }
+
+      setLastScrollY(currentScrollY);
+    };
+
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, [lastScrollY]);
+
   return (
     <>
-      <div className="backdrop-blur-md shadow-lg z-20 fixed top-0 w-full flex flex-col">
+      <div
+        className={`backdrop-blur-md shadow-lg z-20 fixed top-0 w-full flex flex-col transition-transform duration-300 ease-in-out ${
+          isHeaderVisible ? 'translate-y-0' : '-translate-y-full'
+        } lg:translate-y-0`}
+      >
 
         {/* Main Header - Mobile (unchanged rendering, isolated from desktop restructure) */}
-        <div className="lg:hidden w-full bg-[#058080] px-4 flex items-center justify-between py-2">
-          <Link href="/" className="flex items-center gap-3">
+        <div className="lg:hidden w-full bg-[#058080] px-4 flex items-center justify-between py-1.5">
+          <Link href="/" className="flex items-center gap-2 justify-center mx-auto">
             <Image 
               src="/aurelia-dental_logo.png" 
               alt="Logo" 
               width={75} 
               height={75} 
-              className="cursor-pointer"
+              className="cursor-pointer w-[54px] h-[54px]"
             />
-            <p className={`${levenim.className} text-[#fff] font-medium text-[2rem] items-center flex flex-col tracking-widest`}>
+            <p className={`${levenim.className} text-[#fff] font-medium text-[1.5rem] items-center flex flex-col tracking-widest`}>
               aurelia 
-              <span className="block -mt-3 ml-3 text-[#fff] text-[1.5rem] font-bold uppercase">
+              <span className="block -mt-2 ml-2 text-[#fff] text-[1.15rem] font-bold uppercase">
                 Dental
               </span>
             </p>
           </Link>
 
-          <button 
-            onClick={onMobileMenuToggle} 
-            className="px-5 py-3 bg-[linear-gradient(180deg,#ffe14d_0%,#ffd808_50%,#e6b800_100%)] shadow-[0px_0.5px_0.5px_rgba(180,130,0,0.3),0px_1px_0.5px_rgba(180,130,0,0.15)] rounded-[6px] border-0 outline-none transition-all duration-300 ease-[cubic-bezier(0.15,0.83,0.66,1)] cursor-pointer"
-            aria-label="Toggle menu"
-            aria-expanded={isMobileMenuOpen}
-          >
-            <span className={`${tt_wellingtons_demi.className} text-[#181818] font-extrabold tracking-widest`}>
-              MENU
-            </span>
-          </button>
-        </div>
+          </div>
 
         {/* Main Header - Desktop (slim maps bar + single row) */}
         <div className="hidden lg:flex lg:flex-col w-full">

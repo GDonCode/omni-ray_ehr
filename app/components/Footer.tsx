@@ -21,11 +21,6 @@ interface OpeningHour {
   hours: string;
 }
 
-interface QuickLink {
-  label: string;
-  href: string;
-}
-
 interface Service {
   label: string;
   href: string;
@@ -43,6 +38,19 @@ const Footer: React.FC<FooterProps> = ({ tt_wellingtons, inter_heading }) => {
           Shop 40, 41<br />
           Overton Plaza<br />
           49 Union Street, Montego Bay, Jamaica
+        </a>
+      ),
+    },
+    {
+      icon: <MapPin className="size-5 text-white group-hover:scale-104 transition-all" strokeWidth={1.5} />,
+      content: (
+        <a
+          href="https://maps.app.goo.gl/6hZ1vttQ6kLUytwd6"
+          className={`${inter_heading.className} text-white -mt-1 text-lg tracking-wide group-hover:text-[#f6d212] transition-all duration-300`}
+        >
+          Unit 25A<br />
+          Fairview Shopping Centre<br />
+          Annex Plaza, Montego Bay, Jamaica
         </a>
       ),
     },
@@ -74,12 +82,6 @@ const Footer: React.FC<FooterProps> = ({ tt_wellingtons, inter_heading }) => {
     { day: 'MON - FRI', hours: '10:00am - 6:00pm' },
     { day: 'SATURDAY', hours: '9:00am - 6:00pm' },
     { day: 'SUNDAY', hours: 'Closed' },
-  ];
-
-  const quickLinks: QuickLink[] = [
-    { label: 'Home', href: '/' },
-    { label: 'Services', href: '/services' },
-    { label: 'Contact Us', href: '/contact' },
   ];
 
   const services: Service[] = [
@@ -130,34 +132,6 @@ const Footer: React.FC<FooterProps> = ({ tt_wellingtons, inter_heading }) => {
                   <p>{schedule.hours}</p>
                 </div>
               </div>
-            ))}
-          </div>
-        </div>
-
-        {/* Quick Links Section */}
-        <div>
-          <p
-            className={`${tt_wellingtons.className} text-white text-xl font-semibold border-b border-white/20 w-fit pb-1 mb-4`}
-          >
-            Quick Links
-          </p>
-          <div className="flex flex-col gap-3">
-            {quickLinks.map((link, index) => (
-              <Link
-                key={index}
-                href={link.href}
-                className="flex gap-1 items-center group cursor-pointer"
-              >
-                <ChevronRight
-                  className="size-4 text-white transition-transform duration-200 ease-in-out group-hover:translate-x-1"
-                  strokeWidth={1.5}
-                />
-                <p
-                  className={`${inter_heading.className} text-white group-hover:text-[#f6d212] text-lg tracking-wide`}
-                >
-                  {link.label}
-                </p>
-              </Link>
             ))}
           </div>
         </div>

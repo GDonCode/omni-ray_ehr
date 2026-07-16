@@ -14,7 +14,7 @@ export default function ServicesHero({
   bodyFont = "",
 }) {
   return (
-    <div className="mt-29 p-6 lg:p-0" style={{ backgroundColor: bgColor }}>
+    <div className="mt-16.5 p-6 lg:p-0" style={{ backgroundColor: bgColor }}>
       <div className="max-w-7xl mx-auto">
         <div className="lg:pt-10 lg:pb-10 w-full">
           <h1 className={`${titleFont} text-3xl lg:text-4xl font-bold mb-3 lg:text-center`} style={{ color: textColor }}>

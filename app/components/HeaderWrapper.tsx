@@ -1,8 +1,6 @@
 'use client';
-import { useState, useEffect } from 'react';
-import { usePathname } from 'next/navigation';
 import Header from './Header';
-import MobileMenuClient from './MobileMenuClient';
+import MobileBottomNav from './MobileBottomNav';
 import type { NavItem } from './MobileMenu';
 
 interface HeaderWrapperProps {
@@ -18,14 +16,6 @@ export default function HeaderWrapper({
   tt_wellingtons_demi,
   levenim
 }: HeaderWrapperProps) {
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const pathname = usePathname();
-
-  // Close mobile menu when route changes
-  useEffect(() => {
-    setIsMobileMenuOpen(false);
-  }, [pathname]);
-
   return (
     <>
       <Header
@@ -33,13 +23,10 @@ export default function HeaderWrapper({
         inter_heading={inter_heading}
         tt_wellingtons_demi={tt_wellingtons_demi}
         levenim={levenim}
-        isMobileMenuOpen={isMobileMenuOpen}
-        onMobileMenuToggle={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
       />
-      <MobileMenuClient
+      <MobileBottomNav
         navItems={navItems}
-        isOpen={isMobileMenuOpen}
-        onClose={() => setIsMobileMenuOpen(false)}
+        tt_wellingtons_demi={tt_wellingtons_demi}
       />
     </>
   );

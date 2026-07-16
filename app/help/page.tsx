@@ -111,7 +111,7 @@ export default function Help() {
 
   return (
   <>
-    <div className={`${styles.background}`}>
+    <div className={`${styles.background} ${styles.container}`}>
     </div>
     <header role="banner">
       <HeaderWrapper

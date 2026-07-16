@@ -33,7 +33,7 @@ export default function Step2DateTimeSelection({
       />
       <button
         onClick={onPrevious}
-        className={`${fontClasses.inter} fixed bottom-10 right-52 z-100 rounded-xl px-8 py-4 cursor-pointer text-xl font-semibold flex gap-2 items-center transition-all duration-200 hover:scale-[1.02] hover:brightness-105`}
+        className={`${fontClasses.inter} fixed bottom-26 lg:bottom-10 right-52 z-100 rounded-xl px-8 py-4 cursor-pointer text-xl font-semibold flex gap-2 items-center transition-all duration-200 hover:scale-[1.02] hover:brightness-105`}
           style={{
             background: 'linear-gradient(180deg, #ffe14d 0%, #ffd808 50%, #e6b800 100%)',
             boxShadow: '0px 0.5px 0.5px rgba(180,130,0,0.3), 0px 1px 0.5px rgba(180,130,0,0.15)',
@@ -46,7 +46,7 @@ export default function Step2DateTimeSelection({
       {selectedSlots.length > 0 && selectedSlots.every(s => s.times.length > 0) && (
         <button
           onClick={onNext}
-          className={`${fontClasses.inter} fixed bottom-10 right-4 z-100 rounded-xl px-8 py-4 cursor-pointer text-2xl font-semibold flex gap-2 items-center transition-all duration-200 hover:scale-[1.02] hover:brightness-105`}
+          className={`${fontClasses.inter} fixed bottom-26 lg:bottom-10 right-4 z-100 rounded-xl px-8 py-4 cursor-pointer text-2xl font-semibold flex gap-2 items-center transition-all duration-200 hover:scale-[1.02] hover:brightness-105`}
           style={{
             background: 'linear-gradient(180deg, #ffe14d 0%, #ffd808 50%, #e6b800 100%)',
             boxShadow: '0px 0.5px 0.5px rgba(180,130,0,0.3), 0px 1px 0.5px rgba(180,130,0,0.15)',

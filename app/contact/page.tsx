@@ -33,7 +33,7 @@ export default function Contact() {
   ];
 
   return (
-    <div className="bg-[#F7FBFC]">
+    <div className={styles.container}>
       <header role="banner">
         <HeaderWrapper
           navItems={navItems}

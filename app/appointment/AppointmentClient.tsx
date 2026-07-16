@@ -526,8 +526,8 @@ export default function NewAppointment() {
   }, [currentStep, bookingData.selectedService, mounted]);
 
   return (
-    <div className='bg-[#F7FBFC]'>
-      <div className={`${styles.background}`} />
+    <div>
+      <div className={`${styles.container}`} />
       <header role="banner">
         <HeaderWrapper
           navItems={navItems}
@@ -538,12 +538,12 @@ export default function NewAppointment() {
       </header>
 
       {currentStep <= 4 && (
-        <div className="flex flex-col md:flex-row gap-2 md:items-end mb-6 lg:mt-30 mt-31 w-full bg-[#058080] relative">
+        <div className="flex flex-col md:flex-row gap-2 md:items-end mb-6 lg:mt-30 mt-16.5 w-full bg-[#058080] relative">
           <StepIndicator currentStep={currentStep} onStepClick={handleStepClick} maxReachedStep={maxReachedStep} />
         </div>
       )}
 
-      <div className="relative w-[95%] mx-auto bg-[#F7FBFC]">
+      <div className={`relative w-[95%] mx-auto bg-[#F7FBFC] ${styles.container}`}>
         {currentStep === 1 && (
           <div>
             <h2 ref={stepHeadingRef} tabIndex={-1} className="sr-only">Step 1: Select Service</h2>
