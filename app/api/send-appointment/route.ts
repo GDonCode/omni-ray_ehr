@@ -1,13 +1,20 @@
 // app/api/send-appointment/route.ts
 import { Resend } from 'resend';
 import { NextResponse } from 'next/server';
-import { createClient } from '@supabase/supabase-js';
+import { supabaseAdmin } from '@/lib/supabase-admin';
 
-const resend = new Resend(process.env.RESEND_API_KEY);
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_DEFAULT_KEY!
-);
+function getClients() {
+  const resendKey = process.env.RESEND_API_KEY;
+
+  if (!resendKey) {
+    throw new Error('Missing required environment variable(s): RESEND_API_KEY');
+  }
+
+  return {
+    resend: new Resend(resendKey),
+    supabase: supabaseAdmin,
+  };
+}
 
 const EMAIL_CONFIG = {
   testing: {
@@ -84,6 +91,7 @@ const baseEmailWrapper = (content: string) => `
 
 export async function POST(request: Request) {
   try {
+    const { resend, supabase } = getClients();
     const bookingData: BookingData = await request.json();
 
     const parseDate = (dateStr: string): Date => new Date(dateStr);

@@ -70,8 +70,17 @@ async function sendAppointmentEmail(bookingData: BookingData) {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(bookingData),
     });
-    const data = await response.json();
-    if (!response.ok) throw new Error(data.error || 'Failed to send');
+
+    const rawText = await response.text();
+    let data: any = null;
+    try {
+      data = rawText ? JSON.parse(rawText) : null;
+    } catch {
+      console.error('Non-JSON response from /api/send-appointment:', rawText.slice(0, 500));
+      throw new Error(`Server returned an unexpected response (status ${response.status})`);
+    }
+
+    if (!response.ok) throw new Error(data?.error || 'Failed to send');
     return { success: true, data };
   } catch (error) {
     console.error('Error sending appointment:', error);
