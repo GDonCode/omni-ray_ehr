@@ -15,7 +15,6 @@ interface NavItem {
 interface HeaderProps {
   navItems: NavItem[];
   inter_heading: { className: string };
-  tt_wellingtons_medium: { className: string };
   tt_wellingtons_demi: { className: string };
   levenim: { className: string };
   isMobileMenuOpen: boolean;
@@ -25,7 +24,6 @@ interface HeaderProps {
 const Header: React.FC<HeaderProps> = ({ 
   navItems,
   inter_heading,
-  tt_wellingtons_medium,
   tt_wellingtons_demi,
   levenim,
   isMobileMenuOpen,

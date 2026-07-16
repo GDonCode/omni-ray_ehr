@@ -38,7 +38,6 @@ export default function Contact() {
         <HeaderWrapper
           navItems={navItems}
           inter_heading={inter_heading}
-          tt_wellingtons_medium={tt_wellingtons_medium}
           tt_wellingtons_demi={tt_wellingtons_demi}
           levenim={levenim}
         />

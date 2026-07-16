@@ -118,7 +118,6 @@ export default function Help() {
         navItems={navItems}
         inter_heading={inter_heading}
         tt_wellingtons_demi={tt_wellingtons_demi}
-        tt_wellingtons_medium={tt_wellingtons_medium}
         levenim={levenim}
       />
     </header>
