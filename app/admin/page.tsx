@@ -3,6 +3,7 @@ import { redirect } from 'next/navigation'
 import { authOptions } from '../api/auth/[...nextauth]/route'
 import { supabaseAdmin } from '@/lib/supabase-admin'
 import localFont from "next/font/local";
+import styles from './admin.module.css';
 
 import HeaderWrapper from '../components/HeaderWrapper';
 import AdminFooter from '../components/Admin/AdminFooter';
@@ -40,7 +41,7 @@ export default async function AdminAppointmentsPage() {
   }
 
   return (
-    <div className='bg-[#F7FBFC] flex flex-col min-h-screen'>
+    <div className={`${styles.container} flex flex-col min-h-screen`}>
       <header role="banner">
         <HeaderWrapper
           navItems={navItems}
