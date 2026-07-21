@@ -7,7 +7,7 @@ import Image from 'next/image';
 import { MapPin } from 'lucide-react';
 import { usePathname } from 'next/navigation';
 
-interface NavItem {
+export interface NavItem {
   id: string;
   href: string;
   label: string;

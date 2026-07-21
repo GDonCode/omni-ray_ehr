@@ -2,7 +2,7 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { Home, Stethoscope, CircleHelp, Phone, CalendarCheck } from 'lucide-react';
-import type { NavItem } from './MobileMenu';
+import type { NavItem } from './Header';
 
 interface MobileBottomNavProps {
   navItems: NavItem[];

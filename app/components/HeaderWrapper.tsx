@@ -1,7 +1,7 @@
 'use client';
 import Header from './Header';
 import MobileBottomNav from './MobileBottomNav';
-import type { NavItem } from './MobileMenu';
+import type { NavItem } from './Header';
 
 interface HeaderWrapperProps {
   navItems: NavItem[];
