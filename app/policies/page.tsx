@@ -4,7 +4,6 @@ import "../globals.css";
 import localFont from "next/font/local";
 
 import HeaderWrapper from '../components/HeaderWrapper';
-import MobileMenuClient from '../components/MobileMenuClient';
 import Footer from '../components/Footer';
 
 
