@@ -2,7 +2,7 @@ import { getServerSession } from 'next-auth';
 import { NextResponse } from 'next/server';
 import { authOptions } from '../../../auth/[...nextauth]/route';
 import { supabaseAdmin } from '@/lib/supabase-admin';
-import { sendConfirmationToPatient, sendRescheduleNotification } from '@/lib/notifications';
+import { sendConfirmationToPatient, sendRescheduleNotification, sendWaitlistMatch } from '@/lib/notifications';
 
 export async function PATCH(
   request: Request,
@@ -88,6 +88,41 @@ export async function PATCH(
         current.service_name,
         message
       ).catch(err => console.error('Background confirmation error:', err));
+    }
+
+    // Waitlist match: appointment just freed up (was confirmed, now cancelled)
+    if (wasConfirmed && status === 'cancelled' && current.confirmed_date) {
+      supabaseAdmin
+        .from('waitlist_entries')
+        .select('*')
+        .eq('status', 'active')
+        .eq('requested_date', current.confirmed_date)
+        .then(async ({ data: matches, error: matchError }) => {
+          if (matchError) {
+            console.error('Waitlist match query error:', matchError);
+            return;
+          }
+          for (const entry of matches || []) {
+            const bookingLink = `${process.env.NEXT_PUBLIC_SITE_URL}/appointment?service=${encodeURIComponent(entry.service_name)}&date=${entry.requested_date}`;
+            sendWaitlistMatch(
+              {
+                firstName: entry.first_name,
+                lastName: entry.last_name,
+                email: entry.email,
+                phone: entry.phone,
+                contactMethod: entry.contact_method,
+              },
+              entry.requested_date,
+              entry.service_name,
+              bookingLink
+            ).catch(err => console.error('Background waitlist notification error:', err));
+
+            await supabaseAdmin
+              .from('waitlist_entries')
+              .update({ status: 'notified', notified_at: new Date().toISOString() })
+              .eq('id', entry.id);
+          }
+        });
     }
 
     // Note: No notification for status changes from confirmed to cancelled/completed/pending

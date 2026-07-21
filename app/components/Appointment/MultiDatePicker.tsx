@@ -3,6 +3,7 @@
 import { useState, useMemo, useEffect } from 'react';
 import { ChevronLeft, ChevronRight, X } from 'lucide-react';
 import localFont from "next/font/local";
+import WaitlistJoinModal from './WaitlistJoinModal';
 
 const inter = localFont({ src: "../../fonts/Inter/Inter-Regular.otf" });
 const inter_heading = localFont({ src: "../../fonts/Inter/Inter-Medium.otf" });
@@ -23,6 +24,7 @@ interface MultiDatePickerProps {
     saturday: { start: string; end: string };
     sunday: 'closed';
   };
+  serviceName?: string;
 }
 
 // TIME SLOT GENERATION --- TIME SLOT GENERATION --- TIME SLOT GENERATION --- TIME SLOT GENERATION
@@ -45,10 +47,11 @@ const formatDateDisplay = (date: Date) => {
 };
 // DATE FORMATTING --- DATE FORMATTING --- DATE FORMATTING --- DATE FORMATTING
 
-export default function MultiDatePicker({ selectedSlots, onChange, clinicHours }: MultiDatePickerProps) {
+export default function MultiDatePicker({ selectedSlots, onChange, clinicHours, serviceName = '' }: MultiDatePickerProps) {
 // CALENDAR STATE --- CALENDAR STATE --- CALENDAR STATE --- CALENDAR STATE
   const [currentMonth, setCurrentMonth] = useState(new Date());
   const [addingSecond, setAddingSecond] = useState(false);
+  const [showWaitlistModal, setShowWaitlistModal] = useState(false);
   const today = new Date();
   today.setHours(0, 0, 0, 0);
   const firstDayOfMonth = new Date(currentMonth.getFullYear(), currentMonth.getMonth(), 1).getDay(); // 0 = Sunday
@@ -263,6 +266,25 @@ const toggleTime = (date: Date, time: string) => {
         })}
       </div>
       {/* CALENDAR GRID --- CALENDAR GRID */}
+
+      {/* WAITLIST CTA --- WAITLIST CTA */}
+      <div className="text-center border-t border-[#D0E6E6] pt-4">
+        <p className={`${inter.className} text-md text-[#024c4c] mb-2`}>
+          Don't see a day that works for you?
+        </p>
+        <button
+          onClick={() => setShowWaitlistModal(true)}
+          className={`${inter_heading.className} px-4 py-2 rounded-md text-md font-bold text-[#181818] bg-[#ffd808] hover:brightness-95 transition-all cursor-pointer`}
+        >
+          Join the Waitlist
+        </button>
+      </div>
+      <WaitlistJoinModal
+        isOpen={showWaitlistModal}
+        onClose={() => setShowWaitlistModal(false)}
+        defaultServiceName={serviceName}
+      />
+      {/* WAITLIST CTA --- WAITLIST CTA */}
 
       {/* SELECTED DATES & TIME SLOTS --- SELECTED DATES & TIME SLOTS */}
       {selectedSlots.map((slot) => (

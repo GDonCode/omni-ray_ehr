@@ -266,6 +266,7 @@ export default function NewAppointment() {
   useEffect(() => {
     setMounted(true);
     const urlService = searchParams.get('service');
+    const urlDate = searchParams.get('date');
     const savedStep = sessionStorage.getItem('currentStep');
     const savedBookingData = sessionStorage.getItem('bookingData');
 
@@ -320,6 +321,20 @@ export default function NewAppointment() {
     const savedMaxStep = sessionStorage.getItem('maxReachedStep');
     if (savedStep) setCurrentStep(parseInt(savedStep));
     if (savedMaxStep) setMaxReachedStep(parseInt(savedMaxStep));
+
+    // Waitlist match link: pre-fill the freed date and jump straight to Step 2
+    if (urlDate) {
+      const parsedDate = new Date(`${urlDate}T00:00:00`);
+      if (!isNaN(parsedDate.getTime())) {
+        setBookingData(prev => ({
+          ...prev,
+          selectedService: urlService || prev.selectedService,
+          selectedSlots: [{ date: parsedDate, times: [] }],
+        }));
+        setCurrentStep(2);
+        setMaxReachedStep(prevMax => Math.max(prevMax, 2));
+      }
+    }
   }, [searchParams]);
 
   useEffect(() => {
@@ -575,6 +590,7 @@ export default function NewAppointment() {
               onPrevious={() => updateStep(1)}
               onNext={() => updateStep(3)}
               fontClasses={fontClasses}
+              selectedService={bookingData.selectedService}
             />
           </div>
         )}

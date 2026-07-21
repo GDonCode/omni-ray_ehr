@@ -31,10 +31,10 @@ export default function Step5Success({ onHome, onServices, onClearData, fontClas
     <div className="flex flex-col gap-6 pb-6 px-2 -mt-2 lg:pt-44 pt-38">
       <div>
         <h1 className={`${fontClasses.tt_wellingtons_demi} text-2xl font-bold text-[#036d6d] mb-4`}>
-          We've Received Your Appointment Request
+          Your Appointment Is Confirmed
         </h1>
         <p className={`${fontClasses.tt_wellingtons} text-[#181818] leading-8 text-[1.2rem]`}>
-          Thank you for choosing Aurelia Dental! We have received your appointment request and will review it shortly.
+          Thank you for choosing Aurelia Dental! Your appointment is booked, and a confirmation email is on its way to you now.
         </p>
       </div>
       <div>
@@ -42,10 +42,10 @@ export default function Step5Success({ onHome, onServices, onClearData, fontClas
           What Happens Next?
         </h2>
         <p className={`${fontClasses.tt_wellingtons} text-[#181818] leading-8 text-[1.2rem]`}>
-          Our scheduling team will contact you within one business day using your preferred contact method to confirm your appointment date and time.
-          <br /> We'll work with you to find a time that fits your schedule.
+          Check your inbox for your confirmation email with your appointment date and time.
+          <br /> We'll also send you a reminder as your visit approaches.
         </p>
-      </div>
+      </div> 
       <div>
         <h2 className={`${fontClasses.tt_wellingtons_demi} text-xl font-bold text-[#036d6d] mb-4`}>
           In the meantime...

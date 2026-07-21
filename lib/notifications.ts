@@ -292,7 +292,81 @@ export async function sendReminderToPatient(
   }
 }
 
-// sendRescheduleNotification remains unchanged (optional WhatsApp)
+export async function sendWaitlistMatch(
+  patient: {
+    firstName: string;
+    lastName: string;
+    email: string;
+    phone: string;
+    contactMethod: string | null;
+  },
+  freedDate: string,
+  service: string,
+  bookingLink: string
+) {
+  const formattedDate = formatDateLong(freedDate);
+
+  const content = `
+    <tr>
+      <td style="background-color:#058080; padding:30px 20px; text-align:center; border-radius:8px 8px 0 0;">
+        <h1 style="margin:0; color:#faf9f6; font-size:28px; font-weight:bold;">A Slot Just Opened Up</h1>
+        <p style="margin:10px 0 0 0; color:#faf9f6; font-size:20px;">${config.practiceName}</p>
+      </td>
+    </tr>
+    <tr>
+      <td style="padding:30px; background-color:#ffffff; border-left:1px solid #ddd; border-right:1px solid #ddd; border-bottom:1px solid #ddd; border-radius:0 0 8px 8px;">
+        <table width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-bottom:25px;">
+          <tr><td style="padding-top:10px;">Dear ${patient.firstName} ${patient.lastName},</td></tr>
+          <tr><td style="padding-top:10px;">You're on our waitlist for <strong>${service}</strong> on <strong>${formattedDate}</strong>, and a slot just opened up on that date.</td></tr>
+          <tr><td style="padding-top:10px;">Click below to book it now. Availability is first-come, first-served.</td></tr>
+        </table>
+        <table width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-bottom:25px;">
+          <tr>
+            <td style="text-align:center; padding:20px 0;">
+              <a href="${bookingLink}" style="background-color:#058080; color:white; padding:12px 24px; text-decoration:none; border-radius:5px; display:inline-block; font-size:18px;">Book This Slot</a>
+            </td>
+          </tr>
+        </table>
+        <table width="100%" cellpadding="0" cellspacing="0" border="0">
+          <tr>
+            <td style="padding-top:20px; border-top:2px solid #ddd; font-size:16px; color:#777; text-align:center;">
+              <p>If you no longer need this appointment, no action is needed and you'll remain on our list for future openings.</p>
+              <p>${config.practiceName} © ${new Date().getFullYear()}</p>
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+  `;
+
+  const emailHtml = baseEmailWrapper(content);
+  const plainText = `A slot for ${service} on ${formattedDate} just opened up at ${config.practiceName}. Book it here: ${bookingLink}`;
+
+  try {
+    await resend.emails.send({
+      from: config.from,
+      to: patient.email,
+      subject: `A slot opened up for ${formattedDate} – ${config.practiceName}`,
+      html: emailHtml,
+      text: plainText,
+    });
+    console.log('Waitlist match email sent to', patient.email);
+  } catch (error) {
+    console.error('Failed to send waitlist match email:', error);
+  }
+
+  if (patient.contactMethod === 'whatsapp') {
+    try {
+      await twilioClient.messages.create({
+        from: process.env.TWILIO_WHATSAPP_NUMBER,
+        to: `whatsapp:${patient.phone}`,
+        body: plainText,
+      });
+    } catch (error) {
+      console.error('Failed to send waitlist match WhatsApp:', error);
+    }
+  }
+}
 
 export async function sendRescheduleNotification(
   patient: {

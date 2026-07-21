@@ -9,6 +9,7 @@ interface Props {
   onPrevious: () => void;
   onNext: () => void;
   fontClasses: { inter: string };
+  selectedService?: string | null;
 }
 
 const clinicHours = {
@@ -23,6 +24,7 @@ export default function Step2DateTimeSelection({
   onPrevious,
   onNext,
   fontClasses,
+  selectedService,
 }: Props) {
   return (
     <div className="relative">
@@ -30,6 +32,7 @@ export default function Step2DateTimeSelection({
         selectedSlots={selectedSlots}
         onChange={onSelectSlots}
         clinicHours={clinicHours}
+        serviceName={selectedService || ''}
       />
       <button
         onClick={onPrevious}

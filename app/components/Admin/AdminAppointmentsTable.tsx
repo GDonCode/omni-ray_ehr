@@ -9,6 +9,7 @@ import Fuse from 'fuse.js';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import AdminAppointmentForm from '../../admin/[id]/AdminAppointmentForm';
 import AdminCreateAppointmentModal from './AdminCreateAppointmentModal';
+import AdminWaitlistModal from './AdminWaitlistModal';
 
 const inter = localFont({ src: "../../fonts/Inter/Inter-Regular.otf" })
 const inter_heading = localFont({ src: "../../fonts/Inter/Inter-Medium.otf" })
@@ -315,6 +316,13 @@ export default function AdminAppointmentsTable({ initialAppointments }: { initia
     queryClient.invalidateQueries({ queryKey: ['appointments'] });
   };
 
+  // WAITLIST MODAL STATE
+  const [showWaitlistModal, setShowWaitlistModal] = useState(false);
+
+  const handleWaitlistSuccess = () => {
+    setShowWaitlistModal(false);
+  };
+
   const handleUpdateSuccess = (updatedAppointment: Appointment) => {
     setDrawerAppointment(null);
 
@@ -346,6 +354,12 @@ export default function AdminAppointmentsTable({ initialAppointments }: { initia
         onSuccess={handleCreateSuccess}
       />
 
+      <AdminWaitlistModal
+        isOpen={showWaitlistModal}
+        onClose={() => setShowWaitlistModal(false)}
+        onSuccess={handleWaitlistSuccess}
+      />
+
       <div className="px-5 pb-2">
         <h2 className={`${tt_wellingtons_bold.className} text-2xl text-teal-900`}>
           Good {today.getHours() < 12 ? 'Morning' : today.getHours() < 18 ? 'Afternoon' : 'Evening'}
@@ -360,6 +374,12 @@ export default function AdminAppointmentsTable({ initialAppointments }: { initia
           className={`${tt_wellingtons_bold.className} px-4 py-2 rounded-sm cursor-pointer font-extrabold text-white bg-[#058080] hover:bg-[#036d6d] transition-colors duration-200 whitespace-nowrap`}
         >
           + Create Appointment
+        </button>
+          <button
+          onClick={() => setShowWaitlistModal(true)}
+          className={`${tt_wellingtons_bold.className} px-4 py-2 rounded-sm cursor-pointer font-extrabold text-[#181818] bg-[#ffd808] hover:brightness-95 transition-all duration-200 whitespace-nowrap`}
+        >
+          + Join Waitlist
         </button>
           {(['all', 'today', 'upcoming', 'past'] as FilterType[]).map(filter => (
             <button
