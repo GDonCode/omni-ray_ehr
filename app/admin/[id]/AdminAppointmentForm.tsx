@@ -1,6 +1,6 @@
 'use client'
 import type { Appointment } from '../../components/Admin/AdminAppointmentsTable'; 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import localFont from "next/font/local";
 
@@ -30,8 +30,43 @@ export default function AppointmentForm({ appointment, onSuccess }: AppointmentF
   const [confirmedTime, setConfirmedTime] = useState(appointment.confirmed_time || '')
   const [notes, setNotes] = useState(appointment.notes || '')
   const [message, setMessage] = useState(appointment.message || '')
-  const [isLoading, setIsLoading] = useState(false)
+const [isLoading, setIsLoading] = useState(false)
   const [showConfirm, setShowConfirm] = useState(false) // confirmation modal state
+
+  // AVAILABILITY STATE --- AVAILABILITY STATE --- AVAILABILITY STATE
+  const [bookedTimes, setBookedTimes] = useState<string[]>([])
+  const [closedTimeRange, setClosedTimeRange] = useState<{ start_time: string | null; end_time: string | null } | null>(null)
+  const [dayFullyClosed, setDayFullyClosed] = useState(false)
+
+  useEffect(() => {
+    if (!confirmedDate) {
+      setBookedTimes([])
+      setClosedTimeRange(null)
+      setDayFullyClosed(false)
+      return
+    }
+    fetch(`/api/availability?start=${confirmedDate}&end=${confirmedDate}`)
+      .then(res => res.ok ? res.json() : { bookedSlots: [], closures: [] })
+      .then(data => {
+        // Exclude this appointment's own currently-confirmed time on this date so it stays selectable
+        const times = (data.bookedSlots || [])
+          .map((s: { date: string; time: string }) => s.time)
+          .filter((t: string) => !(confirmedDate === appointment.confirmed_date && t === appointment.confirmed_time))
+        setBookedTimes(times)
+
+        const fullClosure = (data.closures || []).find((c: any) => !c.start_time && !c.end_time)
+        setDayFullyClosed(!!fullClosure)
+
+        const partialClosure = (data.closures || []).find((c: any) => c.start_time && c.end_time)
+        setClosedTimeRange(partialClosure || null)
+      })
+      .catch(() => {
+        setBookedTimes([])
+        setClosedTimeRange(null)
+        setDayFullyClosed(false)
+      })
+  }, [confirmedDate])
+  // AVAILABILITY STATE --- AVAILABILITY STATE --- AVAILABILITY STATE
 
   // Format phone number: (876) 888-4433
   const formatPhone = (phone: string) => {
@@ -69,6 +104,7 @@ export default function AppointmentForm({ appointment, onSuccess }: AppointmentF
   // Generate 30‑minute time slots based on day of week
   const getTimeOptions = (dateStr: string) => {
     if (!dateStr) return [];
+    if (dayFullyClosed) return [];
     const date = new Date(dateStr + 'T12:00:00');
     const day = date.getDay(); // 0 = Sunday, 6 = Saturday
     if (day === 0) return []; // Sunday closed
@@ -78,6 +114,8 @@ export default function AppointmentForm({ appointment, onSuccess }: AppointmentF
     for (let hour = startHour; hour < endHour; hour++) {
       for (let minute of ['00', '30']) {
         const timeStr = `${hour.toString().padStart(2, '0')}:${minute}`;
+        if (bookedTimes.includes(timeStr)) continue;
+        if (closedTimeRange && timeStr >= (closedTimeRange.start_time as string) && timeStr < (closedTimeRange.end_time as string)) continue;
         slots.push(timeStr);
       }
     }

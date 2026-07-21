@@ -9,6 +9,7 @@ import HeaderWrapper from '../components/HeaderWrapper';
 import AdminFooter from '../components/Admin/AdminFooter';
 import PageTitle from '../components/PageTitle';
 import AdminAppointmentsTable from '../components/Admin/AdminAppointmentsTable';
+import AdminClosuresManager from '../components/Admin/AdminClosuresManager';
 
 const levenim = localFont({ src: "../fonts/Levenim_MT/levenim-mt.ttf" })
 const inter = localFont({ src: "../fonts/Inter/Inter-Regular.otf" })
@@ -51,7 +52,8 @@ export default async function AdminAppointmentsPage() {
         />
       </header>
       <main role='main' className='lg:mt-36 mt-34 flex-grow'>
-        <div className="container mx-auto lg:p-4 lg:pb-6">
+        <div className="container mx-auto lg:p-4 lg:pb-6 space-y-6">
+          <AdminClosuresManager />
           <AdminAppointmentsTable initialAppointments={appointments || []} />
         </div>
       </main>

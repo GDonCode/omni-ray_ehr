@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { ChevronLeft, ChevronRight, X } from 'lucide-react';
 import localFont from "next/font/local";
 
@@ -46,13 +46,51 @@ const formatDateDisplay = (date: Date) => {
 // DATE FORMATTING --- DATE FORMATTING --- DATE FORMATTING --- DATE FORMATTING
 
 export default function MultiDatePicker({ selectedSlots, onChange, clinicHours }: MultiDatePickerProps) {
-  // CALENDAR STATE --- CALENDAR STATE --- CALENDAR STATE --- CALENDAR STATE
+// CALENDAR STATE --- CALENDAR STATE --- CALENDAR STATE --- CALENDAR STATE
   const [currentMonth, setCurrentMonth] = useState(new Date());
   const [addingSecond, setAddingSecond] = useState(false);
   const today = new Date();
   today.setHours(0, 0, 0, 0);
   const firstDayOfMonth = new Date(currentMonth.getFullYear(), currentMonth.getMonth(), 1).getDay(); // 0 = Sunday
   // CALENDAR STATE --- CALENDAR STATE --- CALENDAR STATE --- CALENDAR STATE
+
+  // AVAILABILITY STATE --- AVAILABILITY STATE --- AVAILABILITY STATE
+  const [bookedSlots, setBookedSlots] = useState<{ date: string; time: string }[]>([]);
+  const [closures, setClosures] = useState<{ date: string; start_time: string | null; end_time: string | null }[]>([]);
+
+  const toISODate = (d: Date) =>
+    `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+
+  // Convert "10:00 AM" display format to "10:00" 24h format for comparison against stored confirmed_time
+  const to24Hour = (time12: string): string => {
+    const [time, ampm] = time12.split(' ');
+    let [hour] = time.split(':').map(Number);
+    if (ampm === 'PM' && hour !== 12) hour += 12;
+    if (ampm === 'AM' && hour === 12) hour = 0;
+    return `${hour.toString().padStart(2, '0')}:00`;
+  };
+
+  useEffect(() => {
+    const start = toISODate(new Date(currentMonth.getFullYear(), currentMonth.getMonth(), 1));
+    const end = toISODate(new Date(currentMonth.getFullYear(), currentMonth.getMonth() + 1, 0));
+
+    fetch(`/api/availability?start=${start}&end=${end}`)
+      .then(res => res.ok ? res.json() : { bookedSlots: [], closures: [] })
+      .then(data => {
+        setBookedSlots(data.bookedSlots || []);
+        setClosures(data.closures || []);
+      })
+      .catch(() => {
+        setBookedSlots([]);
+        setClosures([]);
+      });
+  }, [currentMonth]);
+
+  const isDateClosed = (date: Date): boolean => {
+    const iso = toISODate(date);
+    return closures.some(c => c.date === iso && !c.start_time && !c.end_time);
+  };
+  // AVAILABILITY STATE --- AVAILABILITY STATE --- AVAILABILITY STATE
 
   // MONTH NAVIGATION --- MONTH NAVIGATION --- MONTH NAVIGATION --- MONTH NAVIGATION
   const prevMonth = () => {
@@ -80,8 +118,21 @@ export default function MultiDatePicker({ selectedSlots, onChange, clinicHours }
   const getTimeSlotsForDate = (date: Date): string[] => {
     const day = date.getDay(); // 0 = Sunday, 6 = Saturday
     if (day === 0) return []; // Sunday closed
-    if (day === 6) return generateTimeSlots(clinicHours.saturday.start, clinicHours.saturday.end);
-    return generateTimeSlots(clinicHours.weekdays.start, clinicHours.weekdays.end);
+
+    const allSlots = day === 6
+      ? generateTimeSlots(clinicHours.saturday.start, clinicHours.saturday.end)
+      : generateTimeSlots(clinicHours.weekdays.start, clinicHours.weekdays.end);
+
+    const iso = toISODate(date);
+    const bookedTimes24 = bookedSlots.filter(b => b.date === iso).map(b => b.time);
+    const partialClosure = closures.find(c => c.date === iso && c.start_time && c.end_time);
+
+    return allSlots.filter(slot => {
+      const slot24 = to24Hour(slot);
+      if (bookedTimes24.includes(slot24)) return false;
+      if (partialClosure && slot24 >= (partialClosure.start_time as string) && slot24 < (partialClosure.end_time as string)) return false;
+      return true;
+    });
   };
   // TIME SLOTS FOR DATE --- TIME SLOTS FOR DATE --- TIME SLOTS FOR DATE
 
@@ -190,7 +241,7 @@ const toggleTime = (date: Date, time: string) => {
           const isCurrentMonth = cellDate.getMonth() === currentMonth.getMonth();
           const isFuture = cellDate >= today;
           const isSunday = cellDate.getDay() === 0;
-          const isSelectable = isCurrentMonth && isFuture && !isSunday;
+          const isSelectable = isCurrentMonth && isFuture && !isSunday && !isDateClosed(cellDate);
 
           if (!isCurrentMonth) {
             return <div key={index} className="p-2" />; // empty cell for other months
