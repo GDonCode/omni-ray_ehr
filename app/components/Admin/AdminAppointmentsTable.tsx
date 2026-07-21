@@ -8,6 +8,7 @@ import { Search, X } from 'lucide-react';
 import Fuse from 'fuse.js';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import AdminAppointmentForm from '../../admin/[id]/AdminAppointmentForm';
+import AdminCreateAppointmentModal from './AdminCreateAppointmentModal';
 
 const inter = localFont({ src: "../../fonts/Inter/Inter-Regular.otf" })
 const inter_heading = localFont({ src: "../../fonts/Inter/Inter-Medium.otf" })
@@ -302,6 +303,18 @@ export default function AdminAppointmentsTable({ initialAppointments }: { initia
   // DRAWER STATE
   const [drawerAppointment, setDrawerAppointment] = useState<Appointment | null>(null);
 
+  // CREATE APPOINTMENT MODAL STATE
+  const [showCreateModal, setShowCreateModal] = useState(false);
+
+  const handleCreateSuccess = (newAppointment: Appointment) => {
+    setShowCreateModal(false);
+    queryClient.setQueryData(['appointments'], (old: Appointment[] | undefined) => {
+      if (!old) return [newAppointment];
+      return [newAppointment, ...old];
+    });
+    queryClient.invalidateQueries({ queryKey: ['appointments'] });
+  };
+
   const handleUpdateSuccess = (updatedAppointment: Appointment) => {
     setDrawerAppointment(null);
 
@@ -327,6 +340,12 @@ export default function AdminAppointmentsTable({ initialAppointments }: { initia
         onSuccess={handleUpdateSuccess}
       />
 
+      <AdminCreateAppointmentModal
+        isOpen={showCreateModal}
+        onClose={() => setShowCreateModal(false)}
+        onSuccess={handleCreateSuccess}
+      />
+
       <div className="px-5 pb-2">
         <h2 className={`${tt_wellingtons_bold.className} text-2xl text-teal-900`}>
           Good {today.getHours() < 12 ? 'Morning' : today.getHours() < 18 ? 'Afternoon' : 'Evening'}
@@ -336,6 +355,12 @@ export default function AdminAppointmentsTable({ initialAppointments }: { initia
 
       <div className="px-5 pt-2 pb-6 flex flex-col lg:flex-row lg:gap-6 gap-2">
         <div className="flex flex-wrap gap-2">
+          <button
+          onClick={() => setShowCreateModal(true)}
+          className={`${tt_wellingtons_bold.className} px-4 py-2 rounded-sm cursor-pointer font-extrabold text-white bg-[#058080] hover:bg-[#036d6d] transition-colors duration-200 whitespace-nowrap`}
+        >
+          + Create Appointment
+        </button>
           {(['all', 'today', 'upcoming', 'past'] as FilterType[]).map(filter => (
             <button
               key={filter}

@@ -2,6 +2,7 @@
 import { Resend } from 'resend';
 import { NextResponse } from 'next/server';
 import { supabaseAdmin } from '@/lib/supabase-admin';
+import { sendConfirmationToPatient } from '@/lib/notifications';
 
 function getClients() {
   const resendKey = process.env.RESEND_API_KEY;
@@ -66,6 +67,16 @@ const formatDateLong = (dateStr: string) => {
   return d.toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
 };
 
+// Convert "10:00 AM" (patient picker format) to "10:00" (24h, matches confirmed_time elsewhere)
+const to24Hour = (time12: string): string => {
+  if (!time12.includes('AM') && !time12.includes('PM')) return time12; // already 24h
+  const [time, ampm] = time12.split(' ');
+  let [hour, minute] = time.split(':').map(Number);
+  if (ampm === 'PM' && hour !== 12) hour += 12;
+  if (ampm === 'AM' && hour === 12) hour = 0;
+  return `${hour.toString().padStart(2, '0')}:${minute.toString().padStart(2, '0')}`;
+};
+
 // Base email wrapper (tables + inline styles)
 const baseEmailWrapper = (content: string) => `
   <!DOCTYPE html>
@@ -102,7 +113,34 @@ export async function POST(request: Request) {
       times: slot.times
     }));
 
-    // 1. Insert into Supabase first so we get the appointment ID
+    // The picker now only allows a single date/time — that's the slot being booked
+    const firstSlot = bookingData.selectedSlots[0];
+    const confirmedDate = parseDate(firstSlot.date).toISOString().split('T')[0];
+    const confirmedTime = to24Hour(firstSlot.times[0]);
+
+    // 1. Re-verify the slot is still open (fast-path check; the unique index on
+    //    (confirmed_date, confirmed_time) is what actually prevents the race)
+    const { data: conflictRows, error: conflictError } = await supabase
+      .from('appointment_requests')
+      .select('id')
+      .eq('status', 'confirmed')
+      .eq('confirmed_date', confirmedDate)
+      .eq('confirmed_time', confirmedTime)
+      .limit(1);
+
+    if (conflictError) {
+      console.error('Supabase conflict-check error:', conflictError);
+      return NextResponse.json({ error: 'Database error' }, { status: 500 });
+    }
+
+    if (conflictRows && conflictRows.length > 0) {
+      return NextResponse.json(
+        { error: 'slot_taken', message: 'That time slot was just booked by someone else. Please choose another time.' },
+        { status: 409 }
+      );
+    }
+
+    // 2. Insert as confirmed — no admin approval step
     const { data: inserted, error: dbError } = await supabase
       .from('appointment_requests')
       .insert({
@@ -110,6 +148,8 @@ export async function POST(request: Request) {
         selected_slots: slotsForDb,
         requested_date: null,
         requested_time: null,
+        confirmed_date: confirmedDate,
+        confirmed_time: confirmedTime,
         appointment_for: bookingData.personalInfo.appointmentFor,
         first_name: bookingData.personalInfo.firstName,
         last_name: bookingData.personalInfo.lastName,
@@ -121,19 +161,47 @@ export async function POST(request: Request) {
         is_returning_patient: bookingData.personalInfo.isReturningPatient === 'yes' ? true : bookingData.personalInfo.isReturningPatient === 'no' ? false : null,
         notes: bookingData.personalInfo.notes,
         message: bookingData.personalInfo.message,
-        status: 'new',
+        status: 'confirmed',
       })
       .select()
       .single();
 
     if (dbError) {
+      // Postgres unique-violation on the (confirmed_date, confirmed_time) index —
+      // someone else's insert won the race between our pre-check and this insert
+      if (dbError.code === '23505') {
+        return NextResponse.json(
+          { error: 'slot_taken', message: 'That time slot was just booked by someone else. Please choose another time.' },
+          { status: 409 }
+        );
+      }
       console.error('Supabase insert error:', dbError);
       return NextResponse.json({ error: 'Database error' }, { status: 500 });
     }
 
     const appointmentId = inserted.id;
 
-    // 2. Build email HTML with a link to the specific appointment
+    // 3. Send the confirmation email to the patient immediately — booking is instant now
+    try {
+      await sendConfirmationToPatient(
+        {
+          firstName: bookingData.personalInfo.firstName,
+          lastName: bookingData.personalInfo.lastName,
+          email: bookingData.personalInfo.email,
+          phone: bookingData.personalInfo.phone,
+          contactMethod: bookingData.personalInfo.contactMethod,
+        },
+        confirmedDate,
+        confirmedTime,
+        bookingData.selectedService || '',
+        ''
+      );
+    } catch (err) {
+      console.error('Failed to send patient confirmation email:', err);
+      // Don't fail the request — the appointment is booked; the email is best-effort
+    }
+
+    // 4. Build the practice notification email (FYI — appointment is already confirmed)
     const adminLink = `${config.baseUrl}/admin/${appointmentId}`;
 
     // Build slots HTML (as a nested table)
@@ -158,7 +226,7 @@ export async function POST(request: Request) {
       <!-- Header -->
       <tr>
         <td style="background-color:#058080; padding:30px 20px; text-align:center; border-radius:8px 8px 0 0;">
-          <h1 style="margin:0; color:#faf9f6; font-size:28px; font-weight:bold;">New Appointment Request</h1>
+          <h1 style="margin:0; color:#faf9f6; font-size:28px; font-weight:bold;">New Confirmed Appointment</h1>
           <p style="margin:10px 0 0 0; color:#faf9f6; font-size:20px;">${config.practiceName}</p>
         </td>
       </tr>
@@ -257,7 +325,7 @@ export async function POST(request: Request) {
           <table width="100%" cellpadding="0" cellspacing="0" border="0">
             <tr>
               <td style="padding-top:20px; border-top:2px solid #ddd; font-size:16px; color:#777; text-align:center;">
-                <p>This is an automated appointment request notification.</p>
+                <p>This is an automated confirmed-appointment notification.</p>
                 <p>Received on ${new Date().toLocaleString('en-US', { dateStyle: 'full', timeStyle: 'short' })}</p>
               </td>
             </tr>
@@ -270,7 +338,7 @@ export async function POST(request: Request) {
     const emailHtml = baseEmailWrapper(content);
 
     const plainText = `
-NEW APPOINTMENT REQUEST - ${config.practiceName}
+NEW CONFIRMED APPOINTMENT - ${config.practiceName}
 
 APPOINTMENT DETAILS
 -------------------
@@ -306,24 +374,25 @@ View this request in the admin dashboard: ${adminLink}
 Received: ${new Date().toLocaleString()}
     `.trim();
 
-    // 2. Send email to practice
+    // 5. Send FYI email to practice — patient already has their confirmation
     const { data, error } = await resend.emails.send({
       from: config.from,
       to: config.to,
-      subject: `New Appointment Request - ${bookingData.personalInfo.firstName} ${bookingData.personalInfo.lastName}`,
+      subject: `New Confirmed Appointment - ${bookingData.personalInfo.firstName} ${bookingData.personalInfo.lastName}`,
       html: emailHtml,
       text: plainText,
     });
 
     if (error) {
       console.error('Resend error:', error);
-      // Even if email fails, the appointment is saved; we can still return success but indicate email failure
+      // Even if the practice notification fails, the patient's confirmation already
+      // went out and the slot is booked — return success but flag the notification failure
       return NextResponse.json({
         success: true,
         appointmentId,
         messageId: null,
-        message: 'Appointment request saved but email notification failed',
-        dbStatus: 'saved',
+        message: 'Appointment confirmed. Practice notification email failed to send.',
+        status: 'confirmed',
         emailError: error.message,
       });
     }
@@ -332,14 +401,14 @@ Received: ${new Date().toLocaleString()}
       success: true,
       appointmentId,
       messageId: data?.id,
-      message: 'Appointment request sent successfully',
-      dbStatus: 'saved'
+      message: 'Appointment confirmed',
+      status: 'confirmed'
     });
 
   } catch (error) {
-    console.error('Error in appointment request:', error);
+    console.error('Error booking appointment:', error);
     return NextResponse.json(
-      { error: 'Failed to send appointment request' },
+      { error: 'Failed to book appointment' },
       { status: 500 }
     );
   }

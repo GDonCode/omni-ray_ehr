@@ -144,13 +144,8 @@ export default function MultiDatePicker({ selectedSlots, onChange, clinicHours }
       // If already selected, remove it entirely
       onChange(selectedSlots.filter(slot => slot.date.toDateString() !== date.toDateString()));
     } else {
-      // Adding a new date – keep exactly 2, discarding the most recent (LIFO)
-      let newSlots = [...selectedSlots];
-      if (newSlots.length >= 2) {
-        newSlots.pop(); // remove the most recently selected date
-      }
-      newSlots.push({ date, times: [] });
-      onChange(newSlots);
+      // Single-slot booking: picking a new date replaces any prior selection
+      onChange([{ date, times: [] }]);
     }
   };
   // DATE SELECTION LOGIC --- DATE SELECTION LOGIC --- DATE SELECTION LOGIC
@@ -164,15 +159,10 @@ const toggleTime = (date: Date, time: string) => {
   let newTimes: string[];
   if (slot.times.includes(time)) {
     // Remove the time
-    newTimes = slot.times.filter(t => t !== time);
+    newTimes = [];
   } else {
-    // Add new time – if already have 2, remove the most recent before adding
-    if (slot.times.length === 2) {
-      // Keep the oldest, discard the most recent
-      newTimes = [slot.times[0], time];
-    } else {
-      newTimes = [...slot.times, time];
-    }
+    // Single-slot booking: picking a new time replaces any prior selection
+    newTimes = [time];
   }
 
   const newSlots = [...selectedSlots];
@@ -215,7 +205,7 @@ const toggleTime = (date: Date, time: string) => {
         </button>
         <p className={`${tt_wellingtons_demi.className} text-2xl font-bold text-[#036D6D] flex flex-col justify-center items-center`}>
           {currentMonth.toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}
-          <span className={`${tt_wellingtons_medium.className} text-lg`}>Select 1 or 2 days</span>
+          <span className={`${tt_wellingtons_medium.className} text-lg`}>Select 1 day</span>
         </p>
         <button
           onClick={nextMonth}
@@ -285,7 +275,7 @@ const toggleTime = (date: Date, time: string) => {
               <X size={18} />
             </button>
           </div>
-          <p className={`${inter.className} text-md text-[#024c4c] mb-2`}>Pick up to <span className='font-bold'>2 preferred times.</span> We'll confirm the best one.</p>
+          <p className={`${inter.className} text-md text-[#024c4c] mb-2`}>Pick your preferred time.</p>
           <div className="flex flex-wrap gap-2">
             {getTimeSlotsForDate(slot.date).map(time => {
               const isSelected = slot.times.includes(time);
