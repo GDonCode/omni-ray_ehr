@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import localFont from "next/font/local";
+import { servicesByCategory, serviceCategoryLabels } from '@/lib/services';
 
 const inter_heading = localFont({ src: "../../fonts/Inter/Inter-Medium.otf" });
 const tt_wellingtons_demi = localFont({ src: "../../fonts/TT_Wellingtons/TT Wellingtons Trial DemiBold.otf" });
@@ -157,14 +158,35 @@ export default function AdminCreateAppointmentModal({ isOpen, onClose, onSuccess
 
             <div>
               <label className={`${inter_heading.className} block text-xs uppercase text-[#036d6d] mb-1`}>Service *</label>
-              <input
-                type="text"
+              <select
                 value={serviceName}
                 onChange={(e) => setServiceName(e.target.value)}
-                placeholder="e.g. Teeth Cleaning"
-                className="w-full p-2.5 border border-gray-300 rounded"
+                className="w-full p-2.5 border border-gray-300 rounded bg-white"
                 required
-              />
+              >
+                <option value="">Select a service</option>
+                <optgroup label="Preventive Care">
+                  <option value="New Patient Examination">New Patient Examination</option>
+                  <option value="Routine Dental Cleaning">Routine Dental Cleaning</option>
+                  <option value="Deep Cleaning (Scaling & Root Planing)">Deep Cleaning (Scaling & Root Planing)</option>
+                  <option value="Fluoride Treatment">Fluoride Treatment</option>
+                </optgroup>
+                <optgroup label="Restorative Care">
+                  <option value="Tooth Filling">Tooth Filling</option>
+                  <option value="Root Canal Treatment">Root Canal Treatment</option>
+                  <option value="Simple Tooth Extraction">Simple Tooth Extraction</option>
+                  <option value="Surgical Extraction">Surgical Extraction</option>
+                  <option value="Wisdom Tooth Removal">Wisdom Tooth Removal</option>
+                  <option value="Dental Crown">Dental Crown</option>
+                  <option value="Dental Bridge">Dental Bridge</option>
+                  <option value="Dentures Consultation">Dentures Consultation</option>
+                </optgroup>
+                <optgroup label="Cosmetic Care">
+                  <option value="Teeth Whitening">Teeth Whitening</option>
+                  <option value="Porcelain Veneers">Porcelain Veneers</option>
+                  <option value="Smile Design Consultation">Smile Design Consultation</option>
+                </optgroup>
+              </select>
             </div>
 
             <div className="grid grid-cols-2 gap-4 p-4 bg-teal-50/60 border border-teal-100 rounded-md">
