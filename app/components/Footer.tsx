@@ -85,10 +85,9 @@ const Footer: React.FC<FooterProps> = ({ tt_wellingtons, inter_heading }) => {
   ];
 
   const services: Service[] = [
-    { label: 'General Dentistry', href: '/services#general' },
-    { label: 'Surgical Services', href: '/services#surgical' },
-    { label: 'Orthodontics', href: '/services#orthodontics' },
-    { label: 'Cosmetic Dentistry', href: '/services#cosmetic' },
+    { label: 'Maintain your smile', href: '/services#preventive' },
+    { label: 'Repair your smile', href: '/services#restorative' },
+    { label: 'Transform your smile', href: '/services#cosmetic' },
   ];
 
   return (

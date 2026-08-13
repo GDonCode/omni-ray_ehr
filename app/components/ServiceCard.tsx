@@ -39,7 +39,7 @@ export default function ServiceCard({
       className={`
         relative p-5 flex flex-col cursor-pointer
         backdrop-blur-lg
-        bg-white border border-white/20 shadow-lg rounded-sm
+        bg-white border border-[#036d6d]/20 shadow-lg rounded-sm
         transition-all duration-200 ease-out
         hover:-translate-y-1
         hover:shadow-xl

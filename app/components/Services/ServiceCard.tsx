@@ -39,7 +39,7 @@ export default function ServiceCard({
   const router = useRouter();
 
   return (
-    <div className="bg-white rounded-lg overflow-hidden"
+    <div className="bg-white rounded-lg overflow-hidden border border-[#036d6d]/20"
       style={{ boxShadow: '0 4px 24px rgba(0,0,0,0.08), 0 0 0 1px rgba(0,0,0,0.05)' }}>
       <div className="py-6 px-5 flex flex-col h-full">
 

@@ -266,26 +266,6 @@ const toggleTime = (date: Date, time: string) => {
         })}
       </div>
       {/* CALENDAR GRID --- CALENDAR GRID */}
-
-      {/* WAITLIST CTA --- WAITLIST CTA */}
-      <div className="text-center border-t border-[#D0E6E6] pt-4">
-        <p className={`${inter.className} text-md text-[#024c4c] mb-2`}>
-          Don't see a day that works for you?
-        </p>
-        <button
-          onClick={() => setShowWaitlistModal(true)}
-          className={`${inter_heading.className} px-4 py-2 rounded-md text-md font-bold text-[#181818] bg-[#ffd808] hover:brightness-95 transition-all cursor-pointer`}
-        >
-          Join the Waitlist
-        </button>
-      </div>
-      <WaitlistJoinModal
-        isOpen={showWaitlistModal}
-        onClose={() => setShowWaitlistModal(false)}
-        defaultServiceName={serviceName}
-      />
-      {/* WAITLIST CTA --- WAITLIST CTA */}
-
       {/* SELECTED DATES & TIME SLOTS --- SELECTED DATES & TIME SLOTS */}
       {selectedSlots.map((slot) => (
         <div key={slot.date.toISOString()} className="border border-[#D0E6E6] rounded-lg p-4 bg-white">
@@ -319,6 +299,25 @@ const toggleTime = (date: Date, time: string) => {
         </div>
       ))}
       {/* SELECTED DATES & TIME SLOTS --- SELECTED DATES & TIME SLOTS */}
+
+      {/* WAITLIST CTA --- WAITLIST CTA */}
+      <div className="text-center border-t border-[#D0E6E6] pt-4">
+        <p className={`${inter.className} text-md text-[#024c4c] mb-2`}>
+          Don't see a day that works for you?
+        </p>
+        <button
+          onClick={() => setShowWaitlistModal(true)}
+          className={`${inter_heading.className} px-4 py-2 rounded-md text-md font-bold text-[#181818] bg-[#ffd808] hover:brightness-95 transition-all cursor-pointer`}
+        >
+          Join the Waitlist
+        </button>
+      </div>
+      <WaitlistJoinModal
+        isOpen={showWaitlistModal}
+        onClose={() => setShowWaitlistModal(false)}
+        defaultServiceName={serviceName}
+      />
+      {/* WAITLIST CTA --- WAITLIST CTA */}
     </div>
   );
 }

@@ -42,15 +42,7 @@ export default function ServiceMain({
   fontClasses,
 }: ServiceMainProps) {
   return (
-    <div className="mb-12">
-      <div className="mb-6">
-        <h2 className={`${fontClasses.tt_wellingtons_demi} text-2xl font-bold text-[#036d6d] mb-2 underline decoration-1 underline-offset-3 flex items-center gap-2`}>
-          <Image src={icon} alt="" width={20} height={20} />
-          <span className="uppercase text-3xl">{titlePrefix}</span> {titleSuffix}
-        </h2>
-        <p className={`${fontClasses.tt_wellingtons} text-gray-700 font-semibold`}>{subtitle}</p>
-      </div>
-
+    <div id={category} className="mb-12">
       <div className="grid lg:grid-cols-3 grid-cols-1 gap-6">
         {services.map((service, index) => {
           const serviceId = `${category}-${index}`;
